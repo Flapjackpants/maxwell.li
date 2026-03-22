@@ -19,11 +19,11 @@ export const metadata: Metadata = {
 /** Classic hotlink-friendly GIFs for that Geocities energy. */
 const Y2K_GIFS = {
   construction:
-    "https://media2.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif?w=120",
-  fire: "https://media4.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif?w=200",
-  stars: "https://media1.giphy.com/media/26BRuo6sLetdllPAQ/giphy.gif?w=300",
-  email: "https://media0.giphy.com/media/13CoXDiaCcCoyk/giphy.gif?w=80",
-  new: "https://media3.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif?w=48",
+    "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXlqbTc4cWxwbjhpZjVqOXlqOGI3N3AyanZvNWZ6dmcxdmRhcDl4bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sRHbqh9mGK0jVSWgSw/giphy.gif",
+  fire: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2x3bHlrZDMxa2JhMjBqM3J2dDYxcHFkN3BhenRjZ2dwejgzYm1vdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13mwsrXEUtSyZi/giphy.gif",
+  stars: "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWZpaDljcnVzM2ltaG9ta2NvcWFlMjh0cmo3eXdwMXpmeW8wbnF1dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/q6ffIzlwHKEncy19b5/giphy.gif",
+  email: "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExenNxNHZ0aWhncm5nem8zMnYzMHNicnlwcjllNDMxNGEydGJrd3poeSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/R4vIxmpGyMB5TVS1vh/giphy.gif",
+  new: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc296YXIyNGdtaHR0dHZ0M3Q2cjJ0dXAyYXU1NXJvcGRpdzFsaGptbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/droMJlwA7bz2zQo4dB/giphy.gif",
 } as const;
 
 const pageStyle: React.CSSProperties = {
@@ -58,16 +58,32 @@ export default function RetroHomePage() {
         </h1>
         <div className={styles.marqueeWrap}>
           <div className={styles.marqueeTrack}>
-            You are visitor number 0000007 !!! Thanks 4 stopping by !!!
+            You are visitor number 0000071 !!! Thanks 4 stopping by !!!
           </div>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={Y2K_GIFS.fire} alt="" width={200} height={36} />
+        <div style={{ 
+          display: 'flex', 
+          width: '100%', 
+          overflow: 'hidden', 
+          justifyContent: 'center' 
+        }}>
+          {Array(20).fill(0).map((_, i) => (
+            <img 
+              key={i} 
+              src={Y2K_GIFS.fire} 
+              alt="" 
+              width={200} 
+              height={36} 
+              style={{ flexShrink: 0 }} 
+            />
+          ))}
+        </div>
       </center>
 
       <p style={{ textAlign: "center" }}>
         <Link href="/" style={{ ...linkStyle, fontSize: "18px" }}>
-          &lt;&lt; BACK 2 THE FUTURE (normal site)
+          &lt;&lt; OVR LAND OF SQUING && SQUAGALOGMAZAG!
         </Link>
       </p>
 
@@ -108,7 +124,7 @@ export default function RetroHomePage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={PROFILE_IMAGE_URL}
-                  alt="Me!!!"
+                  alt="Maxwell Li"
                   width={160}
                   height={160}
                   style={{ border: "4px ridge gold" }}
