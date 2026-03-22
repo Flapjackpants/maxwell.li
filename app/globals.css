@@ -805,6 +805,9 @@ html {
     var(--snap-slide-px, 100%) + var(--projects-rail-extra, 0px)
   );
   overflow: visible;
+  /* Long section + y snap fights mouse-wheel deltas; JS drives scroll in this span */
+  scroll-snap-align: none;
+  scroll-snap-stop: normal;
 }
 
 .projects-snap-sticky {

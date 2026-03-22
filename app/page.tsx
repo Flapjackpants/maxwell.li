@@ -12,7 +12,18 @@ import {
   useRef,
   type MouseEvent,
 } from "react";
-import { PROJECTS } from "@/lib/projects";
+import { PROJECTS, type Project, type ProjectId } from "@/lib/projects";
+
+/** Subset of `PROJECTS` shown on the home “Selected work” rail (order preserved). */
+const HOME_RAIL_PROJECT_IDS = ["alpha", "bravo", "charlie"] as const satisfies readonly ProjectId[];
+
+const homeRailProjects: readonly Project[] = HOME_RAIL_PROJECT_IDS.map((id) => {
+  const p = PROJECTS.find((x) => x.id === id);
+  if (!p) {
+    throw new Error(`HOME_RAIL_PROJECT_IDS: unknown id "${id}"`);
+  }
+  return p;
+});
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import {
   ArrowRight,
@@ -86,12 +97,28 @@ function clampSlideIndex(outer: HTMLElement, raw: number) {
   return Math.max(0, Math.min(SECTION_COUNT - 1, Math.round(raw)));
 }
 
-function getSectionScrollTops(): [number, number, number] | null {
+/**
+ * Distance from the top of `scroller`'s scrollable content to `el`'s top border.
+ * `offsetTop` alone is wrong when `offsetParent` is not the scroll container (flex/stacking contexts).
+ */
+function elementContentOffsetTop(el: HTMLElement, scroller: HTMLElement): number {
+  const sr = scroller.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  return scroller.scrollTop + (er.top - sr.top);
+}
+
+function getSectionScrollTops(
+  scroller: HTMLElement,
+): [number, number, number] | null {
   const bio = document.getElementById("bio");
   const projects = document.getElementById("projects");
   const contact = document.getElementById("contact");
   if (!bio || !projects || !contact) return null;
-  return [bio.offsetTop, projects.offsetTop, contact.offsetTop];
+  return [
+    elementContentOffsetTop(bio, scroller),
+    elementContentOffsetTop(projects, scroller),
+    elementContentOffsetTop(contact, scroller),
+  ];
 }
 
 function projectsRailExtraPx(el: HTMLElement | null) {
@@ -109,7 +136,7 @@ function applyProjectsRailShift(
   rail: HTMLElement,
   shift: HTMLElement,
 ) {
-  const t1 = projectsEl.offsetTop;
+  const t1 = elementContentOffsetTop(projectsEl, outer);
   const R = projectsRailExtraPx(projectsEl);
   const y = outer.scrollTop;
   const local = y - t1;
@@ -122,7 +149,7 @@ function applyProjectsRailShift(
 }
 
 function nearestSlideScrollTop(outer: HTMLElement) {
-  const tops = getSectionScrollTops();
+  const tops = getSectionScrollTops(outer);
   if (!tops) return 0;
   const [t0, t1, t2] = tops;
   const projects = document.getElementById("projects");
@@ -131,8 +158,11 @@ function nearestSlideScrollTop(outer: HTMLElement) {
   const railEnd = t1 + R;
   const y = outer.scrollTop;
 
-  if (R > 0 && y >= t1 && y < railEnd) {
-    return y < t1 + R * 0.5 ? t1 : railEnd;
+  // Inside the projects rail scrub range, keep scrollTop as-is so the horizontal
+  // index matches vertical progress (bisecting to t1/railEnd broke scrubbing and
+  // felt like "snap back to first card", especially when scroll-end correction runs).
+  if (R > 0 && y > t1 && y < railEnd) {
+    return y;
   }
   if (y >= railEnd && y < t2) {
     return y < (railEnd + t2) * 0.5 ? railEnd : t2;
@@ -156,7 +186,7 @@ function goToSlideIndex(
   index: number,
   behavior: ScrollBehavior = "auto",
 ) {
-  const tops = getSectionScrollTops();
+  const tops = getSectionScrollTops(outer);
   if (!tops) return;
   const idx = clampSlideIndex(outer, index);
   outer.scrollTo({ top: tops[idx], behavior });
@@ -258,14 +288,20 @@ export default function Home() {
     };
 
     const onWheel = (e: WheelEvent) => {
-      const tops = getSectionScrollTops();
+      const tops = getSectionScrollTops(outer);
       const dy = wheelDeltaYPixels(e, LINE_HEIGHT);
       const dx = e.deltaX;
 
-      if (tops) {
+      // Projects corridor: drive scroll ourselves. Native wheel + scroll-snap on the
+      // viewport often fights discrete mouse-wheel steps on macOS (feels “stuck”).
+      // Lower bound stays near t1 only (not t1−N) so we don’t steal wheel from bio.
+      if (tops && Math.abs(dy) >= Math.abs(dx)) {
         const [, t1, t2] = tops;
         const y = outer.scrollTop;
-        if (y >= t1 - 2 && y < t2 - 2) {
+        const maxY = Math.max(0, outer.scrollHeight - outer.clientHeight);
+        if (y >= t1 - 2 && y < t2) {
+          e.preventDefault();
+          outer.scrollTop = Math.min(maxY, Math.max(0, y + dy));
           return;
         }
       }
@@ -387,7 +423,7 @@ export default function Home() {
     const root = snapViewportRef.current;
     const el = document.getElementById(id);
     if (!root || !el) return;
-    const top = (el as HTMLElement).offsetTop;
+    const top = elementContentOffsetTop(el as HTMLElement, root);
     skipSnapCorrectUntilRef.current = performance.now() + 700;
     root.scrollTo({ top, behavior: "smooth" });
   }, []);
@@ -558,7 +594,7 @@ export default function Home() {
                           margin: "0px 0px -8% 0px",
                         }}
                       >
-                        {PROJECTS.map((project) => (
+                        {homeRailProjects.map((project) => (
                           <MotionProjectLink
                             key={project.id}
                             href={`/projects/${project.id}`}
@@ -607,7 +643,7 @@ export default function Home() {
                   <div className="projects-snap__meta">
                     <p className="mono-data">
                       SCROLL_AXIS // VERTICAL → INDEX //{" "}
-                      {String(PROJECTS.length).padStart(2, "0")} CARDS //
+                      {String(homeRailProjects.length).padStart(2, "0")} CARDS //
                       ARCHIVE_LINK
                     </p>
                   </div>
