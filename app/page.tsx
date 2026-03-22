@@ -2,6 +2,18 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+
+const MotionProjectLink = motion(Link);
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type MouseEvent,
+} from "react";
+import { PROJECTS } from "@/lib/projects";
+import { PortfolioBackground } from "./components/PortfolioBackground";
 import {
   ArrowRight,
   FileText,
@@ -11,297 +23,684 @@ import {
 } from "lucide-react";
 
 /** Swap for `/profile.jpg` (file in `public/`) or any allowed image URL. */
-const PROFILE_IMAGE_URL = "https://via.placeholder.com/320x320";
-
-const PROJECTS = [
-  {
-    id: "alpha",
-    title: "Distributed Telemetry Core",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    imageUrl: "https://via.placeholder.com/600x400",
-    githubUrl: "https://github.com",
-    tags: ["TypeScript", "Rust", "gRPC", "Kafka"],
-  },
-  {
-    id: "bravo",
-    title: "Operational Graph Studio",
-    description:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.",
-    imageUrl: "https://via.placeholder.com/600x400",
-    githubUrl: "https://github.com",
-    tags: ["React", "D3", "PostgreSQL", "Next.js"],
-  },
-  {
-    id: "charlie",
-    title: "Secure Ingest Pipeline",
-    description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.",
-    imageUrl: "https://via.placeholder.com/600x400",
-    githubUrl: "https://github.com",
-    tags: ["Go", "AWS", "Terraform", "OpenTelemetry"],
-  },
-  {
-    id: "delta",
-    title: "Mission Control Dashboard",
-    description:
-      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum sed ut.",
-    imageUrl: "https://via.placeholder.com/600x400",
-    githubUrl: "https://github.com",
-    tags: ["Python", "FastAPI", "Redis", "WebSockets"],
-  },
-] as const;
+const PROFILE_IMAGE_URL = "https://via.placeholder.com/640x640";
 
 const navLinks = [
-  { href: "#bio", label: "Bio" },
-  { href: "#projects", label: "Projects" },
-  { href: "#cv", label: "CV" },
-  { href: "#socials", label: "Socials" },
+  { id: "bio", label: "Bio" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "CV & connect" },
 ] as const;
 
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-12% 0px" },
-  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+const viewportSnap = {
+  amount: 0.38,
+  margin: "-8% 0px -8% 0px" as const,
+  once: false,
 };
 
+const snapEase = [0.22, 1, 0.36, 1] as const;
+
+const revealContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.06 },
+  },
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 22 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.48, ease: snapEase },
+  },
+};
+
+const railRevealContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.085, delayChildren: 0.14 },
+  },
+};
+
+const railRevealItem = {
+  hidden: { opacity: 0, y: 26, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.52, ease: snapEase },
+  },
+};
+
+const SECTION_COUNT = 3;
+
+/** Normalized wheel delta (px-ish); line/page modes differ on mouse vs trackpad. */
+function wheelDeltaYPixels(e: WheelEvent, lineHeightPx: number) {
+  if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) return e.deltaY * lineHeightPx;
+  if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE)
+    return e.deltaY * lineHeightPx * 12;
+  return e.deltaY;
+}
+
+function clampSlideIndex(outer: HTMLElement, raw: number) {
+  return Math.max(0, Math.min(SECTION_COUNT - 1, Math.round(raw)));
+}
+
+function getSectionScrollTops(): [number, number, number] | null {
+  const bio = document.getElementById("bio");
+  const projects = document.getElementById("projects");
+  const contact = document.getElementById("contact");
+  if (!bio || !projects || !contact) return null;
+  return [bio.offsetTop, projects.offsetTop, contact.offsetTop];
+}
+
+function projectsRailExtraPx(el: HTMLElement | null) {
+  if (!el) return 0;
+  const raw = getComputedStyle(el).getPropertyValue("--projects-rail-extra").trim();
+  if (!raw) return 0;
+  const n = parseFloat(raw);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function applyProjectsRailShift(
+  outer: HTMLElement,
+  projectsEl: HTMLElement,
+  port: HTMLElement,
+  rail: HTMLElement,
+  shift: HTMLElement,
+) {
+  const t1 = projectsEl.offsetTop;
+  const R = projectsRailExtraPx(projectsEl);
+  const y = outer.scrollTop;
+  const local = y - t1;
+  let t = 0;
+  if (R > 0 && local > 0) {
+    t = Math.min(1, Math.max(0, local / R));
+  }
+  const maxX = Math.max(0, rail.scrollWidth - port.clientWidth);
+  shift.style.transform = `translate3d(${-t * maxX}px, 0, 0)`;
+}
+
+function nearestSlideScrollTop(outer: HTMLElement) {
+  const tops = getSectionScrollTops();
+  if (!tops) return 0;
+  const [t0, t1, t2] = tops;
+  const projects = document.getElementById("projects");
+  if (!projects) return outer.scrollTop;
+  const R = projectsRailExtraPx(projects);
+  const railEnd = t1 + R;
+  const y = outer.scrollTop;
+
+  if (R > 0 && y >= t1 && y < railEnd) {
+    return y < t1 + R * 0.5 ? t1 : railEnd;
+  }
+  if (y >= railEnd && y < t2) {
+    return y < (railEnd + t2) * 0.5 ? railEnd : t2;
+  }
+
+  const candidates = [t0, t1, t2];
+  let best = candidates[0];
+  let bestD = Math.abs(y - best);
+  for (let i = 1; i < candidates.length; i++) {
+    const d = Math.abs(y - candidates[i]);
+    if (d < bestD) {
+      best = candidates[i];
+      bestD = d;
+    }
+  }
+  return best;
+}
+
+function goToSlideIndex(
+  outer: HTMLElement,
+  index: number,
+  behavior: ScrollBehavior = "auto",
+) {
+  const tops = getSectionScrollTops();
+  if (!tops) return;
+  const idx = clampSlideIndex(outer, index);
+  outer.scrollTo({ top: tops[idx], behavior });
+}
+
+/** Which snap slide owns the viewport center (Firefox-safe vs scrollTop / clientHeight rounding). */
+function activeSlideIndexForWheel(outer: HTMLElement) {
+  const outerRect = outer.getBoundingClientRect();
+  const cy = outerRect.top + outerRect.height / 2;
+  const ids = ["bio", "projects", "contact"] as const;
+  for (let i = 0; i < ids.length; i++) {
+    const el = document.getElementById(ids[i]);
+    if (!el) continue;
+    const r = el.getBoundingClientRect();
+    if (cy >= r.top - 1 && cy <= r.bottom + 1) {
+      return i;
+    }
+  }
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < ids.length; i++) {
+    const el = document.getElementById(ids[i]);
+    if (!el) continue;
+    const r = el.getBoundingClientRect();
+    const mid = (r.top + r.bottom) / 2;
+    const dist = Math.abs(cy - mid);
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestIdx = i;
+    }
+  }
+  return clampSlideIndex(outer, bestIdx);
+}
+
 export default function Home() {
+  const snapViewportRef = useRef<HTMLDivElement>(null);
+  const projectsScrollRef = useRef<HTMLDivElement>(null);
+  const projectsRailRef = useRef<HTMLDivElement>(null);
+  const projectsRailShiftRef = useRef<HTMLDivElement>(null);
+  const skipSnapCorrectUntilRef = useRef(0);
+
+  useLayoutEffect(() => {
+    const root = snapViewportRef.current;
+    if (!root || typeof ResizeObserver === "undefined") return;
+
+    const apply = () => {
+      const h = root.clientHeight;
+      if (h > 0) {
+        root.style.setProperty("--snap-slide-px", `${h}px`);
+      }
+    };
+
+    apply();
+    queueMicrotask(apply);
+    requestAnimationFrame(() => {
+      apply();
+      requestAnimationFrame(apply);
+    });
+    const ro = new ResizeObserver(apply);
+    ro.observe(root);
+    window.addEventListener("resize", apply);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", apply);
+    };
+  }, []);
+
+  useEffect(() => {
+    const outer = snapViewportRef.current;
+    if (!outer) return;
+
+    const WHEEL_THRESHOLD = 56;
+    const LINE_HEIGHT = 18;
+    const SMOOTH_SCROLL_GUARD_MS = 720;
+
+    let accumY = 0;
+    let accumReset: ReturnType<typeof setTimeout> | undefined;
+
+    const scheduleAccumReset = () => {
+      clearTimeout(accumReset);
+      accumReset = setTimeout(() => {
+        accumY = 0;
+      }, 140);
+    };
+
+    const slideAfterWheel = (nextIdx: number) => {
+      skipSnapCorrectUntilRef.current = performance.now() + SMOOTH_SCROLL_GUARD_MS;
+      goToSlideIndex(outer, nextIdx, "smooth");
+      accumY = 0;
+    };
+
+    const sectionScrollState = (el: HTMLElement | null) => {
+      if (!el) return { canScroll: false, atTop: true, atBottom: true };
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const canScroll = scrollHeight > clientHeight + 2;
+      const atTop = scrollTop <= 0;
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 2;
+      return { canScroll, atTop, atBottom };
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      const tops = getSectionScrollTops();
+      const dy = wheelDeltaYPixels(e, LINE_HEIGHT);
+      const dx = e.deltaX;
+
+      if (tops) {
+        const [, t1, t2] = tops;
+        const y = outer.scrollTop;
+        if (y >= t1 - 2 && y < t2 - 2) {
+          return;
+        }
+      }
+
+      const idx = activeSlideIndexForWheel(outer);
+      if (idx !== 1 && Math.abs(dx) > Math.abs(dy) * 1.2) return;
+
+      // Bio / contact: same pattern when slide content overflows (small viewports).
+      if (idx === 0) {
+        const bio = document.getElementById("bio");
+        const { canScroll, atTop, atBottom } = sectionScrollState(bio);
+        if (canScroll) {
+          const innerWantsWheel =
+            (dy > 0 && !atBottom) || (dy < 0 && !atTop);
+          if (innerWantsWheel) return;
+        }
+      } else if (idx === 2) {
+        const contact = document.getElementById("contact");
+        const { canScroll, atTop, atBottom } = sectionScrollState(contact);
+        if (canScroll) {
+          const innerWantsWheel =
+            (dy > 0 && !atBottom) || (dy < 0 && !atTop);
+          if (innerWantsWheel) return;
+        }
+      }
+
+      e.preventDefault();
+      accumY += dy;
+      scheduleAccumReset();
+
+      if (accumY >= WHEEL_THRESHOLD) {
+        slideAfterWheel(idx + 1);
+      } else if (accumY <= -WHEEL_THRESHOLD) {
+        slideAfterWheel(idx - 1);
+      }
+    };
+
+    outer.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    return () => {
+      outer.removeEventListener("wheel", onWheel, { capture: true });
+      clearTimeout(accumReset);
+    };
+  }, []);
+
+  useEffect(() => {
+    const port = projectsScrollRef.current;
+    const rail = projectsRailRef.current;
+    const projects = document.getElementById("projects");
+    if (!port || !rail || !projects || typeof ResizeObserver === "undefined")
+      return;
+
+    const applyExtraAndShift = () => {
+      const maxX = Math.max(0, rail.scrollWidth - port.clientWidth);
+      projects.style.setProperty("--projects-rail-extra", `${maxX}px`);
+      const root = snapViewportRef.current;
+      const shift = projectsRailShiftRef.current;
+      if (root && shift) {
+        applyProjectsRailShift(root, projects, port, rail, shift);
+      }
+    };
+
+    const ro = new ResizeObserver(applyExtraAndShift);
+    ro.observe(port);
+    ro.observe(rail);
+    applyExtraAndShift();
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const root = snapViewportRef.current;
+    if (!root) return;
+
+    const SNAP_EPS = 4;
+
+    const syncRail = () => {
+      const projects = document.getElementById("projects");
+      const port = projectsScrollRef.current;
+      const rail = projectsRailRef.current;
+      const shift = projectsRailShiftRef.current;
+      if (projects && port && rail && shift) {
+        applyProjectsRailShift(root, projects, port, rail, shift);
+      }
+    };
+
+    const correctToNearestSlide = () => {
+      if (performance.now() < skipSnapCorrectUntilRef.current) return;
+      const target = nearestSlideScrollTop(root);
+      if (Math.abs(root.scrollTop - target) > SNAP_EPS) {
+        root.scrollTo({ top: target, behavior: "auto" });
+      }
+    };
+
+    let debounce: ReturnType<typeof setTimeout> | undefined;
+
+    const onScroll = () => {
+      syncRail();
+      if (performance.now() < skipSnapCorrectUntilRef.current) return;
+      clearTimeout(debounce);
+      debounce = setTimeout(correctToNearestSlide, 140);
+    };
+
+    const onScrollEnd = () => {
+      syncRail();
+      correctToNearestSlide();
+    };
+
+    syncRail();
+    root.addEventListener("scrollend", onScrollEnd);
+    root.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      root.removeEventListener("scrollend", onScrollEnd);
+      root.removeEventListener("scroll", onScroll);
+      clearTimeout(debounce);
+    };
+  }, []);
+
+  const scrollToSection = useCallback((id: string) => {
+    const root = snapViewportRef.current;
+    const el = document.getElementById(id);
+    if (!root || !el) return;
+    const top = (el as HTMLElement).offsetTop;
+    skipSnapCorrectUntilRef.current = performance.now() + 700;
+    root.scrollTo({ top, behavior: "smooth" });
+  }, []);
+
+  const onNavClick = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, id: string) => {
+      e.preventDefault();
+      scrollToSection(id);
+    },
+    [scrollToSection],
+  );
+
   return (
-    <div className="min-h-screen bg-black text-neutral-100">
-      <header className="sticky top-0 z-50 border-b border-neutral-800 bg-black/90 backdrop-blur-md transition-colors">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 md:px-8">
-          <a
-            href="#bio"
-            className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-100 transition hover:text-white"
+    <div className="page-root page-root--snap">
+      <PortfolioBackground />
+      <div className="page-layer">
+        <header className="site-header">
+          <nav className="nav-inner">
+            <a
+              href="#bio"
+              className="nav-brand"
+              onClick={(e) => onNavClick(e, "bio")}
+            >
+              Index
+            </a>
+            <ul className="nav-links">
+              {navLinks.map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={`#${link.id}`}
+                    className="nav-link"
+                    onClick={(e) => onNavClick(e, link.id)}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
+
+        <div className="snap-scroll-shell">
+          <div
+            ref={snapViewportRef}
+            className="snap-viewport"
+            tabIndex={-1}
+            aria-label="Portfolio sections"
           >
-            Index
-          </a>
-          <ul className="flex flex-wrap items-center justify-end gap-1 sm:gap-4">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-400 transition hover:text-white sm:text-xs"
+          <section id="bio" className="snap-section snap-section--bio">
+            <motion.div
+              className="hero-snap hero-snap--split"
+              variants={revealContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportSnap}
+            >
+              <motion.div className="hero-snap__portrait" variants={revealItem}>
+                <Image
+                  src={PROFILE_IMAGE_URL}
+                  alt="Profile"
+                  fill
+                  sizes="(max-width: 767px) 100vw, 320px"
+                  className="img-cover"
+                  priority
+                />
+              </motion.div>
+              <div className="hero-snap__copy">
+                <motion.p
+                  className="mono-data hero-snap__eyebrow"
+                  variants={revealItem}
                 >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
-
-      <main>
-        <section
-          id="bio"
-          className="border-b border-neutral-800 px-5 py-20 md:px-8 md:py-28 lg:py-32"
-        >
-          <div className="mx-auto max-w-6xl">
-            <motion.div {...fadeUp}>
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8 md:gap-10">
-                <div className="relative h-24 w-24 shrink-0 overflow-hidden border border-neutral-800 bg-neutral-950 sm:h-28 sm:w-28 md:h-32 md:w-32">
-                  <Image
-                    src={PROFILE_IMAGE_URL}
-                    alt="Profile"
-                    fill
-                    className="object-cover"
-                    sizes="128px"
-                    priority
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.35em] text-neutral-500">
-                    Systems · Software · Strategy
-                  </p>
-                  <h1 className="max-w-4xl text-3xl font-bold uppercase leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
-                    Engineering the future
-                  </h1>
-                </div>
-              </div>
-              <p className="mt-8 max-w-2xl text-base leading-relaxed text-neutral-400 md:text-lg">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                posuere erat a ante venenatis dapibus posuere velit aliquet.
-                Cras mattis consectetur purus sit amet fermentum. Curabitur
-                blandit tempus porttitor.
-              </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <a
-                  href="#cv"
-                  className="inline-flex items-center justify-center gap-2 border border-neutral-700 bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:border-white hover:bg-neutral-200"
+                  SECTOR_01 // IDENTITY
+                </motion.p>
+                <motion.h1
+                  className="display-title--hero"
+                  variants={revealItem}
                 >
-                  <FileText className="h-4 w-4" aria-hidden />
-                  View CV
-                </a>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 border border-neutral-700 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-neutral-100 transition hover:border-neutral-500 hover:bg-neutral-950"
+                  Maxwell Li
+                </motion.h1>
+                <motion.p className="lede lede--hero" variants={revealItem}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+                  posuere erat a ante venenatis dapibus posuere velit aliquet.
+                  Cras mattis consectetur purus sit amet fermentum.
+                </motion.p>
+                <motion.div
+                  className="cta-row cta-row--hero"
+                  variants={revealItem}
                 >
-                  <Github className="h-4 w-4" aria-hidden />
-                  GitHub
-                  <ArrowRight className="h-4 w-4 opacity-70" aria-hidden />
-                </a>
+                  <a
+                    href="#contact"
+                    className="btn btn--primary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection("contact");
+                    }}
+                  >
+                    <FileText aria-hidden />
+                    View CV
+                  </a>
+                  <a
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn--ghost"
+                  >
+                    <Github aria-hidden />
+                    GitHub
+                    <ArrowRight className="btn-icon-fade" aria-hidden />
+                  </a>
+                </motion.div>
               </div>
             </motion.div>
-          </div>
-        </section>
+          </section>
 
-        <section
-          id="projects"
-          className="border-b border-neutral-800 px-5 py-20 md:px-8 md:py-24"
-        >
-          <div className="mx-auto max-w-6xl">
-            <motion.div {...fadeUp} className="mb-12 md:mb-16">
-              <h2 className="text-xs font-bold uppercase tracking-[0.35em] text-white">
-                Selected work
-              </h2>
-              <p className="mt-3 max-w-xl text-sm text-neutral-500">
-                Lorem ipsum dolor sit amet — deployments, interfaces, and
-                infrastructure at scale.
-              </p>
-            </motion.div>
+          <section
+            id="projects"
+            className="snap-section snap-section--projects-rail"
+          >
+            <div className="projects-snap-sticky">
+              <div className="snap-section__inner projects-snap">
+                <div className="projects-snap__bundle">
+                  <motion.div
+                    className="projects-snap__header projects-snap__header-row"
+                    variants={revealContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={viewportSnap}
+                  >
+                    <div className="projects-snap__header-text">
+                      <motion.p className="mono-data" variants={revealItem}>
+                        MODULE_02 // WORK_INDEX
+                      </motion.p>
+                      <motion.h2 className="section-heading" variants={revealItem}>
+                        Selected work
+                      </motion.h2>
+                      <motion.p className="section-intro" variants={revealItem}>
+                        Lorem ipsum dolor sit amet — deployments, interfaces, and
+                        infrastructure at scale. Open the archive for full case
+                        studies, or scroll vertically to scrub the work index,
+                        then open a project.
+                      </motion.p>
+                    </div>
+                    <motion.div variants={revealItem}>
+                      <Link
+                        href="/projects"
+                        className="btn btn--ghost btn--compact"
+                      >
+                        Full archive
+                        <ArrowRight className="btn-icon-fade" aria-hidden />
+                      </Link>
+                    </motion.div>
+                  </motion.div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:gap-8">
-              {PROJECTS.map((project, index) => (
-                <motion.a
-                  key={project.id}
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${project.title} — open on GitHub`}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-10% 0px" }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.06,
-                    ease: [0.22, 1, 0.36, 1] as const,
-                  }}
-                  className="group flex flex-col border border-neutral-800 bg-neutral-950/40 text-left transition-colors hover:border-neutral-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                >
-                  <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-neutral-800">
-                    <Image
-                      src={project.imageUrl}
-                      alt=""
-                      fill
-                      className="object-cover transition duration-500 group-hover:opacity-95"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
-                    />
+                  <div ref={projectsScrollRef} className="projects-snap-scroll">
+                    <div
+                      ref={projectsRailShiftRef}
+                      className="projects-snap-rail-shift"
+                    >
+                      <motion.div
+                        ref={projectsRailRef}
+                        className="projects-snap-rail"
+                        variants={railRevealContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{
+                          once: true,
+                          amount: 0.12,
+                          margin: "0px 0px -8% 0px",
+                        }}
+                      >
+                        {PROJECTS.map((project) => (
+                          <MotionProjectLink
+                            key={project.id}
+                            href={`/projects/${project.id}`}
+                            className="project-card project-card--rail"
+                            aria-label={`${project.title} — open case study`}
+                            variants={railRevealItem}
+                          >
+                            <div
+                              className="project-card--rail-inner"
+                              style={{
+                                display: "flex",
+                                height: "100%",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <div className="project-card-media">
+                                <Image
+                                  src={project.imageUrl}
+                                  alt=""
+                                  fill
+                                  className="img-cover"
+                                  sizes="(max-width: 640px) 84vw, 28rem"
+                                />
+                              </div>
+                              <div className="project-card-body">
+                                <h3 className="project-title">{project.title}</h3>
+                                <p className="project-desc">{project.description}</p>
+                                <ul className="tag-list">
+                                  {project.tags.map((tag) => (
+                                    <li key={tag} className="tag mono-data">
+                                      {tag}
+                                    </li>
+                                  ))}
+                                </ul>
+                                <p className="project-card-hint mono-data">
+                                  CASE_STUDY // OPEN
+                                </p>
+                              </div>
+                            </div>
+                          </MotionProjectLink>
+                        ))}
+                      </motion.div>
+                    </div>
                   </div>
-                  <div className="flex flex-1 flex-col p-5 md:p-6">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-white">
-                      {project.title}
-                    </h3>
-                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-neutral-400">
-                      {project.description}
+
+                  <div className="projects-snap__meta">
+                    <p className="mono-data">
+                      SCROLL_AXIS // VERTICAL → INDEX //{" "}
+                      {String(PROJECTS.length).padStart(2, "0")} CARDS //
+                      ARCHIVE_LINK
                     </p>
-                    <ul className="mt-5 flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <li
-                          key={tag}
-                          className="border border-neutral-800 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-neutral-400"
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="projects-rail-scroll-spacer" aria-hidden />
+          </section>
+
+          <section
+            id="contact"
+            className="snap-section snap-section--contact"
+          >
+            <div className="contact-slide">
+              <motion.div
+                variants={revealContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={viewportSnap}
+              >
+                <motion.div className="cv-panel" variants={revealItem}>
+                  <div>
+                    <p className="mono-data">MODULE_03 // CV_MANIFEST</p>
+                    <h2 className="section-heading">Curriculum vitae</h2>
+                    <p className="cv-lede">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Aenean lacinia bibendum nulla sed consectetur. Maecenas
+                      faucibus mollis interdum.
+                    </p>
+                  </div>
+                  <a href="/cv.pdf" className="btn btn--download">
+                    <FileText aria-hidden />
+                    Download
+                  </a>
+                </motion.div>
+
+                <motion.div
+                  className="contact-slide__social"
+                  variants={revealItem}
+                >
+                  <div className="footer-row">
+                    <div>
+                      <p className="mono-data">MODULE_03B // UPLINK</p>
+                      <p className="footer-label">Connect</p>
+                      <p className="footer-copy">
+                        Lorem ipsum — open to aligned missions and rigorous
+                        teams.
+                      </p>
+                    </div>
+                    <ul className="social-list">
+                      <li>
+                        <a
+                          href="https://linkedin.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="social-link"
+                          aria-label="LinkedIn"
                         >
-                          {tag}
-                        </li>
-                      ))}
+                          <Linkedin />
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://github.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="social-link"
+                          aria-label="GitHub"
+                        >
+                          <Github />
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="mailto:hello@example.com"
+                          className="social-link"
+                          aria-label="Email"
+                        >
+                          <Mail />
+                        </a>
+                      </li>
                     </ul>
                   </div>
-                </motion.a>
-              ))}
+                  <p className="copyright mono-data">
+                    {`© ${new Date().getFullYear()} // RESERVED`}
+                  </p>
+                </motion.div>
+              </motion.div>
             </div>
+          </section>
           </div>
-        </section>
-
-        <section
-          id="cv"
-          className="border-b border-neutral-800 px-5 py-20 md:px-8 md:py-24"
-        >
-          <div className="mx-auto max-w-6xl">
-            <motion.div
-              {...fadeUp}
-              className="grid gap-10 border border-neutral-800 bg-neutral-950/30 p-8 md:grid-cols-[1fr_auto] md:items-center md:p-10 lg:p-12"
-            >
-              <div>
-                <h2 className="text-xs font-bold uppercase tracking-[0.35em] text-white">
-                  Curriculum vitae
-                </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400 md:text-base">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-                  lacinia bibendum nulla sed consectetur. Maecenas faucibus
-                  mollis interdum. Vestibulum id ligula porta felis euismod
-                  semper.
-                </p>
-              </div>
-              <a
-                href="/cv.pdf"
-                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 self-start border border-neutral-700 px-8 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:border-white hover:bg-neutral-900 md:self-center"
-              >
-                <FileText className="h-4 w-4" aria-hidden />
-                Download
-              </a>
-            </motion.div>
-          </div>
-        </section>
-      </main>
-
-      <footer
-        id="socials"
-        className="px-5 py-16 md:px-8 md:py-20"
-      >
-        <div className="mx-auto max-w-6xl">
-          <motion.div
-            {...fadeUp}
-            className="flex flex-col gap-8 border-t border-neutral-800 pt-10 md:flex-row md:items-center md:justify-between"
-          >
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-neutral-500">
-                Connect
-              </p>
-              <p className="mt-2 text-sm text-neutral-400">
-                Lorem ipsum — open to aligned missions and rigorous teams.
-              </p>
-            </div>
-            <ul className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <li>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-11 w-11 items-center justify-center border border-neutral-800 text-neutral-300 transition hover:border-neutral-500 hover:text-white"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-11 w-11 items-center justify-center border border-neutral-800 text-neutral-300 transition hover:border-neutral-500 hover:text-white"
-                  aria-label="GitHub"
-                >
-                  <Github className="h-5 w-5" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:hello@example.com"
-                  className="flex h-11 w-11 items-center justify-center border border-neutral-800 text-neutral-300 transition hover:border-neutral-500 hover:text-white"
-                  aria-label="Email"
-                >
-                  <Mail className="h-5 w-5" />
-                </a>
-              </li>
-            </ul>
-          </motion.div>
-          <p className="mt-10 text-center text-[10px] uppercase tracking-[0.25em] text-neutral-600">
-            © {new Date().getFullYear()} — All rights reserved
-          </p>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
