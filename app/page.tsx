@@ -10,20 +10,18 @@ import {
   Linkedin,
   Mail,
 } from "lucide-react";
+import {
+  homeCv,
+  homeFooter,
+  homeHero,
+  homeProjectsIntro,
+  navLinks,
+  PROFILE_IMAGE_URL,
+} from "@/lib/home-content";
 import { PROJECTS } from "@/lib/projects";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 
 const MotionProjectLink = motion(Link);
-
-/** Swap for `/profile.jpg` (file in `public/`) or any allowed image URL. */
-const PROFILE_IMAGE_URL = "https://via.placeholder.com/320x320";
-
-const navLinks = [
-  { href: "#bio", label: "Bio" },
-  { href: "#projects", label: "Projects" },
-  { href: "#cv", label: "CV" },
-  { href: "#socials", label: "Socials" },
-] as const;
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -73,15 +71,10 @@ export default function Home() {
                 </div>
                 <div className="home-hero-copy">
                   <p className="mono-data home-hero-eyebrow">
-                    Systems · Software · Strategy
+                    {homeHero.eyebrow}
                   </p>
-                  <h1 className="home-hero-title">Maxwell Li</h1>
-                  <p className="home-lede home-lede--hero">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                    posuere erat a ante venenatis dapibus posuere velit aliquet.
-                    Cras mattis consectetur purus sit amet fermentum. Curabitur
-                    blandit tempus porttitor.
-                  </p>
+                  <h1 className="home-hero-title">{homeHero.title}</h1>
+                  <p className="home-lede home-lede--hero">{homeHero.lede}</p>
                   <div className="home-cta-row home-cta-row--hero">
                     <a href="#cv" className="btn btn--primary">
                       <FileText aria-hidden />
@@ -106,11 +99,10 @@ export default function Home() {
           <section id="projects" className="home-section">
             <div className="home-inner">
               <motion.div {...fadeUp} className="home-intro-block">
-                <h2 className="home-section-heading">Selected work</h2>
-                <p className="home-section-intro">
-                  Lorem ipsum dolor sit amet — deployments, interfaces, and
-                  infrastructure at scale.
-                </p>
+                <h2 className="home-section-heading">
+                  {homeProjectsIntro.heading}
+                </h2>
+                <p className="home-section-intro">{homeProjectsIntro.intro}</p>
               </motion.div>
 
               <div className="home-project-grid">
@@ -163,18 +155,10 @@ export default function Home() {
             <div className="home-inner">
               <motion.div {...fadeUp} className="home-cv-panel">
                 <div>
-                  <h2 className="home-section-heading">Curriculum vitae</h2>
-                  <p className="home-cv-lede">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-                    lacinia bibendum nulla sed consectetur. Maecenas faucibus
-                    mollis interdum. Vestibulum id ligula porta felis euismod
-                    semper.
-                  </p>
+                  <h2 className="home-section-heading">{homeCv.heading}</h2>
+                  <p className="home-cv-lede">{homeCv.lede}</p>
                 </div>
-                <a
-                  href="/cv.pdf"
-                  className="btn btn--download"
-                >
+                <a href={homeCv.pdfHref} className="btn btn--download">
                   <FileText aria-hidden />
                   Download
                 </a>
@@ -188,15 +172,15 @@ export default function Home() {
             <motion.div {...fadeUp} className="home-footer-rule">
               <div className="home-footer-row">
                 <div>
-                  <p className="mono-data home-footer-label">Connect</p>
-                  <p className="home-footer-copy">
-                    Lorem ipsum — open to aligned missions and rigorous teams.
+                  <p className="mono-data home-footer-label">
+                    {homeFooter.connectLabel}
                   </p>
+                  <p className="home-footer-copy">{homeFooter.copy}</p>
                 </div>
                 <ul className="home-social-list">
                   <li>
                     <a
-                      href="https://linkedin.com"
+                      href={homeFooter.linkedinUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="home-social-link"
@@ -207,7 +191,7 @@ export default function Home() {
                   </li>
                   <li>
                     <a
-                      href="https://github.com"
+                      href={homeFooter.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="home-social-link"
@@ -218,7 +202,7 @@ export default function Home() {
                   </li>
                   <li>
                     <a
-                      href="mailto:hello@example.com"
+                      href={homeFooter.mailHref}
                       className="home-social-link"
                       aria-label="Email"
                     >
@@ -233,6 +217,13 @@ export default function Home() {
             </motion.div>
           </div>
         </footer>
+
+        <Link
+          href="/retro"
+          prefetch={false}
+          className="home-retro-easter-egg"
+          aria-label="Open Y2K-style alternate homepage"
+        />
       </div>
     </div>
   );

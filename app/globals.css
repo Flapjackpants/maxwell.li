@@ -1082,3 +1082,20 @@ body {
   min-width: 0;
   pointer-events: none;
 }
+
+/* Invisible hit target: bottom-right corner → `/retro` Y2K alternate view */
+.home-retro-easter-egg {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  width: 3rem;
+  height: 3rem;
+  opacity: 0;
+}
+
+.home-retro-easter-egg:focus-visible {
+  opacity: 1;
+  outline: 2px solid rgb(250 204 21);
+  outline-offset: 2px;
+}

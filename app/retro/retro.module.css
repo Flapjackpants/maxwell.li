@@ -1,0 +1,33 @@
+@keyframes y2kBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: y2kBlink 1s step-end infinite;
+}
+
+.marqueeWrap {
+  overflow: hidden;
+  padding: 4px;
+  border: 2px dotted #ff0;
+  background: #000;
+  color: #0f0;
+}
+
+.marqueeTrack {
+  display: inline-block;
+  white-space: nowrap;
+  animation: y2kMarquee 16s linear infinite;
+}
+
+@keyframes y2kMarquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
