@@ -1,5 +1,5 @@
 /** Shared copy for the home page and the Y2K alternate view. */
-export const PROFILE_IMAGE_URL = "https://via.placeholder.com/320x320";
+export const PROFILE_IMAGE_URL = "https://i.imgur.com/ZtXPoiq.png";
 
 export const navLinks = [
   { href: "#bio", label: "Bio" },
@@ -18,20 +18,20 @@ export const homeHero = {
 export const homeProjectsIntro = {
   heading: "Selected work",
   intro:
-    "Lorem ipsum dolor sit amet — deployments, interfaces, and infrastructure at scale.",
+    "Deployments, interfaces, and fun projects.",
 } as const;
 
 export const homeCv = {
-  heading: "Curriculum vitae",
+  heading: "Download my resume",
   lede:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean lacinia bibendum nulla sed consectetur. Maecenas faucibus mollis interdum. Vestibulum id ligula porta felis euismod semper.",
+    "A synopsis of my work experience and projects.",
   pdfHref: "/cv.pdf",
 } as const;
 
 export const homeFooter = {
   connectLabel: "Connect",
-  copy: "Lorem ipsum — open to aligned missions and rigorous teams.",
-  linkedinUrl: "https://linkedin.com",
-  githubUrl: "https://github.com",
-  mailHref: "mailto:hello@example.com",
+  copy: "Open to aligned missions and rigorous teams.",
+  linkedinUrl: "https://www.linkedin.com/in/maxwell-kaiyang-li",
+  githubUrl: "https://github.com/Flapjackpants",
+  mailHref: "mailto:maxkli2007@gmail.com",
 } as const;
