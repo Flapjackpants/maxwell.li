@@ -1,5 +1,5 @@
 /** Shared copy for the home page and the Y2K alternate view. */
-export const PROFILE_IMAGE_URL = "https://i.imgur.com/ZtXPoiq.png";
+export const PROFILE_IMAGE_URL = "/profile.png";
 
 export const navLinks = [
   { href: "#bio", label: "Bio" },
@@ -12,7 +12,7 @@ export const homeHero = {
   eyebrow: "Systems · Software · Strategy",
   title: "Maxwell Li",
   lede:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Cras mattis consectetur purus sit amet fermentum. Curabitur blandit tempus porttitor.",
+    "Hi! I am a computer science student at Cornell in the class of 2029. This website is the best place to see some of the projects I work on in my free time.",
 } as const;
 
 export const homeProjectsIntro = {

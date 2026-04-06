@@ -17,7 +17,7 @@ export const PROJECTS = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     detail:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    imageUrl: "https://via.placeholder.com/1200x675",
+    imageUrl: "/project-1.png",
     githubUrl: "https://github.com",
     tags: ["TypeScript", "Rust", "gRPC", "Kafka"],
   },
@@ -28,7 +28,7 @@ export const PROJECTS = [
       "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.",
     detail:
       "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.",
-    imageUrl: "https://via.placeholder.com/1200x675",
+    imageUrl: "/project-2.png",
     githubUrl: "https://github.com",
     tags: ["React", "D3", "PostgreSQL", "Next.js"],
   },
@@ -39,7 +39,7 @@ export const PROJECTS = [
       "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.",
     detail:
       "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.",
-    imageUrl: "https://via.placeholder.com/1200x675",
+    imageUrl: "/project-3.png",
     githubUrl: "https://github.com",
     tags: ["Go", "AWS", "Terraform", "OpenTelemetry"],
   },
@@ -50,7 +50,7 @@ export const PROJECTS = [
       "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum sed ut.",
     detail:
       "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum sed ut.",
-    imageUrl: "https://via.placeholder.com/1200x675",
+    imageUrl: "/project-4.png",
     githubUrl: "https://github.com",
     tags: ["Python", "FastAPI", "Redis", "WebSockets"],
   },
@@ -61,7 +61,7 @@ export const PROJECTS = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus.",
     detail:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus.",
-    imageUrl: "https://via.placeholder.com/1200x675",
+    imageUrl: "/project-5.png",
     githubUrl: "https://github.com",
     tags: ["C++", "ONNX", "CUDA", "gRPC"],
   },
@@ -72,7 +72,7 @@ export const PROJECTS = [
       "Integer nec odio praesent libero sed cursus ante dapibus diam sed nisi nulla quis sem at nibh elementum imperdiet.",
     detail:
       "Integer nec odio praesent libero sed cursus ante dapibus diam sed nisi nulla quis sem at nibh elementum imperdiet.",
-    imageUrl: "https://via.placeholder.com/1200x675",
+    imageUrl: "/project-6.png",
     githubUrl: "https://github.com",
     tags: ["Scala", "Kafka", "S3", "Protobuf"],
   },
