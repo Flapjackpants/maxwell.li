@@ -12,7 +12,7 @@ export const homeHero = {
   eyebrow: "Systems · Software · Strategy",
   title: "Maxwell Li",
   lede:
-    "Hi! I am a computer science student at Cornell in the class of 2029. This website is the best place to see some of the projects I work on in my free time.",
+    "Hi! I am a computer science student at Cornell in the class of 2028. This website is the best place to see some of the projects I work on in my free time.",
 } as const;
 
 export const homeProjectsIntro = {
@@ -25,7 +25,7 @@ export const homeCv = {
   heading: "Download my resume",
   lede:
     "A synopsis of my work experience and projects.",
-  pdfHref: "/cv.pdf",
+  pdfHref: "/MaxwellLi033126.pdf",
 } as const;
 
 export const homeFooter = {

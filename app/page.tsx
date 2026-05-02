@@ -81,7 +81,7 @@ export default function Home() {
                       View CV
                     </a>
                     <a
-                      href="https://github.com"
+                      href="https://github.com/Flapjackpants"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn--ghost"
