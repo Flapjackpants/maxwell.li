@@ -13,6 +13,7 @@ import {
 } from "@/lib/home-content";
 import { PROJECTS } from "@/lib/projects";
 import { RetroBackgroundAudio } from "./RetroBackgroundAudio";
+import { RetroImageFlash } from "./RetroImageFlash";
 
 export const metadata: Metadata = {
   title: "~*~ Maxwell Li's Homepage ~*~",
@@ -53,6 +54,7 @@ export default function RetroHomePage() {
 
   return (
     <div style={pageStyle}>
+      <RetroImageFlash flashSrc={"/squinglord.png"}>
       <RetroBackgroundAudio />
       <center>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -358,6 +360,7 @@ export default function RetroHomePage() {
           Best viewed in Netscape Navigator 4.7 at 800×600
         </p>
       </center>
+      </RetroImageFlash>
     </div>
   );
 }

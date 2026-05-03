@@ -13,6 +13,17 @@ const GH = "https://github.com/Flapjackpants";
 
 export const PROJECTS = [
   {
+    id: "asciiify",
+    title: "ASCIIify",
+    description:
+      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art.",
+    detail:
+      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. Demo video [here](https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui).",
+    imageUrl: "/asciiify.png",
+    githubUrl: "https://github.com/Flapjackpants/ASCIIify",
+    tags: ["C++", "FFMPEG", "CMake", "Shell"],
+  },
+  {
     id: "burger-ai",
     title: "Burger.AI",
     description:
