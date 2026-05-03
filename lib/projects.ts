@@ -13,15 +13,26 @@ const GH = "https://github.com/Flapjackpants";
 
 export const PROJECTS = [
   {
+    id: "image2banners",
+    title: "Image2Banners",
+    description:
+      "Contributed to this project by adding Mac support and improving the UI. This app takes images and converts them into complex banners, And shows crafting steps for each banner, or saves as NBT to build using a structure block. You can also save them as JSON file, so you don't have to regenerate complex banners from the image each time.",
+    detail:
+      "Contributed to this project by adding Mac support and improving the UI. This app takes images and converts them into complex banners, And shows crafting steps for each banner, or saves as NBT to build using a structure block. You can also save them as JSON file, so you don't have to regenerate complex banners from the image each time. Uses scikit-learn for matching the best banner to each subsection of the image and Electron for the desktop app. I changed the UI to be more consistent with the rest of the app and removed windows-exclusive features to make the app compatible with Mac. I also added more robust concurrency and some quality of life improvements.",
+    imageUrl: "/image2banners.png",
+    githubUrl: "https://github.com/Flapjackpants/Image2Banners-Mac-Edition",
+    tags: ["Python", "scikit-learn", "Electron", "Shell"],
+  },
+  {
     id: "asciiify",
     title: "ASCIIify",
     description:
       "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art.",
     detail:
-      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. Demo video [here](https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui).",
+      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. Working on potentially integrating this into a downloadable plugin for DaVinci Resolve so it can be used direcly as an effect. Demo video [here](https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui).",
     imageUrl: "/asciiify.png",
     githubUrl: "https://github.com/Flapjackpants/ASCIIify",
-    tags: ["C++", "FFMPEG", "CMake", "Shell"],
+    tags: ["C++", "FFMPEG", "CMake", "Shell", "OpenCV"],
   },
   {
     id: "burger-ai",
@@ -44,6 +55,17 @@ export const PROJECTS = [
     imageUrl: "/medexplain.png",
     githubUrl: "https://github.com/MedExplain/MedExplainWeb",
     tags: ["TypeScript", "React", "REST APIs", "Accessibility"],
+  },
+  {
+    id: "critterland",
+    title: "Critterland",
+    description:
+    "A game simulating critter habitats and critter evolution. Made as a final project for CS 2112 at Cornell.",
+    detail:
+    "Critter World is a simulation game in which programmable critters move, eat, reproduce, and mutate in a shared world. You define their behavior; the world runs step by step while evolutionary pressure emerges from competition for energy, survival, and offspring. Over time, populations can diverge as mutations stack and successful strategies spread.",
+    imageUrl: "/critterland.png",
+    githubUrl: "https://github.com/Flapjackpants/CritterLand",
+    tags: ["Java", "JavaFX", "Gradle", "Maven"],
   },
   {
     id: "debately",
