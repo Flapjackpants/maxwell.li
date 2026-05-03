@@ -31,3 +31,51 @@
     transform: translateX(-100%);
   }
 }
+
+/* About section on /retro: reuse home-about collage classes; tune colors for navy + yellow theme */
+.retroAbout {
+  margin: 1rem 0;
+}
+
+.retroAbout :global(.home-about-section-intro) {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.retroAbout :global(.home-about-eyebrow) {
+  color: #0ff !important;
+  font-size: 11px !important;
+}
+
+.retroAbout :global(.home-about-heading) {
+  color: #ff0 !important;
+  text-shadow: 2px 2px #f0f;
+}
+
+.retroAbout :global(.home-about-blocks) {
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .retroAbout :global(.home-about-blocks) {
+    gap: 1.5rem;
+  }
+}
+
+.retroAbout :global(.home-about-subheading) {
+  color: #ff6600 !important;
+}
+
+.retroAbout :global(.home-about-body) {
+  color: #ffa !important;
+}
+
+.retroAbout :global(.home-about-collage-wrap) {
+  max-width: min(18rem, 88vw);
+}
+
+.retroAbout :global(.home-about-split) {
+  padding: 0.5rem;
+  border: 3px ridge #ff00ff;
+  background-color: #000044;
+}

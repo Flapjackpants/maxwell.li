@@ -11,6 +11,8 @@ import {
   Mail,
 } from "lucide-react";
 import {
+  homeAboutBlocks,
+  homeAboutSection,
   homeCv,
   homeFooter,
   homeHero,
@@ -93,6 +95,70 @@ export default function Home() {
                   </div>
                 </div>
               </motion.div>
+            </div>
+          </section>
+
+          <section id="about" className="home-section home-section--about">
+            <div className="home-inner">
+              <motion.div {...fadeUp} className="home-about-section-intro">
+                <p className="mono-data home-about-eyebrow">
+                  {homeAboutSection.eyebrow}
+                </p>
+                <h2 className="home-section-heading home-about-heading">
+                  {homeAboutSection.heading}
+                </h2>
+              </motion.div>
+
+              <div className="home-about-blocks">
+                {homeAboutBlocks.map((block, index) => (
+                  <div
+                    key={block.title}
+                    className={
+                      index % 2 === 1
+                        ? "home-about-block home-about-block--reverse"
+                        : "home-about-block"
+                    }
+                  >
+                    <motion.div {...fadeUp} className="home-about-split">
+                      <div
+                        className="home-about-collage-wrap"
+                        aria-hidden="true"
+                      >
+                        <div className="home-about-collage-grid">
+                          {block.imageRows.map((row, rowIndex) => (
+                            <div
+                              key={rowIndex}
+                              className="home-about-collage-row"
+                              style={
+                                {
+                                  "--about-row-n": row.length,
+                                } as React.CSSProperties
+                              }
+                            >
+                              {row.map((src, cellIndex) => (
+                                // Natural dimensions + max-* caps for variable-aspect mosaic (Next/Image fill always uses a box).
+                                // eslint-disable-next-line @next/next/no-img-element -- see above
+                                <img
+                                  key={`${rowIndex}-${cellIndex}-${src}`}
+                                  src={src}
+                                  alt=""
+                                  className="home-about-collage-img"
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="home-about-copy">
+                        <h3 className="home-about-subheading">{block.title}</h3>
+                        <p className="home-about-body">{block.body}</p>
+                      </div>
+                    </motion.div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 

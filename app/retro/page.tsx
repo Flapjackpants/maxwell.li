@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./retro.module.css";
 import {
+  homeAboutBlocks,
+  homeAboutSection,
   homeCv,
   homeFooter,
   homeHero,
@@ -10,6 +12,7 @@ import {
   PROFILE_IMAGE_URL,
 } from "@/lib/home-content";
 import { PROJECTS } from "@/lib/projects";
+import { RetroBackgroundAudio } from "./RetroBackgroundAudio";
 
 export const metadata: Metadata = {
   title: "~*~ Maxwell Li's Homepage ~*~",
@@ -50,6 +53,7 @@ export default function RetroHomePage() {
 
   return (
     <div style={pageStyle}>
+      <RetroBackgroundAudio />
       <center>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={Y2K_GIFS.stars} alt="" width={280} height={40} />
@@ -61,7 +65,6 @@ export default function RetroHomePage() {
             You are visitor number 0000071 !!! Thanks 4 stopping by !!!
           </div>
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <div style={{ 
           display: 'flex', 
           width: '100%', 
@@ -69,6 +72,7 @@ export default function RetroHomePage() {
           justifyContent: 'center' 
         }}>
           {Array(20).fill(0).map((_, i) => (
+            // eslint-disable-next-line @next/next/no-img-element -- inline GIF strip
             <img 
               key={i} 
               src={Y2K_GIFS.fire} 
@@ -152,6 +156,64 @@ export default function RetroHomePage() {
           </tr>
         </tbody>
       </table>
+
+      <br />
+
+      <div id="about" className={styles.retroAbout}>
+        <div className="home-about-section-intro">
+          <p className="mono-data home-about-eyebrow">{homeAboutSection.eyebrow}</p>
+          <h2 className="home-section-heading home-about-heading">
+            {homeAboutSection.heading}
+          </h2>
+        </div>
+
+        <div className="home-about-blocks">
+          {homeAboutBlocks.map((block, index) => (
+            <div
+              key={block.title}
+              className={
+                index % 2 === 1
+                  ? "home-about-block home-about-block--reverse"
+                  : "home-about-block"
+              }
+            >
+              <div className="home-about-split">
+                <div className="home-about-collage-wrap" aria-hidden="true">
+                  <div className="home-about-collage-grid">
+                    {block.imageRows.map((row, rowIndex) => (
+                      <div
+                        key={rowIndex}
+                        className="home-about-collage-row"
+                        style={
+                          {
+                            "--about-row-n": row.length,
+                          } as React.CSSProperties
+                        }
+                      >
+                        {row.map((src, cellIndex) => (
+                          // eslint-disable-next-line @next/next/no-img-element -- same intrinsic mosaic as main home
+                          <img
+                            key={`${rowIndex}-${cellIndex}-${src}`}
+                            src={src}
+                            alt=""
+                            className="home-about-collage-img"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="home-about-copy">
+                  <h3 className="home-about-subheading">{block.title}</h3>
+                  <p className="home-about-body">{block.body}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <br />
 
