@@ -27,9 +27,9 @@ export const PROJECTS = [
     id: "asciiify",
     title: "ASCIIify",
     description:
-      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art.",
+      "ASCIIify is a tool that converts videos to ASCII art. It can be used as a CLI or integrated into DaVinci Resolve through OpenFX.",
     detail:
-      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. Working on potentially integrating this into a downloadable plugin for DaVinci Resolve so it can be used direcly as an effect. Demo video [here](https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui).",
+      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. It can be used as a CLI or integrated into DaVinci Resolve through OpenFX. Demo video [here](https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui).",
     imageUrl: "/asciiify.png",
     githubUrl: "https://github.com/Flapjackpants/ASCIIify",
     tags: ["C++", "FFMPEG", "CMake", "Shell", "OpenCV"],
