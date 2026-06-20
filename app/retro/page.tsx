@@ -12,6 +12,11 @@ import {
   PROFILE_IMAGE_URL,
 } from "@/lib/home-content";
 import { PROJECTS } from "@/lib/projects";
+import {
+  retroLinkStyle,
+  retroPageStyle,
+  retroTableBorder,
+} from "@/lib/retro-theme";
 import { RetroBackgroundAudio } from "./RetroBackgroundAudio";
 import { RetroImageFlash } from "./RetroImageFlash";
 
@@ -30,30 +35,11 @@ const Y2K_GIFS = {
   new: "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc296YXIyNGdtaHR0dHZ0M3Q2cjJ0dXAyYXU1NXJvcGRpdzFsaGptbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/droMJlwA7bz2zQo4dB/giphy.gif",
 } as const;
 
-const pageStyle: React.CSSProperties = {
-  minHeight: "100dvh",
-  margin: 0,
-  padding: "12px",
-  fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
-  backgroundColor: "#000080",
-  backgroundImage:
-    "repeating-linear-gradient(180deg, #000060 0px, #000080 2px, #0000a0 4px)",
-  color: "#ffff00",
-  fontSize: "15px",
-};
-
-const linkStyle: React.CSSProperties = {
-  color: "#00ff00",
-  fontWeight: "bold",
-};
-
-const tableBorder = { border: "3px ridge #ff00ff", backgroundColor: "#000033" };
-
 export default function RetroHomePage() {
   const year = new Date().getFullYear();
 
   return (
-    <div style={pageStyle}>
+    <div style={retroPageStyle}>
       <RetroImageFlash flashSrc={"/squinglord.png"}>
       <RetroBackgroundAudio />
       <center>
@@ -88,8 +74,12 @@ export default function RetroHomePage() {
       </center>
 
       <p style={{ textAlign: "center" }}>
-        <Link href="/" style={{ ...linkStyle, fontSize: "18px" }}>
+        <Link href="/" style={{ ...retroLinkStyle, fontSize: "18px" }}>
           &lt;&lt; OVR LAND OF SQUING && SQUAGALOGMAZAG!
+        </Link>
+        {" | "}
+        <Link href="/shop" style={{ ...retroLinkStyle, fontSize: "18px" }}>
+          SHOP!!!
         </Link>
       </p>
 
@@ -101,7 +91,7 @@ export default function RetroHomePage() {
         }}
       />
 
-      <table width="100%" cellPadding={8} style={tableBorder}>
+      <table width="100%" cellPadding={8} style={retroTableBorder}>
         <tbody>
           <tr>
             <td colSpan={2} align="center" style={{ backgroundColor: "#330066" }}>
@@ -110,7 +100,7 @@ export default function RetroHomePage() {
               {navLinks.map((l, i) => (
                 <span key={l.href}>
                   {i > 0 ? " ~ " : null}
-                  <a href={l.href} style={linkStyle}>
+                  <a href={l.href} style={retroLinkStyle}>
                     {l.label}
                   </a>
                 </span>
@@ -122,7 +112,7 @@ export default function RetroHomePage() {
               id="bio"
               valign="top"
               width="35%"
-              style={{ ...tableBorder, backgroundColor: "#001a4d" }}
+              style={{ ...retroTableBorder, backgroundColor: "#001a4d" }}
             >
               <center>
                 <b>*** BIO ***</b>
@@ -137,19 +127,19 @@ export default function RetroHomePage() {
                 />
               </center>
             </td>
-            <td valign="top" style={{ ...tableBorder, backgroundColor: "#000044" }}>
+            <td valign="top" style={{ ...retroTableBorder, backgroundColor: "#000044" }}>
               <p style={{ color: "#0ff", fontSize: "12px" }}>{homeHero.eyebrow}</p>
               <h2 style={{ color: "#ff6600", margin: "4px 0" }}>{homeHero.title}</h2>
               <p>{homeHero.lede}</p>
               <p>
-                <a href="#cv" style={linkStyle}>
+                <a href="#cv" style={retroLinkStyle}>
                   <b>&gt;&gt; View my CV!!!</b>
                 </a>{" "}
                 <a
                   href={homeFooter.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={linkStyle}
+                  style={retroLinkStyle}
                 >
                   <b>GitHub</b>
                 </a>
@@ -229,7 +219,7 @@ export default function RetroHomePage() {
       </h2>
       <p style={{ textAlign: "center" }}>{homeProjectsIntro.intro}</p>
 
-      <table width="100%" cellPadding={6} style={tableBorder}>
+      <table width="100%" cellPadding={6} style={retroTableBorder}>
         <tbody>
           {PROJECTS.map((project) => (
             <tr key={project.id}>
@@ -246,7 +236,7 @@ export default function RetroHomePage() {
                 </a>
               </td>
               <td valign="top" style={{ backgroundColor: "#0a0a44" }}>
-                <a href={`/projects/${project.id}`} style={linkStyle}>
+                <a href={`/projects/${project.id}`} style={retroLinkStyle}>
                   <b style={{ fontSize: "17px" }}>{project.title}</b>
                 </a>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -279,7 +269,7 @@ export default function RetroHomePage() {
 
       <br />
 
-      <table width="100%" cellPadding={10} style={tableBorder} id="cv">
+      <table width="100%" cellPadding={10} style={retroTableBorder} id="cv">
         <tbody>
           <tr>
             <td style={{ backgroundColor: "#003300" }}>
@@ -289,7 +279,7 @@ export default function RetroHomePage() {
                 <a
                   href={homeCv.pdfHref}
                   style={{
-                    ...linkStyle,
+                    ...retroLinkStyle,
                     fontSize: "20px",
                     background: "#ff0",
                     color: "#000080",
@@ -310,7 +300,7 @@ export default function RetroHomePage() {
 
       <hr style={{ borderTop: "6px double #f0f" }} />
 
-      <table width="100%" cellPadding={8} style={tableBorder} id="socials">
+      <table width="100%" cellPadding={8} style={retroTableBorder} id="socials">
         <tbody>
           <tr>
             <td align="center" style={{ backgroundColor: "#440044" }}>
@@ -321,7 +311,7 @@ export default function RetroHomePage() {
                   href={homeFooter.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={linkStyle}
+                  style={retroLinkStyle}
                 >
                   LinkedIn
                 </a>
@@ -330,12 +320,12 @@ export default function RetroHomePage() {
                   href={homeFooter.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={linkStyle}
+                  style={retroLinkStyle}
                 >
                   GitHub
                 </a>
                 {" | "}
-                <a href={homeFooter.mailHref} style={linkStyle}>
+                <a href={homeFooter.mailHref} style={retroLinkStyle}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={Y2K_GIFS.email}

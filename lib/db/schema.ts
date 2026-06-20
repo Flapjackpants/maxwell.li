@@ -1,0 +1,68 @@
+import { sql } from "drizzle-orm";
+import {
+  integer,
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
+
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  discordId: text("discord_id").notNull().unique(),
+  username: text("username").notNull(),
+  avatarUrl: text("avatar_url"),
+  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const listings = sqliteTable("listings", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  price: integer("price").notNull(),
+  imageUrl: text("image_url").notNull().default(""),
+  inStock: integer("in_stock", { mode: "boolean" }).notNull().default(true),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const orders = sqliteTable("orders", {
+  id: text("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  status: text("status").notNull().default("pending_payment"),
+  fulfillmentType: text("fulfillment_type").notNull(),
+  deliveryFee: integer("delivery_fee").notNull().default(0),
+  deliveryX: integer("delivery_x"),
+  deliveryY: integer("delivery_y"),
+  deliveryZ: integer("delivery_z"),
+  deliveryDimension: text("delivery_dimension"),
+  pickupLocation: text("pickup_location"),
+  total: integer("total").notNull(),
+  dmFailed: integer("dm_failed", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const orderItems = sqliteTable("order_items", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  orderId: text("order_id")
+    .notNull()
+    .references(() => orders.id),
+  listingId: integer("listing_id")
+    .notNull()
+    .references(() => listings.id),
+  name: text("name").notNull(),
+  price: integer("price").notNull(),
+  quantity: integer("quantity").notNull(),
+});

@@ -1,18 +1,7 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
-
-const linkBtn: CSSProperties = {
-  fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
-  fontSize: "12px",
-  fontWeight: "bold",
-  color: "#000080",
-  background: "#ff0",
-  border: "3px outset #fff",
-  padding: "4px 10px",
-  cursor: "pointer",
-};
+import { retroBtnStyle } from "@/lib/retro-theme";
 
 type Props = {
   /** Path under `public/`, e.g. `/retro-bg.mp3` */
@@ -54,7 +43,7 @@ export function RetroBackgroundAudio({
       <p style={{ textAlign: "center", margin: "8px 0 4px" }}>
         <button
           type="button"
-          style={linkBtn}
+          style={retroBtnStyle}
           onClick={() => {
             const el = ref.current;
             if (!el) return;

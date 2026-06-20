@@ -1,0 +1,52 @@
+.board {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.column {
+  min-width: 180px;
+  flex: 1;
+  background: #000044;
+  border: 2px ridge #ff00ff;
+  padding: 6px;
+}
+
+.columnTitle {
+  color: #ff00ff;
+  font-size: 12px;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.count {
+  color: #0ff;
+  margin-left: 4px;
+}
+
+.card {
+  background: #111166;
+  border: 2px inset #ccc;
+  padding: 6px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.badgePickup {
+  display: inline-block;
+  background: #003300;
+  color: #0f0;
+  padding: 1px 4px;
+  font-size: 10px;
+  border: 1px solid #0f0;
+}
+
+.badgeDelivery {
+  display: inline-block;
+  background: #330033;
+  color: #f0f;
+  padding: 1px 4px;
+  font-size: 10px;
+  border: 1px solid #f0f;
+}
