@@ -31,7 +31,7 @@ export default function CartPage() {
   }, 0);
 
   return (
-    <RetroShell title="~*~ UR CART ~*~" subtitle={`${itemCount} item(s) in cart`}>
+    <RetroShell title="YOUR CART" subtitle={`${itemCount} item(s) in cart`}>
       {loading ? (
         <p>Loading...</p>
       ) : items.length === 0 ? (

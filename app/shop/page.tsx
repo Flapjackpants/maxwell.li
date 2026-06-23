@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { RetroShell } from "./components/RetroShell";
-import { ListingCard } from "./components/ListingCard";
-import { ShopErrorBanner } from "./components/ListingCard";
+import { ListingCard, ShopErrorBanner } from "./components/ListingCard";
+import { AdminLoginPrompt } from "./components/ShopAuthBar";
 import { db } from "@/lib/db";
 import { listings } from "@/lib/db/schema";
 import { retroTableBorder } from "@/lib/retro-theme";
@@ -25,15 +25,22 @@ const ERROR_MESSAGES: Record<string, string> = {
   not_in_guild:
     "You must join our Discord server before shopping! Check the invite link below.",
   auth_failed: "Login failed. Please try again.",
-  admin_required: "Admin access required.",
+  admin_required:
+    "You must log in with Discord (admin account) to access the admin area.",
 };
+
+function safeReturnTo(value: string | undefined): string {
+  if (value?.startsWith("/") && !value.startsWith("//")) return value;
+  return "/admin/orders";
+}
 
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; invite?: string }>;
+  searchParams: Promise<{ error?: string; invite?: string; returnTo?: string }>;
 }) {
   const params = await searchParams;
+  const loginReturnTo = safeReturnTo(params.returnTo);
   const rows = await db
     .select()
     .from(listings)
@@ -45,10 +52,13 @@ export default async function ShopPage({
 
   return (
     <RetroShell
-      title="~*~ SQUING SHOP ~*~"
-      subtitle="Official server marketplace — best deals on the block!!!"
+      title="SQUING SHOP"
+      subtitle="the most UMAZING shopping experience"
     >
       {errorMsg ? <ShopErrorBanner message={errorMsg} /> : null}
+      {params.error === "admin_required" ? (
+        <AdminLoginPrompt returnTo={loginReturnTo} />
+      ) : null}
       {params.error === "not_in_guild" && params.invite ? (
         <p style={{ textAlign: "center" }}>
           <a href={params.invite} style={{ color: "#00ff00", fontWeight: "bold" }}>

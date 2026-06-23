@@ -1,6 +1,7 @@
 import Link from "next/link";
 import styles from "@/app/retro/retro.module.css";
 import { RetroBackgroundAudio } from "@/app/retro/RetroBackgroundAudio";
+import { ShopAuthBar } from "@/app/shop/components/ShopAuthBar";
 import {
   retroHeadingStyle,
   retroHrDashed,
@@ -49,6 +50,8 @@ export function RetroShell({
           Home
         </Link>
       </p>
+
+      <ShopAuthBar />
 
       <hr style={retroHrDashed} />
 

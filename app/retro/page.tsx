@@ -21,7 +21,7 @@ import { RetroBackgroundAudio } from "./RetroBackgroundAudio";
 import { RetroImageFlash } from "./RetroImageFlash";
 
 export const metadata: Metadata = {
-  title: "~*~ Maxwell Li's Homepage ~*~",
+  title: "Maxwell Li's Homepage",
   description: "Welcome to my cool web site!!!",
 };
 

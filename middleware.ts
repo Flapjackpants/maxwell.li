@@ -8,16 +8,18 @@ export async function middleware(request: NextRequest) {
   }
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
+  const returnTo = encodeURIComponent(request.nextUrl.pathname);
+
   if (!token) {
     return NextResponse.redirect(
-      new URL("/shop?error=admin_required", request.url),
+      new URL(`/shop?error=admin_required&returnTo=${returnTo}`, request.url),
     );
   }
 
   const session = await verifySessionTokenEdge(token);
   if (!session?.isAdmin) {
     return NextResponse.redirect(
-      new URL("/shop?error=admin_required", request.url),
+      new URL(`/shop?error=admin_required&returnTo=${returnTo}`, request.url),
     );
   }
 

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { CartProvider } from "./components/CartProvider";
 
 export const metadata: Metadata = {
-  title: "~*~ Squing Shop ~*~",
-  description: "Official Minecraft server marketplace!!!",
+  title: "Squing Shop",
+  description: "the most UMAZING shopping experience",
 };
 
 export default function ShopLayout({

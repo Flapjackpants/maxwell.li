@@ -16,7 +16,7 @@ export function getDeliveryFee(): number {
 }
 
 export const PAYMENT_INSTRUCTIONS =
-  "Pay in-game (diamonds / emeralds / agreed currency) or via Venmo/PayPal as discussed on Discord. Your order stays PENDING PAYMENT until an admin confirms payment.";
+  "Pay in-game with Gold Blocks or Ender Pearls";
 
 export const DISCORD_INVITE_URL =
   process.env.DISCORD_INVITE_URL ?? "https://discord.gg/";

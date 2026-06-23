@@ -72,7 +72,7 @@ export default async function OrderPage({
 
   return (
     <RetroShell
-      title="~*~ ORDER STATUS ~*~"
+      title="ORDER STATUS"
       subtitle={`Order #${order.id.slice(0, 8)}`}
     >
       <OrderStatusPanel order={order} />

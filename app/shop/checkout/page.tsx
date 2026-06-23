@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RetroShell } from "../components/RetroShell";
 import { useCart } from "../components/CartProvider";
-import { DiscordLoginButton } from "../components/ListingCard";
+import { DiscordLoginButton } from "../components/ShopAuthBar";
 import {
   retroBtnStyle,
   retroInputStyle,
@@ -113,7 +113,7 @@ export default function CheckoutPage() {
 
   if (session === undefined) {
     return (
-      <RetroShell title="~*~ CHECKOUT ~*~">
+      <RetroShell title="CHECKOUT">
         <p>Loading...</p>
       </RetroShell>
     );
@@ -121,7 +121,7 @@ export default function CheckoutPage() {
 
   if (!session) {
     return (
-      <RetroShell title="~*~ CHECKOUT ~*~">
+      <RetroShell title="CHECKOUT">
         <p style={{ textAlign: "center" }}>
           U must log in with Discord 2 checkout!!!
         </p>
@@ -134,7 +134,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <RetroShell title="~*~ CHECKOUT ~*~">
+      <RetroShell title="CHECKOUT">
         <p style={{ textAlign: "center" }}>
           Cart is empty.{" "}
           <a href="/shop" style={retroLinkStyle}>
@@ -147,7 +147,7 @@ export default function CheckoutPage() {
 
   return (
     <RetroShell
-      title="~*~ CHECKOUT ~*~"
+      title="CHECKOUT"
       subtitle={`Logged in as ${session.username}`}
     >
       <form onSubmit={handleSubmit}>

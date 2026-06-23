@@ -1,6 +1,6 @@
 "use client";
 
-import { retroBtnStyle, retroLinkStyle } from "@/lib/retro-theme";
+import { retroBtnStyle } from "@/lib/retro-theme";
 import type { Listing } from "@/lib/shop/types";
 import { useCart } from "./CartProvider";
 
@@ -72,20 +72,5 @@ export function ShopErrorBanner({ message }: { message: string }) {
     <p style={{ color: "#f00", textAlign: "center", fontWeight: "bold" }}>
       {message}
     </p>
-  );
-}
-
-export function DiscordLoginButton({
-  returnTo,
-  label = "[ CONTINUE WITH DISCORD ]",
-}: {
-  returnTo: string;
-  label?: string;
-}) {
-  const href = `/api/auth/discord?returnTo=${encodeURIComponent(returnTo)}`;
-  return (
-    <a href={href} style={{ ...retroLinkStyle, fontSize: 18 }}>
-      {label}
-    </a>
   );
 }

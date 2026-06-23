@@ -8,7 +8,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RetroShell title="~*~ ADMIN ZONE ~*~" subtitle="Staff only!!!" showAudio={false}>
+    <RetroShell title="ADMIN ZONE" subtitle="Staff only" showAudio={false}>
       <p style={{ textAlign: "center" }}>
         <Link href="/admin/orders" style={retroLinkStyle}>
           Orders
