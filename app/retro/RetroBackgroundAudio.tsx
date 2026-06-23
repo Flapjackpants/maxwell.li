@@ -52,8 +52,8 @@ export function RetroBackgroundAudio({
           }}
         >
           {needsTap
-            ? "[ CLICK HERE 4 BACKGROUND MP3!!! ]"
-            : "[ REPLAY / UN-PAUSE TEH JAMZ ]"}
+            ? "[ CLICK HERE FOR BACKGROUND MP3 ]"
+            : "[ REPLAY / UN-PAUSE ]"}
         </button>
       </p>
     </>

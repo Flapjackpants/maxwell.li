@@ -126,7 +126,7 @@ export default function CheckoutPage() {
     return (
       <RetroShell title="CHECKOUT">
         <p style={{ textAlign: "center" }}>
-          U must log in with Discord 2 checkout!!!
+          Please log in with Discord to verify identity.
         </p>
         <center>
           <DiscordLoginButton returnTo="/shop/checkout" />
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
               checked={fulfillmentType === "pickup"}
               onChange={() => setFulfillmentType("pickup")}
             />{" "}
-            Pickup (location sent when order is ready)
+            Pickup (In Susland Plaza)
           </label>
           <br />
           <label>

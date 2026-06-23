@@ -24,7 +24,7 @@ export function CartQuantityPicker({ listing, onConfirm, onCancel }: Props) {
       parseQuantityFields(chests, stacks, items),
     );
     if (absolute < 1) {
-      setError("Enter at least 1 item!!!");
+      setError("Enter at least 1 item");
       return;
     }
     onConfirm(absolute);

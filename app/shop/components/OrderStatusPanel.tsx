@@ -39,7 +39,7 @@ export function OrderStatusPanel({ order, currency }: Props) {
     <>
       {order.dmFailed ? (
         <p style={{ color: "#ff6600", fontWeight: "bold" }}>
-          We could not DM you on Discord — check this page for updates!!!
+          We could not DM you on Discord. Check this page for updates!
         </p>
       ) : null}
 

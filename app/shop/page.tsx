@@ -70,7 +70,7 @@ export default async function ShopPage({
       ) : null}
 
       {catalog.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No items in stock right now. Check back!!!</p>
+        <p style={{ textAlign: "center" }}>No items in stock right now. Check back later.</p>
       ) : (
         <table width="100%" cellPadding={6} style={retroTableBorder}>
           <tbody>

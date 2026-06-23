@@ -28,9 +28,15 @@ export function ShopAuthBar() {
   const [session, setSession] = useState<SessionInfo | undefined>(undefined);
 
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch("/api/auth/me", { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
-      .then((data) => setSession(data))
+      .then((data: SessionInfo | null) =>
+        setSession(
+          data
+            ? { username: data.username, isAdmin: data.isAdmin === true }
+            : null,
+        ),
+      )
       .catch(() => setSession(null));
   }, []);
 
@@ -53,7 +59,7 @@ export function ShopAuthBar() {
   return (
     <p style={{ textAlign: "center" }}>
       Logged in as <b style={{ color: "#0ff" }}>{session.username}</b>
-      {session.isAdmin ? (
+      {session.isAdmin === true ? (
         <>
           {" | "}
           <Link href="/admin/orders" style={retroLinkStyle}>
@@ -83,7 +89,7 @@ export function AdminLoginPrompt({ returnTo }: { returnTo: string }) {
       }}
     >
       <p style={{ color: "#ffccff", fontWeight: "bold" }}>
-        Admin area requires Discord login!!!
+        Admin area requires Discord login!
       </p>
       <p style={{ fontSize: 13 }}>
         Log in with the Discord account set as{" "}

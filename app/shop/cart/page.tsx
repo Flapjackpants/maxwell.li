@@ -44,7 +44,7 @@ export default function CartPage() {
         <p>Loading...</p>
       ) : items.length === 0 ? (
         <p style={{ textAlign: "center" }}>
-          Cart is empty!!!{" "}
+          Cart is empty!{" "}
           <Link href="/shop" style={retroLinkStyle}>
             Go shopping
           </Link>

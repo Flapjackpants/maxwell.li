@@ -22,7 +22,7 @@ import { RetroImageFlash } from "./RetroImageFlash";
 
 export const metadata: Metadata = {
   title: "Maxwell Li's Homepage",
-  description: "Welcome to my cool web site!!!",
+  description: "Welcome to my cool web site",
 };
 
 /** Classic hotlink-friendly GIFs for that Geocities energy. */
@@ -50,7 +50,7 @@ export default function RetroHomePage() {
         </h1>
         <div className={styles.marqueeWrap}>
           <div className={styles.marqueeTrack}>
-            You are visitor number 0000071 !!! Thanks 4 stopping by !!!
+            You are visitor number 0000071! Thanks for stopping by!
           </div>
         </div>
         <div style={{ 
@@ -79,7 +79,7 @@ export default function RetroHomePage() {
         </Link>
         {" | "}
         <Link href="/shop" style={{ ...retroLinkStyle, fontSize: "18px" }}>
-          SHOP!!!
+          SHOP
         </Link>
       </p>
 
@@ -133,7 +133,7 @@ export default function RetroHomePage() {
               <p>{homeHero.lede}</p>
               <p>
                 <a href="#cv" style={retroLinkStyle}>
-                  <b>&gt;&gt; View my CV!!!</b>
+                  <b>&gt;&gt; View my CV</b>
                 </a>{" "}
                 <a
                   href={homeFooter.githubUrl}
@@ -334,7 +334,7 @@ export default function RetroHomePage() {
                     height={48}
                     style={{ verticalAlign: "middle" }}
                   />{" "}
-                  E-MAIL!!!
+                  E-MAIL
                 </a>
               </p>
               <p style={{ fontSize: "11px", color: "#aaa" }}>

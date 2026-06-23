@@ -1,7 +1,5 @@
 export const MINECRAFT_DIMENSIONS = [
   { value: "overworld", label: "Overworld" },
-  { value: "nether", label: "The Nether" },
-  { value: "the_end", label: "The End" },
 ] as const;
 
 export type MinecraftDimension = (typeof MINECRAFT_DIMENSIONS)[number]["value"];
@@ -20,7 +18,7 @@ export function calculateDeliveryFee(subtotal: number): number {
 }
 
 export const PAYMENT_INSTRUCTIONS =
-  "Pay in-game with the agreed currency. Your order will be completed once payment is confirmed.";
+  "Pay in-game with the agreed currency in the same chest you receieved your items. DM Flapjackpants when you have paid. Your order will be completed once payment is confirmed.";
 
 export const DISCORD_INVITE_URL =
   process.env.DISCORD_INVITE_URL ?? "https://discord.gg/";
