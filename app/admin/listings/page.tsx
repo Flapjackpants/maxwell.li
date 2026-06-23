@@ -4,14 +4,26 @@ import { useEffect, useState } from "react";
 import {
   retroBtnStyle,
   retroInputStyle,
+  retroSelectStyle,
   retroTableBorder,
 } from "@/lib/retro-theme";
+import {
+  PRICE_UNITS,
+  formatListingPrice,
+  listingPrice,
+  type PriceUnit,
+} from "@/lib/shop/pricing";
 import type { Listing } from "@/lib/shop/types";
+import { formatPurchaseLimit } from "@/lib/shop/purchase-limit";
 
 const emptyForm = {
   name: "",
   description: "",
   price: "0",
+  priceUnit: "stack" as PriceUnit,
+  pricePerCount: "1",
+  purchaseLimitMode: "uncapped" as "uncapped" | "capped",
+  maxPurchaseQuantity: "64",
   imageUrl: "",
   inStock: true,
 };
@@ -43,6 +55,12 @@ export default function AdminListingsPage() {
       name: form.name,
       description: form.description,
       price: Number(form.price),
+      priceUnit: form.priceUnit,
+      pricePerCount: Number(form.pricePerCount),
+      maxPurchaseQuantity:
+        form.purchaseLimitMode === "capped"
+          ? Number(form.maxPurchaseQuantity)
+          : null,
       imageUrl: form.imageUrl,
       inStock: form.inStock,
     };
@@ -74,6 +92,11 @@ export default function AdminListingsPage() {
       name: listing.name,
       description: listing.description,
       price: String(listing.price),
+      priceUnit: listing.priceUnit,
+      pricePerCount: String(listing.pricePerCount),
+      purchaseLimitMode:
+        listing.maxPurchaseQuantity === null ? "uncapped" : "capped",
+      maxPurchaseQuantity: String(listing.maxPurchaseQuantity ?? 64),
       imageUrl: listing.imageUrl,
       inStock: listing.inStock,
     });
@@ -116,12 +139,38 @@ export default function AdminListingsPage() {
           <p>
             <input
               type="number"
-              placeholder="Price per stack (64 items)"
+              min={0}
+              placeholder="Price"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               style={retroInputStyle}
               required
             />{" "}
+            {currency} per{" "}
+            <input
+              type="number"
+              min={1}
+              value={form.pricePerCount}
+              onChange={(e) =>
+                setForm({ ...form, pricePerCount: e.target.value })
+              }
+              style={{ ...retroInputStyle, width: 64 }}
+              required
+            />{" "}
+            <select
+              value={form.priceUnit}
+              onChange={(e) =>
+                setForm({ ...form, priceUnit: e.target.value as PriceUnit })
+              }
+              style={retroSelectStyle}
+            >
+              {PRICE_UNITS.map((unit) => (
+                <option key={unit} value={unit}>
+                  {unit}
+                  {Number(form.pricePerCount) === 1 ? "" : "s"}
+                </option>
+              ))}
+            </select>{" "}
             <input
               placeholder="Image URL"
               value={form.imageUrl}
@@ -138,6 +187,39 @@ export default function AdminListingsPage() {
               />{" "}
               In stock
             </label>
+          </p>
+          <p>
+            Purchase limit:{" "}
+            <select
+              value={form.purchaseLimitMode}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  purchaseLimitMode: e.target.value as "uncapped" | "capped",
+                })
+              }
+              style={retroSelectStyle}
+            >
+              <option value="uncapped">Uncapped</option>
+              <option value="capped">Capped</option>
+            </select>
+            {form.purchaseLimitMode === "capped" ? (
+              <>
+                {" "}
+                max{" "}
+                <input
+                  type="number"
+                  min={1}
+                  value={form.maxPurchaseQuantity}
+                  onChange={(e) =>
+                    setForm({ ...form, maxPurchaseQuantity: e.target.value })
+                  }
+                  style={{ ...retroInputStyle, width: 96 }}
+                  required
+                />{" "}
+                items per order
+              </>
+            ) : null}
           </p>
           {error ? <p style={{ color: "#f00" }}>{error}</p> : null}
           <button type="submit" style={retroBtnStyle}>
@@ -163,7 +245,14 @@ export default function AdminListingsPage() {
           {listings.map((listing) => (
             <tr key={listing.id}>
               <td style={{ backgroundColor: "#0a0a44" }}>
-                <b>{listing.name}</b> — {listing.price} {currency} / stack
+                <b>{listing.name}</b> —{" "}
+                {formatListingPrice(listingPrice(listing), currency)}
+                <br />
+                {formatPurchaseLimit(listing) ? (
+                  <span style={{ fontSize: 12 }}>{formatPurchaseLimit(listing)}</span>
+                ) : (
+                  <span style={{ fontSize: 12, color: "#888" }}>Uncapped per order</span>
+                )}
                 <br />
                 {listing.inStock ? (
                   <span style={{ color: "#0f0" }}>IN STOCK</span>

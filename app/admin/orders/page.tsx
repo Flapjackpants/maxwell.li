@@ -26,6 +26,7 @@ type OrderCard = {
   deliveryZ: number | null;
   deliveryDimension: string | null;
   pickupLocation: string | null;
+  estimatedReadyTime: string | null;
   total: number;
   buyerUsername: string;
   items: OrderItem[];
@@ -50,6 +51,10 @@ export default function AdminOrdersPage() {
     null,
   );
   const [pickupLocationInput, setPickupLocationInput] = useState("");
+  const [readyTimePromptOrderId, setReadyTimePromptOrderId] = useState<
+    string | null
+  >(null);
+  const [estimatedReadyTimeInput, setEstimatedReadyTimeInput] = useState("");
   const [advanceError, setAdvanceError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -82,6 +87,11 @@ export default function AdminOrdersPage() {
     setAdvanceError(null);
     const current = normalizeOrderStatus(order.status);
     const next = getNextStatus(current);
+    if (current === "order_queued") {
+      setReadyTimePromptOrderId(order.id);
+      setEstimatedReadyTimeInput(order.estimatedReadyTime ?? "");
+      return;
+    }
     if (next === "awaiting_pickup") {
       setPickupPromptOrderId(order.id);
       setPickupLocationInput(order.pickupLocation ?? "");
@@ -90,14 +100,22 @@ export default function AdminOrdersPage() {
     void advanceOrder(order.id);
   }
 
-  async function advanceOrder(orderId: string, pickupLocation?: string) {
+  async function advanceOrder(
+    orderId: string,
+    options?: { pickupLocation?: string; estimatedReadyTime?: string },
+  ) {
     setAdvanceError(null);
     const res = await fetch(`/api/orders/${orderId}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "advance",
-        ...(pickupLocation ? { pickupLocation } : {}),
+        ...(options?.pickupLocation
+          ? { pickupLocation: options.pickupLocation }
+          : {}),
+        ...(options?.estimatedReadyTime
+          ? { estimatedReadyTime: options.estimatedReadyTime }
+          : {}),
       }),
     });
     if (!res.ok) {
@@ -107,6 +125,8 @@ export default function AdminOrdersPage() {
     }
     setPickupPromptOrderId(null);
     setPickupLocationInput("");
+    setReadyTimePromptOrderId(null);
+    setEstimatedReadyTimeInput("");
     await refresh();
   }
 
@@ -201,6 +221,10 @@ export default function AdminOrdersPage() {
                         </p>
                       ) : order.pickupLocation ? (
                         <p style={{ fontSize: 11 }}>Pickup: {order.pickupLocation}</p>
+                      ) : order.estimatedReadyTime ? (
+                        <p style={{ fontSize: 11 }}>
+                          ETA: {order.estimatedReadyTime}
+                        </p>
                       ) : null}
                       <p style={{ fontSize: 11 }}>
                         Total: {order.total} {currency} | #
@@ -272,10 +296,9 @@ export default function AdminOrdersPage() {
                 type="button"
                 style={retroBtnStyle}
                 onClick={() =>
-                  void advanceOrder(
-                    pickupPromptOrderId,
-                    pickupLocationInput.trim(),
-                  )
+                  void advanceOrder(pickupPromptOrderId, {
+                    pickupLocation: pickupLocationInput.trim(),
+                  })
                 }
               >
                 [ CONFIRM ADVANCE ]
@@ -284,6 +307,68 @@ export default function AdminOrdersPage() {
                 type="button"
                 style={retroBtnStyle}
                 onClick={() => setPickupPromptOrderId(null)}
+              >
+                [ CANCEL ]
+              </button>
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {readyTimePromptOrderId ? (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0, 0, 0, 0.75)",
+            padding: 16,
+          }}
+          onClick={() => setReadyTimePromptOrderId(null)}
+        >
+          <div
+            style={{
+              fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+              backgroundColor: "#000033",
+              color: "#ffff00",
+              border: "4px ridge #ff00ff",
+              padding: 16,
+              maxWidth: 400,
+              width: "100%",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ color: "#ff00ff", marginTop: 0 }}>Estimated ready time</h3>
+            <p style={{ fontSize: 13 }}>
+              Sent to the buyer via Discord DM when you advance this order.
+            </p>
+            <input
+              type="text"
+              value={estimatedReadyTimeInput}
+              onChange={(e) => setEstimatedReadyTimeInput(e.target.value)}
+              placeholder="e.g. 12 hours"
+              style={{ ...retroInputStyle, width: "100%", marginBottom: 12 }}
+              autoFocus
+            />
+            <p style={{ margin: 0, textAlign: "center" }}>
+              <button
+                type="button"
+                style={retroBtnStyle}
+                onClick={() =>
+                  void advanceOrder(readyTimePromptOrderId, {
+                    estimatedReadyTime: estimatedReadyTimeInput.trim(),
+                  })
+                }
+              >
+                [ CONFIRM ADVANCE ]
+              </button>{" "}
+              <button
+                type="button"
+                style={retroBtnStyle}
+                onClick={() => setReadyTimePromptOrderId(null)}
               >
                 [ CANCEL ]
               </button>

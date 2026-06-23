@@ -3,21 +3,39 @@
 import { useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { retroBtnStyle, retroInputStyle } from "@/lib/retro-theme";
+import {
+  formatQuantityBreakdown,
+  parseQuantityFields,
+  toAbsoluteQuantity,
+} from "@/lib/shop/minecraft-quantity";
+import {
+  formatPurchaseLimit,
+  getMaxPurchaseQuantity,
+} from "@/lib/shop/purchase-limit";
 import type { Listing } from "@/lib/shop/types";
-import { parseQuantityFields, toAbsoluteQuantity } from "@/lib/shop/minecraft-quantity";
 
 type Props = {
   listing: Listing;
+  existingQuantity?: number;
   onConfirm: (quantity: number) => void;
   onCancel: () => void;
 };
 
-export function CartQuantityPicker({ listing, onConfirm, onCancel }: Props) {
+export function CartQuantityPicker({
+  listing,
+  existingQuantity = 0,
+  onConfirm,
+  onCancel,
+}: Props) {
   const id = useId();
   const [chests, setChests] = useState("0");
   const [stacks, setStacks] = useState("0");
   const [items, setItems] = useState("1");
   const [error, setError] = useState<string | null>(null);
+
+  const maxTotal = getMaxPurchaseQuantity(listing);
+  const remaining =
+    maxTotal === null ? null : Math.max(0, maxTotal - existingQuantity);
 
   function handleConfirm() {
     const absolute = toAbsoluteQuantity(
@@ -27,12 +45,21 @@ export function CartQuantityPicker({ listing, onConfirm, onCancel }: Props) {
       setError("Enter at least 1 item");
       return;
     }
+    if (remaining !== null && absolute > remaining) {
+      setError(
+        remaining === 0
+          ? "This listing is already at the purchase limit in your cart"
+          : `Maximum ${formatQuantityBreakdown(remaining)} more for this listing`,
+      );
+      return;
+    }
     onConfirm(absolute);
   }
 
   if (typeof document === "undefined") return null;
 
   const inputStyle = { ...retroInputStyle, width: 56 };
+  const limitLabel = formatPurchaseLimit(listing);
 
   return createPortal(
     <div
@@ -82,6 +109,18 @@ export function CartQuantityPicker({ listing, onConfirm, onCancel }: Props) {
           }}
         >
           1 stack = 64 items · 1 chest = 27 stacks
+          {limitLabel ? (
+            <>
+              <br />
+              {limitLabel}
+              {existingQuantity > 0 ? (
+                <>
+                  <br />
+                  Already in cart: {formatQuantityBreakdown(existingQuantity)}
+                </>
+              ) : null}
+            </>
+          ) : null}
         </p>
 
         <center style={{ marginBottom: 12 }}>
@@ -146,7 +185,7 @@ export function CartQuantityPicker({ listing, onConfirm, onCancel }: Props) {
 
         <p style={{ textAlign: "center", margin: 0 }}>
           <button type="button" style={retroBtnStyle} onClick={handleConfirm}>
-            [ ADD 2 CART ]
+            [ ADD TO CART ]
           </button>{" "}
           <button type="button" style={retroBtnStyle} onClick={onCancel}>
             [ CANCEL ]

@@ -16,6 +16,7 @@ const patchSchema = z.object({
   action: z.enum(["advance", "set"]),
   status: z.string().optional(),
   pickupLocation: z.string().min(1).max(500).optional(),
+  estimatedReadyTime: z.string().min(1).max(200).optional(),
 });
 
 export async function PATCH(
@@ -68,6 +69,45 @@ export async function PATCH(
   }
 
   const previousStatus = order.status as OrderStatus;
+
+  if (currentStatus === "order_queued" && newStatus === "gathering_materials") {
+    const estimatedReadyTime = parsed.data.estimatedReadyTime?.trim();
+    if (!estimatedReadyTime) {
+      return NextResponse.json(
+        {
+          error:
+            "Estimated ready time is required when advancing from order queued",
+        },
+        { status: 400 },
+      );
+    }
+
+    await db
+      .update(orders)
+      .set({
+        status: newStatus,
+        estimatedReadyTime,
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, id));
+
+    const dmResult = await sendOrderStatusDm(discordId, id, newStatus, {
+      estimatedReadyTime,
+    });
+    if (!dmResult.ok) {
+      console.warn("DM failed for order", id, dmResult.reason);
+      await db
+        .update(orders)
+        .set({ dmFailed: true })
+        .where(eq(orders.id, id));
+    }
+
+    return NextResponse.json({
+      id,
+      status: newStatus,
+      estimatedReadyTime,
+    });
+  }
 
   if (newStatus === "awaiting_pickup") {
     const location = parsed.data.pickupLocation?.trim();

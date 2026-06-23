@@ -51,7 +51,7 @@ export function ShopAuthBar() {
   if (!session) {
     return (
       <p style={{ textAlign: "center" }}>
-        <DiscordLoginButton returnTo="/shop" label="[ LOG IN WITH DISCORD ]" />
+        <DiscordLoginButton returnTo="/shop" label="[ LOG IN WITH DISCORD TO RECEIVE ORDER UPDATES ]" />
       </p>
     );
   }

@@ -32,6 +32,8 @@ async function getOrder(id: string, userId: number, isAdmin: boolean) {
       listingId: r.item!.listingId,
       name: r.item!.name,
       price: r.item!.price,
+      priceUnit: r.item!.priceUnit as OrderItem["priceUnit"],
+      pricePerCount: r.item!.pricePerCount,
       quantity: r.item!.quantity,
     }));
 
@@ -46,6 +48,7 @@ async function getOrder(id: string, userId: number, isAdmin: boolean) {
     deliveryZ: order.deliveryZ,
     deliveryDimension: order.deliveryDimension as MinecraftDimension | null,
     pickupLocation: order.pickupLocation,
+    estimatedReadyTime: order.estimatedReadyTime,
     total: order.total,
     dmFailed: order.dmFailed,
     createdAt: order.createdAt,

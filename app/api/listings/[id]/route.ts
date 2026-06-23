@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems } from "@/lib/db/schema";
+import { PRICE_UNITS } from "@/lib/shop/pricing";
 
 function mapListing(row: typeof listings.$inferSelect) {
   return {
@@ -11,8 +12,11 @@ function mapListing(row: typeof listings.$inferSelect) {
     name: row.name,
     description: row.description,
     price: row.price,
+    priceUnit: row.priceUnit,
+    pricePerCount: row.pricePerCount,
     imageUrl: row.imageUrl,
     inStock: row.inStock,
+    maxPurchaseQuantity: row.maxPurchaseQuantity,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -22,8 +26,11 @@ const updateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   description: z.string().max(2000).optional(),
   price: z.number().int().min(0).optional(),
+  priceUnit: z.enum(PRICE_UNITS).optional(),
+  pricePerCount: z.number().int().min(1).max(1_000_000).optional(),
   imageUrl: z.string().max(2000).optional(),
   inStock: z.boolean().optional(),
+  maxPurchaseQuantity: z.number().int().min(1).max(1_000_000_000).nullable().optional(),
 });
 
 export async function PATCH(

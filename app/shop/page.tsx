@@ -15,8 +15,11 @@ function mapListing(row: typeof listings.$inferSelect): Listing {
     name: row.name,
     description: row.description,
     price: row.price,
+    priceUnit: row.priceUnit as Listing["priceUnit"],
+    pricePerCount: row.pricePerCount,
     imageUrl: row.imageUrl,
     inStock: row.inStock,
+    maxPurchaseQuantity: row.maxPurchaseQuantity,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -55,7 +58,7 @@ export default async function ShopPage({
 
   return (
     <RetroShell
-      title="Squing Shop"
+      title="Or head to the Susland Plaza (-266, 92, -288) for our brick-and-mortar shopping experience!"
       titleImage={SHOP_TITLE_IMAGE}
       subtitle="the most UMAZING shopping experience"
       showAudio={false}

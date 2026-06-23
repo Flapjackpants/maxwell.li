@@ -1,4 +1,5 @@
 export const ORDER_STATUSES = [
+  "order_queued",
   "gathering_materials",
   "awaiting_pickup",
   "awaiting_payment",
@@ -10,6 +11,7 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export type FulfillmentType = "pickup" | "delivery";
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  order_queued: "Order Queued",
   gathering_materials: "Gathering Materials",
   awaiting_pickup: "Awaiting Pickup",
   awaiting_payment: "Awaiting Payment",
@@ -17,6 +19,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 };
 
 const STATUS_TRANSITIONS: Partial<Record<OrderStatus, OrderStatus>> = {
+  order_queued: "gathering_materials",
   gathering_materials: "awaiting_pickup",
   awaiting_pickup: "awaiting_payment",
   awaiting_payment: "completed",
@@ -33,6 +36,7 @@ export function isValidStatus(value: string): value is OrderStatus {
 /** Kanban column order for admin board */
 export function getKanbanColumns(): OrderStatus[] {
   return [
+    "order_queued",
     "gathering_materials",
     "awaiting_pickup",
     "awaiting_payment",

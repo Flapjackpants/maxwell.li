@@ -3,7 +3,7 @@ import { CartProvider } from "./components/CartProvider";
 import { ShopBackgroundAudio } from "./components/ShopBackgroundAudio";
 
 export const metadata: Metadata = {
-  title: "Squing Shop",
+  title: "Or head to the Susland Plaza (-266, 92, -288) for our brick-and-mortar shopping experience!",
   description: "the most UMAZING shopping experience",
 };
 

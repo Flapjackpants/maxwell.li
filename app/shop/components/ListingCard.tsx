@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { retroBtnStyle } from "@/lib/retro-theme";
+import { formatListingPrice, listingPrice } from "@/lib/shop/pricing";
+import {
+  clampPurchaseQuantity,
+  formatPurchaseLimit,
+} from "@/lib/shop/purchase-limit";
 import type { Listing } from "@/lib/shop/types";
 import { useCart } from "./CartProvider";
 import { CartQuantityPicker } from "./CartQuantityPicker";
@@ -13,8 +18,11 @@ type Props = {
 };
 
 export function ListingCard({ listing, currency }: Props) {
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const purchaseLimitLabel = formatPurchaseLimit(listing);
+  const existingQuantity =
+    items.find((item) => item.listingId === listing.id)?.quantity ?? 0;
 
   return (
     <>
@@ -39,7 +47,14 @@ export function ListingCard({ listing, currency }: Props) {
                 )}
                 <p>{listing.description}</p>
                 <p>
-                  <b>Price:</b> {listing.price} {currency} per stack (64 items)
+                  <b>Price:</b>{" "}
+                  {formatListingPrice(listingPrice(listing), currency)}
+                  {purchaseLimitLabel ? (
+                    <>
+                      <br />
+                      <span style={{ fontSize: 13 }}>{purchaseLimitLabel}</span>
+                    </>
+                  ) : null}
                 </p>
                 <button
                   type="button"
@@ -61,8 +76,14 @@ export function ListingCard({ listing, currency }: Props) {
       {pickerOpen ? (
         <CartQuantityPicker
           listing={listing}
+          existingQuantity={existingQuantity}
           onConfirm={(quantity) => {
-            addItem(listing.id, quantity, listing.name);
+            const newTotal = clampPurchaseQuantity(
+              listing,
+              existingQuantity + quantity,
+            );
+            const toAdd = newTotal - existingQuantity;
+            if (toAdd > 0) addItem(listing.id, toAdd, listing.name);
             setPickerOpen(false);
           }}
           onCancel={() => setPickerOpen(false)}

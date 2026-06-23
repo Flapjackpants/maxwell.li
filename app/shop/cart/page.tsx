@@ -8,7 +8,12 @@ import {
   MinecraftQuantityInputs,
   MinecraftQuantityLabel,
 } from "../components/MinecraftQuantityInputs";
-import { lineTotalForQuantity } from "@/lib/shop/pricing";
+import {
+  cartSubtotal,
+  formatListingPrice,
+  listingPrice,
+} from "@/lib/shop/pricing";
+import { clampPurchaseQuantity } from "@/lib/shop/purchase-limit";
 import { retroBtnStyle, retroLinkStyle, retroTableBorder } from "@/lib/retro-theme";
 import type { Listing } from "@/lib/shop/types";
 
@@ -34,11 +39,15 @@ export default function CartPage() {
   }, []);
 
   const listingMap = new Map(listings.map((l) => [l.id, l]));
-  const subtotal = items.reduce((sum, item) => {
-    const listing = listingMap.get(item.listingId);
-    if (!listing) return sum;
-    return sum + lineTotalForQuantity(item.quantity, listing.price);
-  }, 0);
+  const subtotal = cartSubtotal(
+    items
+      .map((item) => {
+        const listing = listingMap.get(item.listingId);
+        if (!listing) return null;
+        return { quantity: item.quantity, price: listingPrice(listing) };
+      })
+      .filter((line): line is NonNullable<typeof line> => line !== null),
+  );
 
   return (
     <RetroShell title="YOUR CART" subtitle={`${itemCount} item(s) total`} showAudio={false}>
@@ -61,7 +70,8 @@ export default function CartPage() {
                 return (
                   <tr key={item.listingId}>
                     <td style={{ backgroundColor: "#0a0a44" }}>
-                      <b>{listing.name}</b> — {listing.price} {currency} per stack
+                      <b>{listing.name}</b> —{" "}
+                      {formatListingPrice(listingPrice(listing), currency)}
                       <br />
                       <MinecraftQuantityLabel total={item.quantity} />
                       <br />
@@ -69,8 +79,9 @@ export default function CartPage() {
                         total={item.quantity}
                         compact
                         onChange={(total) => {
-                          if (total <= 0) removeItem(item.listingId);
-                          else setQuantity(item.listingId, total);
+                          const capped = clampPurchaseQuantity(listing, total);
+                          if (capped <= 0) removeItem(item.listingId);
+                          else setQuantity(item.listingId, capped);
                         }}
                       />{" "}
                       <button
@@ -80,9 +91,6 @@ export default function CartPage() {
                       >
                         [ REMOVE ]
                       </button>
-                    </td>
-                    <td align="right" style={{ backgroundColor: "#111166" }}>
-                      {lineTotalForQuantity(item.quantity, listing.price)} {currency}
                     </td>
                   </tr>
                 );

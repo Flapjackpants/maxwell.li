@@ -5,7 +5,8 @@ import { requireUser } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems, orders, users } from "@/lib/db/schema";
 import { calculateDeliveryFee } from "@/lib/shop/constants";
-import { lineTotalForQuantity } from "@/lib/shop/pricing";
+import { cartSubtotal, listingPrice } from "@/lib/shop/pricing";
+import { exceedsPurchaseLimit } from "@/lib/shop/purchase-limit";
 import type { MinecraftDimension } from "@/lib/shop/constants";
 
 async function fetchOrderWithDetails(orderId: string) {
@@ -31,6 +32,8 @@ async function fetchOrderWithDetails(orderId: string) {
       listingId: r.item!.listingId,
       name: r.item!.name,
       price: r.item!.price,
+      priceUnit: r.item!.priceUnit as "item" | "stack" | "chest",
+      pricePerCount: r.item!.pricePerCount,
       quantity: r.item!.quantity,
     }));
 
@@ -45,6 +48,7 @@ async function fetchOrderWithDetails(orderId: string) {
     deliveryZ: order.deliveryZ,
     deliveryDimension: order.deliveryDimension as MinecraftDimension | null,
     pickupLocation: order.pickupLocation,
+    estimatedReadyTime: order.estimatedReadyTime,
     total: order.total,
     dmFailed: order.dmFailed,
     createdAt: order.createdAt,
@@ -84,6 +88,7 @@ export async function GET() {
           deliveryZ: row.order.deliveryZ,
           deliveryDimension: row.order.deliveryDimension as MinecraftDimension | null,
           pickupLocation: row.order.pickupLocation,
+          estimatedReadyTime: row.order.estimatedReadyTime,
           total: row.order.total,
           dmFailed: row.order.dmFailed,
           createdAt: row.order.createdAt,
@@ -99,6 +104,8 @@ export async function GET() {
           listingId: row.item.listingId,
           name: row.item.name,
           price: row.item.price,
+          priceUnit: row.item.priceUnit as "item" | "stack" | "chest",
+          pricePerCount: row.item.pricePerCount,
           quantity: row.item.quantity,
         });
       }
@@ -182,12 +189,25 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+    if (exceedsPurchaseLimit(listing, item.quantity)) {
+      return NextResponse.json(
+        {
+          error: `${listing.name} exceeds the maximum purchase quantity per order`,
+        },
+        { status: 400 },
+      );
+    }
   }
 
-  const subtotal = items.reduce((sum, item) => {
-    const listing = listingMap.get(item.listingId)!;
-    return sum + lineTotalForQuantity(item.quantity, listing.price);
-  }, 0);
+  const subtotal = cartSubtotal(
+    items.map((item) => {
+      const listing = listingMap.get(item.listingId)!;
+      return {
+        quantity: item.quantity,
+        price: listingPrice(listing),
+      };
+    }),
+  );
 
   const deliveryFee =
     fulfillmentType === "delivery" ? calculateDeliveryFee(subtotal) : 0;
@@ -197,7 +217,7 @@ export async function POST(request: Request) {
   await db.insert(orders).values({
     id: orderId,
     userId: session!.userId,
-    status: "gathering_materials",
+    status: "order_queued",
     fulfillmentType,
     deliveryFee,
     deliveryX: fulfillmentType === "delivery" ? parsed.data.deliveryX! : null,
@@ -206,6 +226,7 @@ export async function POST(request: Request) {
     deliveryDimension:
       fulfillmentType === "delivery" ? parsed.data.deliveryDimension! : null,
     pickupLocation: null,
+    estimatedReadyTime: null,
     total,
     updatedAt: new Date(),
   });
@@ -218,6 +239,8 @@ export async function POST(request: Request) {
         listingId: item.listingId,
         name: listing.name,
         price: listing.price,
+        priceUnit: listing.priceUnit,
+        pricePerCount: listing.pricePerCount,
         quantity: item.quantity,
       };
     }),

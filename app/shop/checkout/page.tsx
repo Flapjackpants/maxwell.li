@@ -13,7 +13,11 @@ import {
   retroTableBorder,
 } from "@/lib/retro-theme";
 import { MINECRAFT_DIMENSIONS } from "@/lib/shop/constants";
-import { lineTotalForQuantity } from "@/lib/shop/pricing";
+import {
+  cartSubtotal,
+  formatListingPrice,
+  listingPrice,
+} from "@/lib/shop/pricing";
 import type { Listing } from "@/lib/shop/types";
 import { MinecraftQuantityLabel } from "../components/MinecraftQuantityInputs";
 
@@ -67,11 +71,15 @@ export default function CheckoutPage() {
   }, []);
 
   const listingMap = new Map(listings.map((l) => [l.id, l]));
-  const subtotal = items.reduce((sum, item) => {
-    const listing = listingMap.get(item.listingId);
-    if (!listing) return sum;
-    return sum + lineTotalForQuantity(item.quantity, listing.price);
-  }, 0);
+  const subtotal = cartSubtotal(
+    items
+      .map((item) => {
+        const listing = listingMap.get(item.listingId);
+        if (!listing) return null;
+        return { quantity: item.quantity, price: listingPrice(listing) };
+      })
+      .filter((line): line is NonNullable<typeof line> => line !== null),
+  );
   const deliveryFee =
     fulfillmentType === "delivery"
       ? Math.ceil((subtotal * shopConfig.deliveryFeePercent) / 100)
@@ -128,7 +136,7 @@ export default function CheckoutPage() {
     return (
       <RetroShell title="CHECKOUT" showAudio={false}>
         <p style={{ textAlign: "center" }}>
-          Please log in with Discord to verify identity.
+          Please log in with Discord to receive order updates.
         </p>
         <center>
           <DiscordLoginButton returnTo="/shop/checkout" />
@@ -167,11 +175,9 @@ export default function CheckoutPage() {
                   <td style={{ backgroundColor: "#0a0a44" }}>
                     {listing.name}
                     <br />
+                    {formatListingPrice(listingPrice(listing), shopConfig.currency)}
+                    <br />
                     <MinecraftQuantityLabel total={item.quantity} />
-                  </td>
-                  <td align="right">
-                    {lineTotalForQuantity(item.quantity, listing.price)}{" "}
-                    {shopConfig.currency}
                   </td>
                 </tr>
               );
@@ -189,7 +195,7 @@ export default function CheckoutPage() {
               checked={fulfillmentType === "pickup"}
               onChange={() => setFulfillmentType("pickup")}
             />{" "}
-            Pickup (In Susland Plaza)
+            Pickup (Susland Plaza Red Tent: -266, 92, -288)
           </label>
           <br />
           <label>

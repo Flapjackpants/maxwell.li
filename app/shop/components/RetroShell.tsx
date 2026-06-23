@@ -34,7 +34,7 @@ export function RetroShell({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={titleImage}
-            alt={title}
+            alt=""
             style={{
               maxWidth: "min(100%, 420px)",
               height: "auto",
@@ -42,11 +42,10 @@ export function RetroShell({
               marginBottom: 8,
             }}
           />
-        ) : (
-          <h1 style={retroHeadingStyle}>
-            <span className={styles.blink}>{title}</span>
-          </h1>
-        )}
+        ) : null}
+        <h1 style={retroHeadingStyle}>
+          <span className={styles.blink}>{title}</span>
+        </h1>
         {subtitle ? (
           <div className={styles.marqueeWrap}>
             <div className={styles.marqueeTrack}>{subtitle}</div>

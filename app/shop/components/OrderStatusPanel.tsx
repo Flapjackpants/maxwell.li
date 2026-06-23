@@ -5,7 +5,7 @@ import {
   type OrderStatus,
 } from "@/lib/shop/order-status";
 import { PAYMENT_INSTRUCTIONS } from "@/lib/shop/constants";
-import { lineTotalForQuantity } from "@/lib/shop/pricing";
+import { formatListingPrice, listingPrice } from "@/lib/shop/pricing";
 import { retroTableBorder } from "@/lib/retro-theme";
 import { MinecraftQuantityLabel } from "./MinecraftQuantityInputs";
 import type { OrderItem } from "@/lib/shop/types";
@@ -20,6 +20,7 @@ type OrderView = {
   deliveryZ: number | null;
   deliveryDimension: string | null;
   pickupLocation: string | null;
+  estimatedReadyTime: string | null;
   total: number;
   dmFailed: boolean;
   buyerUsername: string;
@@ -35,6 +36,7 @@ export function OrderStatusPanel({ order, currency }: Props) {
   const columns = getKanbanColumns();
   const normalized = normalizeOrderStatus(order.status);
   const currentIdx = columns.indexOf(normalized);
+  const itemsSubtotal = order.total - order.deliveryFee;
 
   return (
     <>
@@ -75,6 +77,14 @@ export function OrderStatusPanel({ order, currency }: Props) {
         </p>
       ) : null}
 
+      {order.estimatedReadyTime &&
+      normalized !== "order_queued" &&
+      normalized !== "completed" ? (
+        <p style={{ background: "#330033", padding: 8, border: "2px ridge #f0f" }}>
+          <b>Estimated ready time:</b> {order.estimatedReadyTime}
+        </p>
+      ) : null}
+
       {normalized === "awaiting_pickup" && order.pickupLocation ? (
         <p style={{ background: "#003300", padding: 8, border: "2px ridge #0f0" }}>
           <b>Pickup location:</b> {order.pickupLocation}
@@ -97,27 +107,29 @@ export function OrderStatusPanel({ order, currency }: Props) {
               <td style={{ backgroundColor: "#0a0a44" }}>
                 {item.name}{" "}
                 <MinecraftQuantityLabel total={item.quantity} />
-              </td>
-              <td align="right">
-                {lineTotalForQuantity(item.quantity, item.price)} {currency}
+                <br />
+                <span style={{ fontSize: 12 }}>
+                  {formatListingPrice(listingPrice(item), currency)}
+                </span>
               </td>
             </tr>
           ))}
+          <tr>
+            <td align="right">
+              Subtotal: {itemsSubtotal} {currency}
+            </td>
+          </tr>
           {order.deliveryFee > 0 ? (
             <tr>
-              <td>Delivery fee</td>
               <td align="right">
-                {order.deliveryFee} {currency}
+                Delivery fee: {order.deliveryFee} {currency}
               </td>
             </tr>
           ) : null}
           <tr>
-            <td>
-              <b>Total</b>
-            </td>
             <td align="right">
               <b>
-                {order.total} {currency}
+                Total: {order.total} {currency}
               </b>
             </td>
           </tr>

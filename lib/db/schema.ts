@@ -21,8 +21,11 @@ export const listings = sqliteTable("listings", {
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
   price: integer("price").notNull(),
+  priceUnit: text("price_unit").notNull().default("stack"),
+  pricePerCount: integer("price_per_count").notNull().default(1),
   imageUrl: text("image_url").notNull().default(""),
   inStock: integer("in_stock", { mode: "boolean" }).notNull().default(true),
+  maxPurchaseQuantity: integer("max_purchase_quantity"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -36,7 +39,7 @@ export const orders = sqliteTable("orders", {
   userId: integer("user_id")
     .notNull()
     .references(() => users.id),
-  status: text("status").notNull().default("gathering_materials"),
+  status: text("status").notNull().default("order_queued"),
   fulfillmentType: text("fulfillment_type").notNull(),
   deliveryFee: integer("delivery_fee").notNull().default(0),
   deliveryX: integer("delivery_x"),
@@ -44,6 +47,7 @@ export const orders = sqliteTable("orders", {
   deliveryZ: integer("delivery_z"),
   deliveryDimension: text("delivery_dimension"),
   pickupLocation: text("pickup_location"),
+  estimatedReadyTime: text("estimated_ready_time"),
   total: integer("total").notNull(),
   dmFailed: integer("dm_failed", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
@@ -64,5 +68,7 @@ export const orderItems = sqliteTable("order_items", {
   }),
   name: text("name").notNull(),
   price: integer("price").notNull(),
+  priceUnit: text("price_unit").notNull().default("stack"),
+  pricePerCount: integer("price_per_count").notNull().default(1),
   quantity: integer("quantity").notNull(),
 });

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings } from "@/lib/db/schema";
+import { PRICE_UNITS } from "@/lib/shop/pricing";
 
 function mapListing(row: typeof listings.$inferSelect) {
   return {
@@ -10,8 +11,11 @@ function mapListing(row: typeof listings.$inferSelect) {
     name: row.name,
     description: row.description,
     price: row.price,
+    priceUnit: row.priceUnit,
+    pricePerCount: row.pricePerCount,
     imageUrl: row.imageUrl,
     inStock: row.inStock,
+    maxPurchaseQuantity: row.maxPurchaseQuantity,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -22,13 +26,30 @@ export async function GET() {
   return NextResponse.json(rows.map(mapListing));
 }
 
-const createSchema = z.object({
-  name: z.string().min(1).max(200),
-  description: z.string().max(2000).optional(),
+const priceFields = {
   price: z.number().int().min(0),
-  imageUrl: z.string().max(2000).optional(),
-  inStock: z.boolean().optional(),
-});
+  priceUnit: z.enum(PRICE_UNITS),
+  pricePerCount: z.number().int().min(1).max(1_000_000),
+};
+
+const createSchema = z
+  .object({
+    name: z.string().min(1).max(200),
+    description: z.string().max(2000).optional(),
+    ...priceFields,
+    imageUrl: z.string().max(2000).optional(),
+    inStock: z.boolean().optional(),
+    maxPurchaseQuantity: z.number().int().min(1).max(1_000_000_000).nullable(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.maxPurchaseQuantity !== null && data.maxPurchaseQuantity < 1) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Capped quantity must be at least 1",
+        path: ["maxPurchaseQuantity"],
+      });
+    }
+  });
 
 export async function POST(request: Request) {
   const { error } = await requireAdmin();
@@ -46,8 +67,11 @@ export async function POST(request: Request) {
       name: parsed.data.name,
       description: parsed.data.description ?? "",
       price: parsed.data.price,
+      priceUnit: parsed.data.priceUnit,
+      pricePerCount: parsed.data.pricePerCount,
       imageUrl: parsed.data.imageUrl ?? "",
       inStock: parsed.data.inStock ?? true,
+      maxPurchaseQuantity: parsed.data.maxPurchaseQuantity ?? null,
       updatedAt: new Date(),
     })
     .returning();

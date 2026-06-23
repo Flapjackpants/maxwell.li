@@ -15,6 +15,20 @@
       "when": 1782245239557,
       "tag": "0001_adorable_rhodey",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782400000000,
+      "tag": "0002_flexible_listing_prices",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1782500000000,
+      "tag": "0003_purchase_limits_order_queued",
+      "breakpoints": true
     }
   ]
 }

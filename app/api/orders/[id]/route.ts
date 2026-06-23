@@ -42,6 +42,8 @@ export async function GET(
       listingId: r.item!.listingId,
       name: r.item!.name,
       price: r.item!.price,
+      priceUnit: r.item!.priceUnit,
+      pricePerCount: r.item!.pricePerCount,
       quantity: r.item!.quantity,
     }));
 
@@ -56,6 +58,7 @@ export async function GET(
     deliveryZ: order.deliveryZ,
     deliveryDimension: order.deliveryDimension as MinecraftDimension | null,
     pickupLocation: order.pickupLocation,
+    estimatedReadyTime: order.estimatedReadyTime,
     total: order.total,
     dmFailed: order.dmFailed,
     createdAt: order.createdAt,
