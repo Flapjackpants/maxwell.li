@@ -116,7 +116,7 @@ export default function AdminListingsPage() {
           <p>
             <input
               type="number"
-              placeholder="Price"
+              placeholder="Price per stack (64 items)"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               style={retroInputStyle}
@@ -163,7 +163,7 @@ export default function AdminListingsPage() {
           {listings.map((listing) => (
             <tr key={listing.id}>
               <td style={{ backgroundColor: "#0a0a44" }}>
-                <b>{listing.name}</b> — {listing.price} {currency}
+                <b>{listing.name}</b> — {listing.price} {currency} / stack
                 <br />
                 {listing.inStock ? (
                   <span style={{ color: "#0f0" }}>IN STOCK</span>

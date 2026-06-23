@@ -39,7 +39,7 @@ export function ListingCard({ listing, currency }: Props) {
                 )}
                 <p>{listing.description}</p>
                 <p>
-                  <b>Price:</b> {listing.price} {currency} per item
+                  <b>Price:</b> {listing.price} {currency} per stack (64 items)
                 </p>
                 <button
                   type="button"

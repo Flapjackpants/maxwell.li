@@ -13,6 +13,7 @@ import {
   retroTableBorder,
 } from "@/lib/retro-theme";
 import { MINECRAFT_DIMENSIONS } from "@/lib/shop/constants";
+import { lineTotalForQuantity } from "@/lib/shop/pricing";
 import type { Listing } from "@/lib/shop/types";
 import { MinecraftQuantityLabel } from "../components/MinecraftQuantityInputs";
 
@@ -68,11 +69,12 @@ export default function CheckoutPage() {
   const listingMap = new Map(listings.map((l) => [l.id, l]));
   const subtotal = items.reduce((sum, item) => {
     const listing = listingMap.get(item.listingId);
-    return sum + (listing?.price ?? 0) * item.quantity;
+    if (!listing) return sum;
+    return sum + lineTotalForQuantity(item.quantity, listing.price);
   }, 0);
   const deliveryFee =
     fulfillmentType === "delivery"
-      ? Math.round((subtotal * shopConfig.deliveryFeePercent) / 100)
+      ? Math.ceil((subtotal * shopConfig.deliveryFeePercent) / 100)
       : 0;
   const total = subtotal + deliveryFee;
 
@@ -168,7 +170,8 @@ export default function CheckoutPage() {
                     <MinecraftQuantityLabel total={item.quantity} />
                   </td>
                   <td align="right">
-                    {listing.price * item.quantity} {shopConfig.currency}
+                    {lineTotalForQuantity(item.quantity, listing.price)}{" "}
+                    {shopConfig.currency}
                   </td>
                 </tr>
               );

@@ -2,6 +2,7 @@ import Link from "next/link";
 import styles from "@/app/retro/retro.module.css";
 import { RetroBackgroundAudio } from "@/app/retro/RetroBackgroundAudio";
 import { ShopAuthBar } from "@/app/shop/components/ShopAuthBar";
+import { RetroFireStrip } from "@/app/shop/components/RetroFireStrip";
 import {
   retroHeadingStyle,
   retroHrDashed,
@@ -51,6 +52,7 @@ export function RetroShell({
             <div className={styles.marqueeTrack}>{subtitle}</div>
           </div>
         ) : null}
+        <RetroFireStrip />
       </center>
 
       <p style={{ textAlign: "center" }}>
@@ -60,10 +62,6 @@ export function RetroShell({
         {" | "}
         <Link href="/shop/cart" style={retroLinkStyle}>
           Cart
-        </Link>
-        {" | "}
-        <Link href="/retro" style={retroLinkStyle}>
-          Home
         </Link>
       </p>
 

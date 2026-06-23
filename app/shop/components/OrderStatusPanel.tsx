@@ -5,6 +5,7 @@ import {
   type OrderStatus,
 } from "@/lib/shop/order-status";
 import { PAYMENT_INSTRUCTIONS } from "@/lib/shop/constants";
+import { lineTotalForQuantity } from "@/lib/shop/pricing";
 import { retroTableBorder } from "@/lib/retro-theme";
 import { MinecraftQuantityLabel } from "./MinecraftQuantityInputs";
 import type { OrderItem } from "@/lib/shop/types";
@@ -98,7 +99,7 @@ export function OrderStatusPanel({ order, currency }: Props) {
                 <MinecraftQuantityLabel total={item.quantity} />
               </td>
               <td align="right">
-                {item.price * item.quantity} {currency}
+                {lineTotalForQuantity(item.quantity, item.price)} {currency}
               </td>
             </tr>
           ))}

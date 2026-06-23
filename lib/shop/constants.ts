@@ -14,7 +14,7 @@ export function getDeliveryFeePercent(): number {
 }
 
 export function calculateDeliveryFee(subtotal: number): number {
-  return Math.round((subtotal * getDeliveryFeePercent()) / 100);
+  return Math.ceil((subtotal * getDeliveryFeePercent()) / 100);
 }
 
 export const PAYMENT_INSTRUCTIONS =

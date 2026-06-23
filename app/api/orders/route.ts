@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems, orders, users } from "@/lib/db/schema";
 import { calculateDeliveryFee } from "@/lib/shop/constants";
+import { lineTotalForQuantity } from "@/lib/shop/pricing";
 import type { MinecraftDimension } from "@/lib/shop/constants";
 
 async function fetchOrderWithDetails(orderId: string) {
@@ -185,7 +186,7 @@ export async function POST(request: Request) {
 
   const subtotal = items.reduce((sum, item) => {
     const listing = listingMap.get(item.listingId)!;
-    return sum + listing.price * item.quantity;
+    return sum + lineTotalForQuantity(item.quantity, listing.price);
   }, 0);
 
   const deliveryFee =
