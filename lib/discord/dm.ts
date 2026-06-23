@@ -1,3 +1,4 @@
+import { getAppOrigin } from "@/lib/app-url";
 import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/shop/order-status";
 
 const DISCORD_API = "https://discord.com/api/v10";
@@ -9,7 +10,7 @@ function getBotToken(): string {
 }
 
 function getAppUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return getAppOrigin();
 }
 
 export type DmResult = { ok: true } | { ok: false; reason: string };

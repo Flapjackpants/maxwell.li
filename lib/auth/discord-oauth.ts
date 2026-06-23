@@ -1,3 +1,5 @@
+import { getDiscordRedirectUri } from "@/lib/app-url";
+
 const DISCORD_API = "https://discord.com/api/v10";
 
 export type DiscordUser = {
@@ -19,7 +21,7 @@ function requireEnv(name: string): string {
 
 export function getDiscordAuthorizeUrl(state: string): string {
   const clientId = requireEnv("DISCORD_CLIENT_ID");
-  const redirectUri = requireEnv("DISCORD_REDIRECT_URI");
+  const redirectUri = getDiscordRedirectUri();
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -33,7 +35,7 @@ export function getDiscordAuthorizeUrl(state: string): string {
 export async function exchangeDiscordCode(code: string): Promise<string> {
   const clientId = requireEnv("DISCORD_CLIENT_ID");
   const clientSecret = requireEnv("DISCORD_CLIENT_SECRET");
-  const redirectUri = requireEnv("DISCORD_REDIRECT_URI");
+  const redirectUri = getDiscordRedirectUri();
 
   const res = await fetch(`${DISCORD_API}/oauth2/token`, {
     method: "POST",

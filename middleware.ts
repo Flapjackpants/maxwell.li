@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { appUrl } from "@/lib/app-url";
 import { SESSION_COOKIE, verifySessionTokenEdge } from "@/lib/auth/session";
 
 export async function middleware(request: NextRequest) {
@@ -12,14 +13,14 @@ export async function middleware(request: NextRequest) {
 
   if (!token) {
     return NextResponse.redirect(
-      new URL(`/shop?error=admin_required&returnTo=${returnTo}`, request.url),
+      appUrl(`/shop?error=admin_required&returnTo=${returnTo}`),
     );
   }
 
   const session = await verifySessionTokenEdge(token);
   if (!session?.isAdmin) {
     return NextResponse.redirect(
-      new URL(`/shop?error=admin_required&returnTo=${returnTo}`, request.url),
+      appUrl(`/shop?error=admin_required&returnTo=${returnTo}`),
     );
   }
 

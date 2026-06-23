@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { appUrl } from "@/lib/app-url";
 import {
   discordAvatarUrl,
   exchangeDiscordCode,
@@ -14,8 +15,8 @@ import { DISCORD_INVITE_URL } from "@/lib/shop/constants";
 
 export const dynamic = "force-dynamic";
 
-function redirectWithError(request: Request, error: string) {
-  return NextResponse.redirect(new URL(`/shop?error=${error}`, request.url));
+function redirectWithError(error: string) {
+  return NextResponse.redirect(appUrl(`/shop?error=${error}`));
 }
 
 export async function handleDiscordCallback(request: Request) {
@@ -37,7 +38,7 @@ export async function handleDiscordCallback(request: Request) {
   }
 
   if (oauthError || !code) {
-    return redirectWithError(request, "discord_denied");
+    return redirectWithError("discord_denied");
   }
 
   try {
@@ -50,9 +51,8 @@ export async function handleDiscordCallback(request: Request) {
     const guildId = getRequiredGuildId();
     if (!isGuildMember(guilds, guildId)) {
       return NextResponse.redirect(
-        new URL(
+        appUrl(
           `/shop?error=not_in_guild&invite=${encodeURIComponent(DISCORD_INVITE_URL)}`,
-          request.url,
         ),
       );
     }
@@ -98,12 +98,12 @@ export async function handleDiscordCallback(request: Request) {
       isAdmin: isAdmin || existing[0]?.isAdmin === true,
     });
 
-    const response = NextResponse.redirect(new URL(returnTo, request.url));
+    const response = NextResponse.redirect(appUrl(returnTo));
     const cookie = sessionCookieOptions(token);
     response.cookies.set(cookie);
     return response;
   } catch (err) {
     console.error("Discord OAuth callback error:", err);
-    return redirectWithError(request, "auth_failed");
+    return redirectWithError("auth_failed");
   }
 }
