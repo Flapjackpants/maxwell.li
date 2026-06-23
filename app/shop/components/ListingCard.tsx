@@ -58,9 +58,9 @@ export function ListingCard({ listing }: Props) {
             opacity: listing.inStock ? 1 : 0.5,
           }}
           disabled={!listing.inStock}
-          onClick={() => addItem(listing.id, 1)}
+          onClick={() => addItem(listing.id, 1, listing.name)}
         >
-          [ ADD 2 CART ]
+          [ ADD TO CART ]
         </button>
       </td>
     </tr>

@@ -9,12 +9,13 @@ import {
   useState,
 } from "react";
 import type { CartItem } from "@/lib/shop/types";
+import { CartAddedToast } from "./CartAddedToast";
 
 const STORAGE_KEY = "shop_cart";
 
 type CartContextValue = {
   items: CartItem[];
-  addItem: (listingId: number, quantity?: number) => void;
+  addItem: (listingId: number, quantity?: number, itemName?: string) => void;
   removeItem: (listingId: number) => void;
   setQuantity: (listingId: number, quantity: number) => void;
   clearCart: () => void;
@@ -43,6 +44,7 @@ function saveCart(items: CartItem[]) {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [addedToast, setAddedToast] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = loadCart();
@@ -56,19 +58,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (hydrated) saveCart(items);
   }, [items, hydrated]);
 
-  const addItem = useCallback((listingId: number, quantity = 1) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.listingId === listingId);
-      if (existing) {
-        return prev.map((i) =>
-          i.listingId === listingId
-            ? { ...i, quantity: i.quantity + quantity }
-            : i,
-        );
-      }
-      return [...prev, { listingId, quantity }];
-    });
-  }, []);
+  const addItem = useCallback(
+    (listingId: number, quantity = 1, itemName?: string) => {
+      setItems((prev) => {
+        const existing = prev.find((i) => i.listingId === listingId);
+        if (existing) {
+          return prev.map((i) =>
+            i.listingId === listingId
+              ? { ...i, quantity: i.quantity + quantity }
+              : i,
+          );
+        }
+        return [...prev, { listingId, quantity }];
+      });
+      if (itemName) setAddedToast(itemName);
+    },
+    [],
+  );
 
   const removeItem = useCallback((listingId: number) => {
     setItems((prev) => prev.filter((i) => i.listingId !== listingId));
@@ -104,7 +110,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [items, addItem, removeItem, setQuantity, clearCart, itemCount, hydrated],
   );
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      {addedToast ? (
+        <CartAddedToast
+          itemName={addedToast}
+          onDismiss={() => setAddedToast(null)}
+        />
+      ) : null}
+    </CartContext.Provider>
+  );
 }
 
 export function useCart() {

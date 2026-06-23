@@ -89,7 +89,7 @@ export default function CartPage() {
           </p>
           <center>
             <Link href="/shop/checkout" style={{ ...retroLinkStyle, fontSize: 18 }}>
-              [ PROCEED 2 CHECKOUT ]
+              [ PROCEED TO CHECKOUT ]
             </Link>
           </center>
         </>
