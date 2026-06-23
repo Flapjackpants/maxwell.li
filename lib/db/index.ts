@@ -5,11 +5,10 @@ import { getDatabaseAuthToken, getDatabaseUrl } from "./env";
 
 function createDb() {
   const url = getDatabaseUrl() ?? "file:local.db";
-  const authToken = getDatabaseAuthToken();
 
   const client = createClient({
     url,
-    authToken,
+    authToken: getDatabaseAuthToken(),
   });
 
   return drizzle(client, { schema });

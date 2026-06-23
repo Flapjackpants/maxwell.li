@@ -13,6 +13,10 @@ export function getDatabaseAuthToken(): string | undefined {
   return normalized || undefined;
 }
 
+export function requiresAuthToken(url: string): boolean {
+  return url.startsWith("libsql:") || url.startsWith("https:") || url.startsWith("http:");
+}
+
 export function getDatabaseEnvDiagnostics(): string {
   const keys = [
     "DATABASE_URL",
@@ -31,22 +35,30 @@ export function describeDatabaseConfig(): string {
     return [
       "DATABASE_URL is not set.",
       `Checked: ${getDatabaseEnvDiagnostics()}`,
-      "For Turso in production, set these as **runtime** variables on your hosting service:",
+      "Set these as runtime variables on your Railway service, then redeploy:",
       "  DATABASE_URL=libsql://your-database.turso.io",
       "  DATABASE_AUTH_TOKEN=your-turso-token",
-      "Turso also accepts TURSO_DATABASE_URL and TURSO_AUTH_TOKEN.",
-      "On Railway: open your service → Variables → ensure scope includes Deploy/Runtime, then redeploy.",
     ].join("\n");
   }
 
   if (process.env.NODE_ENV === "production" && url.startsWith("file:")) {
     return [
       `DATABASE_URL is "${url}", which only works locally.`,
-      "In production, use your Turso libsql URL instead:",
-      "  DATABASE_URL=libsql://your-database.turso.io",
-      "  DATABASE_AUTH_TOKEN=your-turso-token",
+      "In production, use your Turso libsql URL instead.",
     ].join("\n");
   }
 
   return "";
+}
+
+export function getDatabaseConfigError(): string | null {
+  const configError = describeDatabaseConfig();
+  if (configError) return configError;
+
+  const url = getDatabaseUrl()!;
+  if (requiresAuthToken(url) && !getDatabaseAuthToken()) {
+    return "DATABASE_AUTH_TOKEN is required for remote Turso databases.";
+  }
+
+  return null;
 }

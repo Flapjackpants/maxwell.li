@@ -1,6 +1,8 @@
 [build]
 builder = "nixpacks"
+buildCommand = "npm run build"
 
 [deploy]
-startCommand = "next start"
+preDeployCommand = "node scripts/migrate.mjs"
+startCommand = "next start --port $PORT"
 restartPolicyType = "on_failure"
