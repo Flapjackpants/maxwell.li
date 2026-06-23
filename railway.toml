@@ -1,7 +1,3 @@
-[build]
-builder = "nixpacks"
-buildCommand = "npm run build"
-
 [deploy]
 preDeployCommand = "node scripts/migrate.mjs"
 startCommand = "next start --port $PORT"
