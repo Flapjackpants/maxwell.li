@@ -58,9 +58,9 @@ export default async function ShopPage({
 
   return (
     <RetroShell
-      title="Or head to the Susland Plaza (-266, 92, -288) for our brick-and-mortar shopping experience!"
+      title="the most UMAZING shopping experience"
       titleImage={SHOP_TITLE_IMAGE}
-      subtitle="the most UMAZING shopping experience"
+      subtitle="Or head to the Susland Plaza (-266, 92, -288) for our brick-and-mortar shopping experience!"
       showAudio={false}
     >
       {errorMsg ? <ShopErrorBanner message={errorMsg} /> : null}

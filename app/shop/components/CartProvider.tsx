@@ -18,6 +18,9 @@ type CartContextValue = {
   addItem: (listingId: number, quantity?: number, itemName?: string) => void;
   removeItem: (listingId: number) => void;
   setQuantity: (listingId: number, quantity: number) => void;
+  mergeCartQuantities: (
+    updates: { listingId: number; quantity: number }[],
+  ) => void;
   clearCart: () => void;
   itemCount: number;
   hydrated: boolean;
@@ -93,6 +96,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  const mergeCartQuantities = useCallback(
+    (updates: { listingId: number; quantity: number }[]) => {
+      if (updates.length === 0) return;
+      setItems((prev) => {
+        const next = new Map(prev.map((item) => [item.listingId, item]));
+        for (const { listingId, quantity } of updates) {
+          if (quantity <= 0) {
+            next.delete(listingId);
+          } else {
+            next.set(listingId, { listingId, quantity });
+          }
+        }
+        return [...next.values()];
+      });
+    },
+    [],
+  );
+
   const clearCart = useCallback(() => setItems([]), []);
 
   const itemCount = useMemo(
@@ -106,11 +127,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       addItem,
       removeItem,
       setQuantity,
+      mergeCartQuantities,
       clearCart,
       itemCount,
       hydrated,
     }),
-    [items, addItem, removeItem, setQuantity, clearCart, itemCount, hydrated],
+    [items, addItem, removeItem, setQuantity, mergeCartQuantities, clearCart, itemCount, hydrated],
   );
 
   return (

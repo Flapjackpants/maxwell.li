@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { retroInputStyle } from "@/lib/retro-theme";
 import type { Listing } from "@/lib/shop/types";
 import { ListingCard } from "./ListingCard";
+import { MaterialListImport } from "./MaterialListImport";
 
 type Props = {
   listings: Listing[];
@@ -25,6 +26,8 @@ export function ShopCatalog({ listings, currency }: Props) {
 
   return (
     <>
+      <MaterialListImport listings={listings} />
+
       <p style={{ textAlign: "center", marginBottom: 16 }}>
         <label>
           <span style={{ color: "#0ff", fontWeight: "bold" }}>Search: </span>
