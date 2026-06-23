@@ -13,6 +13,8 @@ import { users } from "@/lib/db/schema";
 import { getRequiredGuildId, isGuildMember } from "@/lib/discord/guild";
 import { DISCORD_INVITE_URL } from "@/lib/shop/constants";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");

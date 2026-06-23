@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getDiscordAuthorizeUrl } from "@/lib/auth/discord-oauth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const returnTo = searchParams.get("returnTo") ?? "/shop";
