@@ -14,15 +14,34 @@ function getAppUrl(): string {
 
 export type DmResult = { ok: true } | { ok: false; reason: string };
 
+function buildStatusMessage(
+  orderId: string,
+  status: OrderStatus,
+  pickupLocation?: string,
+): string {
+  const orderUrl = `${getAppUrl()}/shop/orders/${orderId}`;
+  const shortId = orderId.slice(0, 8);
+
+  if (status === "awaiting_pickup" && pickupLocation) {
+    return `**Order update** (#${shortId})\nYour order is awaiting pickup at **${pickupLocation}**.\nView your order: ${orderUrl}`;
+  }
+
+  const label = ORDER_STATUS_LABELS[status];
+  return `**Order update** (#${shortId})\nStatus: **${label}**\nView your order: ${orderUrl}`;
+}
+
 export async function sendOrderStatusDm(
   discordUserId: string,
   orderId: string,
   status: OrderStatus,
+  options?: { pickupLocation?: string },
 ): Promise<DmResult> {
   const token = getBotToken();
-  const label = ORDER_STATUS_LABELS[status];
-  const orderUrl = `${getAppUrl()}/shop/orders/${orderId}`;
-  const content = `**Order update** (#${orderId.slice(0, 8)})\nStatus: **${label}**\nView your order: ${orderUrl}`;
+  const content = buildStatusMessage(
+    orderId,
+    status,
+    options?.pickupLocation,
+  );
 
   try {
     const channelRes = await fetch(`${DISCORD_API}/users/${discordUserId}/channels`, {

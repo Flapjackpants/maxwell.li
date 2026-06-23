@@ -5,7 +5,7 @@ import { OrderStatusPanel } from "../../components/OrderStatusPanel";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { orderItems, orders, users } from "@/lib/db/schema";
-import type { MinecraftDimension } from "@/lib/shop/constants";
+import { getCurrency, type MinecraftDimension } from "@/lib/shop/constants";
 import type { OrderItem } from "@/lib/shop/types";
 
 async function getOrder(id: string, userId: number, isAdmin: boolean) {
@@ -75,7 +75,7 @@ export default async function OrderPage({
       title="ORDER STATUS"
       subtitle={`Order #${order.id.slice(0, 8)}`}
     >
-      <OrderStatusPanel order={order} />
+      <OrderStatusPanel order={order} currency={getCurrency()} />
     </RetroShell>
   );
 }

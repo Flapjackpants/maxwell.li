@@ -3,14 +3,20 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
-import { listings, orderItems, orders, users } from "@/lib/db/schema";
+import { orders, users } from "@/lib/db/schema";
 import { sendOrderStatusDm } from "@/lib/discord/dm";
 import {
   getNextStatus,
   isValidStatus,
-  type FulfillmentType,
+  normalizeOrderStatus,
   type OrderStatus,
 } from "@/lib/shop/order-status";
+
+const patchSchema = z.object({
+  action: z.enum(["advance", "set"]),
+  status: z.string().optional(),
+  pickupLocation: z.string().min(1).max(500).optional(),
+});
 
 export async function PATCH(
   request: Request,
@@ -21,9 +27,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
-  const parsed = z
-    .object({ action: z.enum(["advance", "set"]), status: z.string().optional() })
-    .safeParse(body);
+  const parsed = patchSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -45,11 +49,14 @@ export async function PATCH(
   }
 
   const { order, discordId } = row;
-  const fulfillmentType = order.fulfillmentType as FulfillmentType;
   let newStatus: OrderStatus | null;
 
+  const currentStatus = isValidStatus(order.status)
+    ? (order.status as OrderStatus)
+    : normalizeOrderStatus(order.status);
+
   if (parsed.data.action === "advance") {
-    newStatus = getNextStatus(order.status as OrderStatus, fulfillmentType);
+    newStatus = getNextStatus(currentStatus);
     if (!newStatus) {
       return NextResponse.json({ error: "No next status" }, { status: 400 });
     }
@@ -62,27 +69,36 @@ export async function PATCH(
 
   const previousStatus = order.status as OrderStatus;
 
-  // Decrement stock when moving to paid
-  if (previousStatus === "pending_payment" && newStatus === "paid") {
-    const items = await db
-      .select()
-      .from(orderItems)
-      .where(eq(orderItems.orderId, id));
-
-    for (const item of items) {
-      const listingRows = await db
-        .select()
-        .from(listings)
-        .where(eq(listings.id, item.listingId))
-        .limit(1);
-      const listing = listingRows[0];
-      if (!listing?.inStock) {
-        return NextResponse.json(
-          { error: `${item.name} is no longer in stock` },
-          { status: 400 },
-        );
-      }
+  if (newStatus === "awaiting_pickup") {
+    const location = parsed.data.pickupLocation?.trim();
+    if (!location) {
+      return NextResponse.json(
+        { error: "Pickup location is required when advancing to awaiting pickup" },
+        { status: 400 },
+      );
     }
+
+    await db
+      .update(orders)
+      .set({
+        status: newStatus,
+        pickupLocation: location,
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, id));
+
+    const dmResult = await sendOrderStatusDm(discordId, id, newStatus, {
+      pickupLocation: location,
+    });
+    if (!dmResult.ok) {
+      console.warn("DM failed for order", id, dmResult.reason);
+      await db
+        .update(orders)
+        .set({ dmFailed: true })
+        .where(eq(orders.id, id));
+    }
+
+    return NextResponse.json({ id, status: newStatus, pickupLocation: location });
   }
 
   await db

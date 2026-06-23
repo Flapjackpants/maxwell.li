@@ -4,7 +4,7 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems, orders, users } from "@/lib/db/schema";
-import { getDeliveryFee, getPickupLocation } from "@/lib/shop/constants";
+import { calculateDeliveryFee } from "@/lib/shop/constants";
 import type { MinecraftDimension } from "@/lib/shop/constants";
 
 async function fetchOrderWithDetails(orderId: string) {
@@ -188,14 +188,15 @@ export async function POST(request: Request) {
     return sum + listing.price * item.quantity;
   }, 0);
 
-  const deliveryFee = fulfillmentType === "delivery" ? getDeliveryFee() : 0;
+  const deliveryFee =
+    fulfillmentType === "delivery" ? calculateDeliveryFee(subtotal) : 0;
   const total = subtotal + deliveryFee;
   const orderId = crypto.randomUUID();
 
   await db.insert(orders).values({
     id: orderId,
     userId: session!.userId,
-    status: "pending_payment",
+    status: "gathering_materials",
     fulfillmentType,
     deliveryFee,
     deliveryX: fulfillmentType === "delivery" ? parsed.data.deliveryX! : null,
@@ -203,8 +204,7 @@ export async function POST(request: Request) {
     deliveryZ: fulfillmentType === "delivery" ? parsed.data.deliveryZ! : null,
     deliveryDimension:
       fulfillmentType === "delivery" ? parsed.data.deliveryDimension! : null,
-    pickupLocation:
-      fulfillmentType === "pickup" ? getPickupLocation() : null,
+    pickupLocation: null,
     total,
     updatedAt: new Date(),
   });

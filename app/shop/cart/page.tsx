@@ -14,13 +14,22 @@ import type { Listing } from "@/lib/shop/types";
 export default function CartPage() {
   const { items, setQuantity, removeItem, itemCount } = useCart();
   const [listings, setListings] = useState<Listing[]>([]);
+  const [currency, setCurrency] = useState("emeralds");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/listings")
-      .then((r) => r.json())
-      .then((data: Listing[]) => setListings(data))
-      .finally(() => setLoading(false));
+    void (async () => {
+      const [listingsRes, configRes] = await Promise.all([
+        fetch("/api/listings"),
+        fetch("/api/shop/config"),
+      ]);
+      if (listingsRes.ok) setListings(await listingsRes.json());
+      if (configRes.ok) {
+        const config = (await configRes.json()) as { currency: string };
+        setCurrency(config.currency);
+      }
+      setLoading(false);
+    })();
   }, []);
 
   const listingMap = new Map(listings.map((l) => [l.id, l]));
@@ -50,7 +59,7 @@ export default function CartPage() {
                 return (
                   <tr key={item.listingId}>
                     <td style={{ backgroundColor: "#0a0a44" }}>
-                      <b>{listing.name}</b> — {listing.price} gold blocks/e-pearls per item
+                      <b>{listing.name}</b> — {listing.price} {currency} per item
                       <br />
                       <MinecraftQuantityLabel total={item.quantity} />
                       <br />
@@ -71,7 +80,7 @@ export default function CartPage() {
                       </button>
                     </td>
                     <td align="right" style={{ backgroundColor: "#111166" }}>
-                      {listing.price * item.quantity}
+                      {listing.price * item.quantity} {currency}
                     </td>
                   </tr>
                 );
@@ -79,7 +88,9 @@ export default function CartPage() {
             </tbody>
           </table>
           <p style={{ textAlign: "right", fontSize: 18 }}>
-            <b>Subtotal: {subtotal} gold blocks/e-pearls</b>
+            <b>
+              Subtotal: {subtotal} {currency}
+            </b>
           </p>
           <center>
             <Link href="/shop/checkout" style={{ ...retroLinkStyle, fontSize: 18 }}>

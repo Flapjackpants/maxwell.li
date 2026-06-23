@@ -22,6 +22,14 @@ export default function AdminListingsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [currency, setCurrency] = useState("emeralds");
+
+  useEffect(() => {
+    void fetch("/api/shop/config")
+      .then((r) => r.json())
+      .then((data: { currency: string }) => setCurrency(data.currency));
+  }, []);
+
   useEffect(() => {
     void fetch("/api/listings")
       .then((r) => r.json())
@@ -155,7 +163,7 @@ export default function AdminListingsPage() {
           {listings.map((listing) => (
             <tr key={listing.id}>
               <td style={{ backgroundColor: "#0a0a44" }}>
-                <b>{listing.name}</b> — {listing.price} gold blocks/e-pearls
+                <b>{listing.name}</b> — {listing.price} {currency}
                 <br />
                 {listing.inStock ? (
                   <span style={{ color: "#0f0" }}>IN STOCK</span>

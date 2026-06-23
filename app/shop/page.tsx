@@ -5,6 +5,7 @@ import { AdminLoginPrompt } from "./components/ShopAuthBar";
 import { db } from "@/lib/db";
 import { listings } from "@/lib/db/schema";
 import { retroTableBorder } from "@/lib/retro-theme";
+import { getCurrency } from "@/lib/shop/constants";
 import type { Listing } from "@/lib/shop/types";
 
 function mapListing(row: typeof listings.$inferSelect): Listing {
@@ -49,6 +50,7 @@ export default async function ShopPage({
 
   const catalog = rows.map(mapListing);
   const errorMsg = params.error ? ERROR_MESSAGES[params.error] : null;
+  const currency = getCurrency();
 
   return (
     <RetroShell
@@ -73,7 +75,7 @@ export default async function ShopPage({
         <table width="100%" cellPadding={6} style={retroTableBorder}>
           <tbody>
             {catalog.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
+              <ListingCard key={listing.id} listing={listing} currency={currency} />
             ))}
           </tbody>
         </table>

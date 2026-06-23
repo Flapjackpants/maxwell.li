@@ -1,10 +1,12 @@
 import {
   ORDER_STATUS_LABELS,
   getKanbanColumns,
+  normalizeOrderStatus,
   type OrderStatus,
 } from "@/lib/shop/order-status";
 import { PAYMENT_INSTRUCTIONS } from "@/lib/shop/constants";
 import { retroTableBorder } from "@/lib/retro-theme";
+import { MinecraftQuantityLabel } from "./MinecraftQuantityInputs";
 import type { OrderItem } from "@/lib/shop/types";
 
 type OrderView = {
@@ -23,9 +25,15 @@ type OrderView = {
   items: OrderItem[];
 };
 
-export function OrderStatusPanel({ order }: { order: OrderView }) {
-  const columns = getKanbanColumns(order.fulfillmentType);
-  const currentIdx = columns.indexOf(order.status as OrderStatus);
+type Props = {
+  order: OrderView;
+  currency: string;
+};
+
+export function OrderStatusPanel({ order, currency }: Props) {
+  const columns = getKanbanColumns();
+  const normalized = normalizeOrderStatus(order.status);
+  const currentIdx = columns.indexOf(normalized);
 
   return (
     <>
@@ -37,13 +45,13 @@ export function OrderStatusPanel({ order }: { order: OrderView }) {
 
       <p>
         <b>Status:</b>{" "}
-        {ORDER_STATUS_LABELS[order.status as OrderStatus] ?? order.status}
+        {ORDER_STATUS_LABELS[normalized as OrderStatus] ?? order.status}
       </p>
 
       <table cellPadding={4} style={{ ...retroTableBorder, marginBottom: 12 }}>
         <tbody>
           {columns.map((status, idx) => {
-            const done = idx <= currentIdx;
+            const done = currentIdx >= 0 && idx <= currentIdx;
             return (
               <tr key={status}>
                 <td
@@ -60,17 +68,25 @@ export function OrderStatusPanel({ order }: { order: OrderView }) {
         </tbody>
       </table>
 
-      {order.status === "pending_payment" ? (
+      {normalized === "awaiting_payment" ? (
         <p style={{ background: "#440044", padding: 8, border: "2px dotted #ff0" }}>
           <b>Payment instructions:</b> {PAYMENT_INSTRUCTIONS}
         </p>
       ) : null}
 
+      {normalized === "awaiting_pickup" && order.pickupLocation ? (
+        <p style={{ background: "#003300", padding: 8, border: "2px ridge #0f0" }}>
+          <b>Pickup location:</b> {order.pickupLocation}
+        </p>
+      ) : null}
+
       <p>
         <b>Fulfillment:</b>{" "}
-        {order.fulfillmentType === "pickup"
-          ? `Pickup at ${order.pickupLocation}`
-          : `Delivery to ${order.deliveryX}, ${order.deliveryY}, ${order.deliveryZ} (${order.deliveryDimension})`}
+        {order.fulfillmentType === "delivery"
+          ? `Delivery to ${order.deliveryX}, ${order.deliveryY}, ${order.deliveryZ} (${order.deliveryDimension})`
+          : order.pickupLocation
+            ? `Pickup at ${order.pickupLocation}`
+            : "Pickup — location will be sent when your order is ready"}
       </p>
 
       <table width="100%" cellPadding={6} style={retroTableBorder}>
@@ -78,15 +94,20 @@ export function OrderStatusPanel({ order }: { order: OrderView }) {
           {order.items.map((item) => (
             <tr key={item.id}>
               <td style={{ backgroundColor: "#0a0a44" }}>
-                {item.name} x{item.quantity}
+                {item.name}{" "}
+                <MinecraftQuantityLabel total={item.quantity} />
               </td>
-              <td align="right">{item.price * item.quantity}</td>
+              <td align="right">
+                {item.price * item.quantity} {currency}
+              </td>
             </tr>
           ))}
           {order.deliveryFee > 0 ? (
             <tr>
               <td>Delivery fee</td>
-              <td align="right">{order.deliveryFee}</td>
+              <td align="right">
+                {order.deliveryFee} {currency}
+              </td>
             </tr>
           ) : null}
           <tr>
@@ -94,7 +115,9 @@ export function OrderStatusPanel({ order }: { order: OrderView }) {
               <b>Total</b>
             </td>
             <td align="right">
-              <b>{order.total}</b>
+              <b>
+                {order.total} {currency}
+              </b>
             </td>
           </tr>
         </tbody>

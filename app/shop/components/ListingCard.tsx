@@ -8,9 +8,10 @@ import { CartQuantityPicker } from "./CartQuantityPicker";
 
 type Props = {
   listing: Listing;
+  currency: string;
 };
 
-export function ListingCard({ listing }: Props) {
+export function ListingCard({ listing, currency }: Props) {
   const { addItem } = useCart();
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -53,7 +54,7 @@ export function ListingCard({ listing }: Props) {
           )}
           <p>{listing.description}</p>
           <p>
-            <b>Price:</b> {listing.price} gold blocks/e-pearls per item
+            <b>Price:</b> {listing.price} {currency} per item
           </p>
           <button
             type="button"

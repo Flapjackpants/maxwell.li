@@ -6,17 +6,21 @@ export const MINECRAFT_DIMENSIONS = [
 
 export type MinecraftDimension = (typeof MINECRAFT_DIMENSIONS)[number]["value"];
 
-export function getPickupLocation(): string {
-  return process.env.SHOP_PICKUP_LOCATION ?? "Spawn shop chest";
+export function getCurrency(): string {
+  return process.env.SHOP_CURRENCY ?? "emeralds";
 }
 
-export function getDeliveryFee(): number {
-  const fee = Number(process.env.SHOP_DELIVERY_FEE ?? "50");
-  return Number.isFinite(fee) ? fee : 50;
+export function getDeliveryFeePercent(): number {
+  const pct = Number(process.env.SHOP_DELIVERY_FEE_PERCENT ?? "10");
+  return Number.isFinite(pct) && pct >= 0 ? pct : 10;
+}
+
+export function calculateDeliveryFee(subtotal: number): number {
+  return Math.round((subtotal * getDeliveryFeePercent()) / 100);
 }
 
 export const PAYMENT_INSTRUCTIONS =
-  "Pay in-game with Gold Blocks or Ender Pearls";
+  "Pay in-game with the agreed currency. Your order will be completed once payment is confirmed.";
 
 export const DISCORD_INVITE_URL =
   process.env.DISCORD_INVITE_URL ?? "https://discord.gg/";

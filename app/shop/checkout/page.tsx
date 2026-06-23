@@ -17,8 +17,8 @@ import type { Listing } from "@/lib/shop/types";
 import { MinecraftQuantityLabel } from "../components/MinecraftQuantityInputs";
 
 type ShopConfig = {
-  pickupLocation: string;
-  deliveryFee: number;
+  currency: string;
+  deliveryFeePercent: number;
 };
 
 type SessionInfo = {
@@ -40,8 +40,8 @@ export default function CheckoutPage() {
   const [deliveryZ, setDeliveryZ] = useState("0");
   const [deliveryDimension, setDeliveryDimension] = useState("overworld");
   const [shopConfig, setShopConfig] = useState<ShopConfig>({
-    pickupLocation: "Spawn shop chest",
-    deliveryFee: 50,
+    currency: "emeralds",
+    deliveryFeePercent: 10,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,7 +71,9 @@ export default function CheckoutPage() {
     return sum + (listing?.price ?? 0) * item.quantity;
   }, 0);
   const deliveryFee =
-    fulfillmentType === "delivery" ? shopConfig.deliveryFee : 0;
+    fulfillmentType === "delivery"
+      ? Math.round((subtotal * shopConfig.deliveryFeePercent) / 100)
+      : 0;
   const total = subtotal + deliveryFee;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -164,7 +166,9 @@ export default function CheckoutPage() {
                     <br />
                     <MinecraftQuantityLabel total={item.quantity} />
                   </td>
-                  <td align="right">{listing.price * item.quantity}</td>
+                  <td align="right">
+                    {listing.price * item.quantity} {shopConfig.currency}
+                  </td>
                 </tr>
               );
             })}
@@ -181,7 +185,7 @@ export default function CheckoutPage() {
               checked={fulfillmentType === "pickup"}
               onChange={() => setFulfillmentType("pickup")}
             />{" "}
-            Pickup at <b>{shopConfig.pickupLocation}</b>
+            Pickup (location sent when order is ready)
           </label>
           <br />
           <label>
@@ -191,7 +195,7 @@ export default function CheckoutPage() {
               checked={fulfillmentType === "delivery"}
               onChange={() => setFulfillmentType("delivery")}
             />{" "}
-            Delivery (+{shopConfig.deliveryFee} gold blocks/e-pearls flat fee)
+            Delivery (+{shopConfig.deliveryFeePercent}% of subtotal)
           </label>
         </p>
 
@@ -248,13 +252,16 @@ export default function CheckoutPage() {
         <p style={{ textAlign: "right", fontSize: 18 }}>
           {deliveryFee > 0 ? (
             <>
-              Subtotal: {subtotal}
+              Subtotal: {subtotal} {shopConfig.currency}
               <br />
-              Delivery fee: {deliveryFee}
+              Delivery fee ({shopConfig.deliveryFeePercent}%): {deliveryFee}{" "}
+              {shopConfig.currency}
               <br />
             </>
           ) : null}
-          <b>Total: {total} gold blocks/e-pearls</b>
+          <b>
+            Total: {total} {shopConfig.currency}
+          </b>
         </p>
 
         {error ? <p style={{ color: "#f00" }}>{error}</p> : null}

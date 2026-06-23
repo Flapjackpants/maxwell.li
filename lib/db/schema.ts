@@ -36,7 +36,7 @@ export const orders = sqliteTable("orders", {
   userId: integer("user_id")
     .notNull()
     .references(() => users.id),
-  status: text("status").notNull().default("pending_payment"),
+  status: text("status").notNull().default("gathering_materials"),
   fulfillmentType: text("fulfillment_type").notNull(),
   deliveryFee: integer("delivery_fee").notNull().default(0),
   deliveryX: integer("delivery_x"),
