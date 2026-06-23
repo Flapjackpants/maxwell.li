@@ -15,6 +15,10 @@ import {
 } from "@/lib/shop/pricing";
 import type { Listing } from "@/lib/shop/types";
 import { formatPurchaseLimit } from "@/lib/shop/purchase-limit";
+import {
+  CraftingSuggestionsPanel,
+  type CraftingSuggestionFormState,
+} from "./CraftingSuggestionsPanel";
 
 const emptyForm = {
   name: "",
@@ -33,6 +37,7 @@ export default function AdminListingsPage() {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [suggestionsKey, setSuggestionsKey] = useState(0);
 
   const [currency, setCurrency] = useState("emeralds");
 
@@ -81,6 +86,7 @@ export default function AdminListingsPage() {
 
     setForm(emptyForm);
     setEditingId(null);
+    setSuggestionsKey((key) => key + 1);
     void fetch("/api/listings")
       .then((r) => r.json())
       .then((data: Listing[]) => setListings(data));
@@ -105,9 +111,17 @@ export default function AdminListingsPage() {
   async function handleDelete(id: number) {
     if (!confirm("Delete this listing?")) return;
     await fetch(`/api/listings/${id}`, { method: "DELETE" });
+    setSuggestionsKey((key) => key + 1);
     void fetch("/api/listings")
       .then((r) => r.json())
       .then((data: Listing[]) => setListings(data));
+  }
+
+  function applySuggestion(next: CraftingSuggestionFormState) {
+    setEditingId(null);
+    setForm(next);
+    setError(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
@@ -239,6 +253,13 @@ export default function AdminListingsPage() {
           ) : null}
         </fieldset>
       </form>
+
+      <CraftingSuggestionsPanel
+        key={suggestionsKey}
+        currency={currency}
+        listingCount={listings.length}
+        onApply={applySuggestion}
+      />
 
       <table width="100%" cellPadding={6} style={retroTableBorder}>
         <tbody>

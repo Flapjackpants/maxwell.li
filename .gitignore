@@ -36,6 +36,9 @@ yarn-error.log*
 # local sqlite dev db
 local.db
 
+# minecraft jar cache for recipe fetch
+.cache/
+
 # vercel
 .vercel
 
