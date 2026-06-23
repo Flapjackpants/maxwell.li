@@ -5,6 +5,7 @@ import { retroBtnStyle } from "@/lib/retro-theme";
 import type { Listing } from "@/lib/shop/types";
 import { useCart } from "./CartProvider";
 import { CartQuantityPicker } from "./CartQuantityPicker";
+import { ListingImage, listingCardStyle } from "./ListingImage";
 
 type Props = {
   listing: Listing;
@@ -17,58 +18,45 @@ export function ListingCard({ listing, currency }: Props) {
 
   return (
     <>
-      <tr>
-        <td width="120" valign="top" style={{ backgroundColor: "#111166" }}>
-          {listing.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={listing.imageUrl}
-              alt={listing.name}
-              width={100}
-              height={100}
-              style={{ border: "2px solid lime", objectFit: "cover" }}
-            />
-          ) : (
-            <div
-              style={{
-                width: 100,
-                height: 100,
-                background: "#222",
-                border: "2px solid lime",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 11,
-              }}
-            >
-              NO IMG
-            </div>
-          )}
-        </td>
-        <td valign="top" style={{ backgroundColor: "#0a0a44" }}>
-          <b style={{ fontSize: "17px", color: "#ff6600" }}>{listing.name}</b>
-          {!listing.inStock ? (
-            <span style={{ color: "#f00", marginLeft: 8 }}>[OUT OF STOCK]</span>
-          ) : (
-            <span style={{ color: "#0f0", marginLeft: 8 }}>[IN STOCK]</span>
-          )}
-          <p>{listing.description}</p>
-          <p>
-            <b>Price:</b> {listing.price} {currency} per item
-          </p>
-          <button
-            type="button"
-            style={{
-              ...retroBtnStyle,
-              opacity: listing.inStock ? 1 : 0.5,
-            }}
-            disabled={!listing.inStock}
-            onClick={() => setPickerOpen(true)}
-          >
-            [ ADD TO CART ]
-          </button>
-        </td>
-      </tr>
+      <div style={listingCardStyle()}>
+        <table width="100%" cellPadding={6}>
+          <tbody>
+            <tr>
+              <td width="120" valign="top" style={{ backgroundColor: "#111166" }}>
+                <ListingImage
+                  src={listing.imageUrl}
+                  alt={listing.name}
+                  width={100}
+                  height={100}
+                />
+              </td>
+              <td valign="top" style={{ backgroundColor: "#0a0a44" }}>
+                <b style={{ fontSize: "17px", color: "#ff6600" }}>{listing.name}</b>
+                {!listing.inStock ? (
+                  <span style={{ color: "#f00", marginLeft: 8 }}>[OUT OF STOCK]</span>
+                ) : (
+                  <span style={{ color: "#0f0", marginLeft: 8 }}>[IN STOCK]</span>
+                )}
+                <p>{listing.description}</p>
+                <p>
+                  <b>Price:</b> {listing.price} {currency} per item
+                </p>
+                <button
+                  type="button"
+                  style={{
+                    ...retroBtnStyle,
+                    opacity: listing.inStock ? 1 : 0.5,
+                  }}
+                  disabled={!listing.inStock}
+                  onClick={() => setPickerOpen(true)}
+                >
+                  [ ADD TO CART ]
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       {pickerOpen ? (
         <CartQuantityPicker

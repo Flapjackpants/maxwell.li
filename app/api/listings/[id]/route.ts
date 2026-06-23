@@ -22,7 +22,7 @@ const updateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   description: z.string().max(2000).optional(),
   price: z.number().int().min(0).optional(),
-  imageUrl: z.string().max(500).optional(),
+  imageUrl: z.string().max(2000).optional(),
   inStock: z.boolean().optional(),
 });
 

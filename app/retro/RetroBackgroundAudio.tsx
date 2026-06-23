@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { retroBtnStyle } from "@/lib/retro-theme";
+import { useEffect, useRef } from "react";
 
 type Props = {
-  /** Path under `public/`, e.g. `/retro-bg.mp3` */
+  /** Path under `public/`, e.g. `/squingMusic.mp3` */
   src?: string;
   volume?: number;
 };
 
 export function RetroBackgroundAudio({
-  src = "squingMusic.mp3",
+  src = "/squingMusic.mp3",
   volume = 0.32,
 }: Props) {
   const ref = useRef<HTMLAudioElement>(null);
-  const [needsTap, setNeedsTap] = useState(false);
 
   useEffect(() => {
     const audio = ref.current;
@@ -22,11 +20,9 @@ export function RetroBackgroundAudio({
     audio.volume = volume;
 
     function tryPlay() {
-      const a = ref.current;
-      if (!a) return;
-      a.play()
-        .then(() => setNeedsTap(false))
-        .catch(() => setNeedsTap(true));
+      void ref.current?.play().catch(() => {
+        /* autoplay blocked until interaction */
+      });
     }
 
     tryPlay();
@@ -38,24 +34,14 @@ export function RetroBackgroundAudio({
   }, [src, volume]);
 
   return (
-    <>
-      <audio ref={ref} src={src} loop playsInline preload="auto" />
-      <p style={{ textAlign: "center", margin: "8px 0 4px" }}>
-        <button
-          type="button"
-          style={retroBtnStyle}
-          onClick={() => {
-            const el = ref.current;
-            if (!el) return;
-            el.volume = volume;
-            el.play().catch(() => setNeedsTap(true));
-          }}
-        >
-          {needsTap
-            ? "[ CLICK HERE FOR BACKGROUND MP3 ]"
-            : "[ REPLAY / UN-PAUSE ]"}
-        </button>
-      </p>
-    </>
+    <audio
+      ref={ref}
+      src={src}
+      loop
+      playsInline
+      preload="auto"
+      aria-hidden
+      style={{ display: "none" }}
+    />
   );
 }

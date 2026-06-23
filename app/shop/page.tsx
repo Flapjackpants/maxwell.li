@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import { RetroShell } from "./components/RetroShell";
-import { ListingCard, ShopErrorBanner } from "./components/ListingCard";
+import { ShopErrorBanner } from "./components/ListingCard";
+import { ShopCatalog } from "./components/ShopCatalog";
 import { AdminLoginPrompt } from "./components/ShopAuthBar";
 import { db } from "@/lib/db";
 import { listings } from "@/lib/db/schema";
-import { retroTableBorder } from "@/lib/retro-theme";
 import { getCurrency } from "@/lib/shop/constants";
 import type { Listing } from "@/lib/shop/types";
 
@@ -69,17 +69,7 @@ export default async function ShopPage({
         </p>
       ) : null}
 
-      {catalog.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No items in stock right now. Check back later.</p>
-      ) : (
-        <table width="100%" cellPadding={6} style={retroTableBorder}>
-          <tbody>
-            {catalog.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} currency={currency} />
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ShopCatalog listings={catalog} currency={currency} />
     </RetroShell>
   );
 }

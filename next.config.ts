@@ -8,6 +8,21 @@ const nextConfig: NextConfig = {
         hostname: "via.placeholder.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "static.wikia.nocookie.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "minecraft.wiki",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "minecraft.fandom.com",
+        pathname: "/**",
+      },
     ],
   },
 };
