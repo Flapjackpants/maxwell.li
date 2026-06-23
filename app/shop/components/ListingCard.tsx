@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { retroBtnStyle } from "@/lib/retro-theme";
 import type { Listing } from "@/lib/shop/types";
 import { useCart } from "./CartProvider";
+import { CartQuantityPicker } from "./CartQuantityPicker";
 
 type Props = {
   listing: Listing;
@@ -10,60 +12,74 @@ type Props = {
 
 export function ListingCard({ listing }: Props) {
   const { addItem } = useCart();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   return (
-    <tr>
-      <td width="120" valign="top" style={{ backgroundColor: "#111166" }}>
-        {listing.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={listing.imageUrl}
-            alt={listing.name}
-            width={100}
-            height={100}
-            style={{ border: "2px solid lime", objectFit: "cover" }}
-          />
-        ) : (
-          <div
+    <>
+      <tr>
+        <td width="120" valign="top" style={{ backgroundColor: "#111166" }}>
+          {listing.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={listing.imageUrl}
+              alt={listing.name}
+              width={100}
+              height={100}
+              style={{ border: "2px solid lime", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: 100,
+                height: 100,
+                background: "#222",
+                border: "2px solid lime",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 11,
+              }}
+            >
+              NO IMG
+            </div>
+          )}
+        </td>
+        <td valign="top" style={{ backgroundColor: "#0a0a44" }}>
+          <b style={{ fontSize: "17px", color: "#ff6600" }}>{listing.name}</b>
+          {!listing.inStock ? (
+            <span style={{ color: "#f00", marginLeft: 8 }}>[OUT OF STOCK]</span>
+          ) : (
+            <span style={{ color: "#0f0", marginLeft: 8 }}>[IN STOCK]</span>
+          )}
+          <p>{listing.description}</p>
+          <p>
+            <b>Price:</b> {listing.price} gold blocks/e-pearls per item
+          </p>
+          <button
+            type="button"
             style={{
-              width: 100,
-              height: 100,
-              background: "#222",
-              border: "2px solid lime",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 11,
+              ...retroBtnStyle,
+              opacity: listing.inStock ? 1 : 0.5,
             }}
+            disabled={!listing.inStock}
+            onClick={() => setPickerOpen(true)}
           >
-            NO IMG
-          </div>
-        )}
-      </td>
-      <td valign="top" style={{ backgroundColor: "#0a0a44" }}>
-        <b style={{ fontSize: "17px", color: "#ff6600" }}>{listing.name}</b>
-        {!listing.inStock ? (
-          <span style={{ color: "#f00", marginLeft: 8 }}>[OUT OF STOCK]</span>
-        ) : (
-          <span style={{ color: "#0f0", marginLeft: 8 }}>[IN STOCK]</span>
-        )}
-        <p>{listing.description}</p>
-        <p>
-          <b>Price:</b> {listing.price} emeralds
-        </p>
-        <button
-          type="button"
-          style={{
-            ...retroBtnStyle,
-            opacity: listing.inStock ? 1 : 0.5,
+            [ ADD TO CART ]
+          </button>
+        </td>
+      </tr>
+
+      {pickerOpen ? (
+        <CartQuantityPicker
+          listing={listing}
+          onConfirm={(quantity) => {
+            addItem(listing.id, quantity, listing.name);
+            setPickerOpen(false);
           }}
-          disabled={!listing.inStock}
-          onClick={() => addItem(listing.id, 1, listing.name)}
-        >
-          [ ADD TO CART ]
-        </button>
-      </td>
-    </tr>
+          onCancel={() => setPickerOpen(false)}
+        />
+      ) : null}
+    </>
   );
 }
 

@@ -14,6 +14,7 @@ import {
 } from "@/lib/retro-theme";
 import { MINECRAFT_DIMENSIONS } from "@/lib/shop/constants";
 import type { Listing } from "@/lib/shop/types";
+import { MinecraftQuantityLabel } from "../components/MinecraftQuantityInputs";
 
 type ShopConfig = {
   pickupLocation: string;
@@ -159,7 +160,9 @@ export default function CheckoutPage() {
               return (
                 <tr key={item.listingId}>
                   <td style={{ backgroundColor: "#0a0a44" }}>
-                    {listing.name} x{item.quantity}
+                    {listing.name}
+                    <br />
+                    <MinecraftQuantityLabel total={item.quantity} />
                   </td>
                   <td align="right">{listing.price * item.quantity}</td>
                 </tr>
@@ -188,7 +191,7 @@ export default function CheckoutPage() {
               checked={fulfillmentType === "delivery"}
               onChange={() => setFulfillmentType("delivery")}
             />{" "}
-            Delivery (+{shopConfig.deliveryFee} emeralds flat fee)
+            Delivery (+{shopConfig.deliveryFee} gold blocks/e-pearls flat fee)
           </label>
         </p>
 
@@ -251,7 +254,7 @@ export default function CheckoutPage() {
               <br />
             </>
           ) : null}
-          <b>Total: {total} emeralds</b>
+          <b>Total: {total} gold blocks/e-pearls</b>
         </p>
 
         {error ? <p style={{ color: "#f00" }}>{error}</p> : null}

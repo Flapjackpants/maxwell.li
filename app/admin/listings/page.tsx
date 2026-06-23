@@ -155,7 +155,7 @@ export default function AdminListingsPage() {
           {listings.map((listing) => (
             <tr key={listing.id}>
               <td style={{ backgroundColor: "#0a0a44" }}>
-                <b>{listing.name}</b> — {listing.price} emeralds
+                <b>{listing.name}</b> — {listing.price} gold blocks/e-pearls
                 <br />
                 {listing.inStock ? (
                   <span style={{ color: "#0f0" }}>IN STOCK</span>

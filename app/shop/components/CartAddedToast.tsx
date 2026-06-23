@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { retroBtnStyle, retroLinkStyle } from "@/lib/retro-theme";
+import { formatQuantityBreakdown } from "@/lib/shop/minecraft-quantity";
 
 type Props = {
   itemName: string;
+  quantity: number;
   onDismiss: () => void;
 };
 
-export function CartAddedToast({ itemName, onDismiss }: Props) {
+export function CartAddedToast({ itemName, quantity, onDismiss }: Props) {
   useEffect(() => {
     const timer = window.setTimeout(onDismiss, 3000);
     return () => window.clearTimeout(timer);
@@ -47,6 +49,10 @@ export function CartAddedToast({ itemName, onDismiss }: Props) {
     </p>
     <p style={{ margin: "0 0 10px", fontSize: 14 }}>
       <b style={{ color: "#ff6600" }}>{itemName}</b>
+      <br />
+      <span style={{ color: "#0ff", fontSize: 12 }}>
+        {formatQuantityBreakdown(quantity)}
+      </span>
     </p>
     <p style={{ margin: 0 }}>
       <Link href="/shop/cart" style={{ ...retroLinkStyle, fontSize: 14 }}>

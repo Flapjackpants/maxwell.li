@@ -44,7 +44,10 @@ function saveCart(items: CartItem[]) {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const [addedToast, setAddedToast] = useState<string | null>(null);
+  const [addedToast, setAddedToast] = useState<{
+    name: string;
+    quantity: number;
+  } | null>(null);
 
   useEffect(() => {
     const stored = loadCart();
@@ -71,7 +74,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
         return [...prev, { listingId, quantity }];
       });
-      if (itemName) setAddedToast(itemName);
+      if (itemName) setAddedToast({ name: itemName, quantity });
     },
     [],
   );
@@ -115,7 +118,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       {children}
       {addedToast ? (
         <CartAddedToast
-          itemName={addedToast}
+          itemName={addedToast.name}
+          quantity={addedToast.quantity}
           onDismiss={() => setAddedToast(null)}
         />
       ) : null}
