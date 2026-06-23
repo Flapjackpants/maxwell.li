@@ -40,11 +40,17 @@ export function loadEnvFiles(root) {
 }
 
 export function getDatabaseUrl() {
-  return process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL;
+  const url =
+    process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL ?? "";
+  const trimmed = url.trim();
+  return trimmed || undefined;
 }
 
 export function getDatabaseAuthToken() {
-  return process.env.DATABASE_AUTH_TOKEN ?? process.env.TURSO_AUTH_TOKEN;
+  const token =
+    process.env.DATABASE_AUTH_TOKEN ?? process.env.TURSO_AUTH_TOKEN ?? "";
+  const normalized = token.replace(/\s+/g, "").trim();
+  return normalized || undefined;
 }
 
 export function describeDatabaseConfig() {
@@ -56,6 +62,7 @@ export function describeDatabaseConfig() {
       "  DATABASE_URL=libsql://your-database.turso.io",
       "  DATABASE_AUTH_TOKEN=your-turso-token",
       "Turso also accepts TURSO_DATABASE_URL and TURSO_AUTH_TOKEN.",
+      "On Railway: ensure variables are scoped to Deploy/Runtime, then redeploy.",
     ].join("\n");
   }
 
