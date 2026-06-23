@@ -59,9 +59,9 @@ export const orderItems = sqliteTable("order_items", {
   orderId: text("order_id")
     .notNull()
     .references(() => orders.id),
-  listingId: integer("listing_id")
-    .notNull()
-    .references(() => listings.id),
+  listingId: integer("listing_id").references(() => listings.id, {
+    onDelete: "set null",
+  }),
   name: text("name").notNull(),
   price: integer("price").notNull(),
   quantity: integer("quantity").notNull(),

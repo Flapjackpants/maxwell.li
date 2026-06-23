@@ -15,7 +15,7 @@ export type Listing = {
 export type OrderItem = {
   id: number;
   orderId: string;
-  listingId: number;
+  listingId: number | null;
   name: string;
   price: number;
   quantity: number;

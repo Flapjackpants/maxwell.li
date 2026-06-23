@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
-import { listings } from "@/lib/db/schema";
+import { listings, orderItems } from "@/lib/db/schema";
 
 function mapListing(row: typeof listings.$inferSelect) {
   return {
@@ -71,14 +71,32 @@ export async function DELETE(
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
 
-  const deleted = await db
-    .delete(listings)
-    .where(eq(listings.id, listingId))
-    .returning({ id: listings.id });
+  try {
+    const deleted = await db.transaction(async (tx) => {
+      await tx
+        .update(orderItems)
+        .set({ listingId: null })
+        .where(eq(orderItems.listingId, listingId));
 
-  if (!deleted[0]) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return tx
+        .delete(listings)
+        .where(eq(listings.id, listingId))
+        .returning({ id: listings.id });
+    });
+
+    if (!deleted[0]) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("Failed to delete listing:", err);
+    return NextResponse.json(
+      {
+        error:
+          "Could not delete listing. Run database migrations if this persists.",
+      },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ ok: true });
 }
