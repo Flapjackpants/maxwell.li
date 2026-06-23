@@ -12,7 +12,7 @@ export type SessionPayload = {
 };
 
 function getSecret() {
-  const secret = process.env.SESSION_SECRET;
+  const secret = process.env.SESSION_SECRET?.trim();
   if (!secret) {
     throw new Error("SESSION_SECRET is not set");
   }

@@ -12,7 +12,7 @@ export type DiscordGuild = {
 };
 
 function requireEnv(name: string): string {
-  const value = process.env[name];
+  const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} is not set`);
   return value;
 }
@@ -48,7 +48,10 @@ export async function exchangeDiscordCode(code: string): Promise<string> {
   });
 
   if (!res.ok) {
-    throw new Error(`Discord token exchange failed: ${res.status}`);
+    const body = await res.text();
+    throw new Error(
+      `Discord token exchange failed: ${res.status} ${body.slice(0, 200)}`,
+    );
   }
 
   const data = (await res.json()) as { access_token: string };
