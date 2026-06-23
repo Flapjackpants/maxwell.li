@@ -116,7 +116,7 @@ export default function CheckoutPage() {
 
   if (session === undefined) {
     return (
-      <RetroShell title="CHECKOUT">
+      <RetroShell title="CHECKOUT" showAudio={false}>
         <p>Loading...</p>
       </RetroShell>
     );
@@ -124,7 +124,7 @@ export default function CheckoutPage() {
 
   if (!session) {
     return (
-      <RetroShell title="CHECKOUT">
+      <RetroShell title="CHECKOUT" showAudio={false}>
         <p style={{ textAlign: "center" }}>
           Please log in with Discord to verify identity.
         </p>
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <RetroShell title="CHECKOUT">
+      <RetroShell title="CHECKOUT" showAudio={false}>
         <p style={{ textAlign: "center" }}>
           Cart is empty.{" "}
           <a href="/shop" style={retroLinkStyle}>
@@ -152,6 +152,7 @@ export default function CheckoutPage() {
     <RetroShell
       title="CHECKOUT"
       subtitle={`Logged in as ${session.username}`}
+      showAudio={false}
     >
       <form onSubmit={handleSubmit}>
         <table width="100%" cellPadding={6} style={retroTableBorder}>

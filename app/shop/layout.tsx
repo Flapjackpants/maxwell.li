@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CartProvider } from "./components/CartProvider";
+import { ShopBackgroundAudio } from "./components/ShopBackgroundAudio";
 
 export const metadata: Metadata = {
   title: "Squing Shop",
@@ -11,5 +12,10 @@ export default function ShopLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <CartProvider>{children}</CartProvider>;
+  return (
+    <CartProvider>
+      <ShopBackgroundAudio />
+      {children}
+    </CartProvider>
+  );
 }

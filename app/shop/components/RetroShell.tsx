@@ -13,6 +13,7 @@ import {
 type RetroShellProps = {
   title: string;
   subtitle?: string;
+  titleImage?: string;
   children: React.ReactNode;
   showAudio?: boolean;
 };
@@ -20,6 +21,7 @@ type RetroShellProps = {
 export function RetroShell({
   title,
   subtitle,
+  titleImage,
   children,
   showAudio = true,
 }: RetroShellProps) {
@@ -27,9 +29,23 @@ export function RetroShell({
     <div style={retroPageStyle}>
       {showAudio ? <RetroBackgroundAudio /> : null}
       <center>
-        <h1 style={retroHeadingStyle}>
-          <span className={styles.blink}>{title}</span>
-        </h1>
+        {titleImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={titleImage}
+            alt={title}
+            style={{
+              maxWidth: "min(100%, 420px)",
+              height: "auto",
+              border: "4px ridge gold",
+              marginBottom: 8,
+            }}
+          />
+        ) : (
+          <h1 style={retroHeadingStyle}>
+            <span className={styles.blink}>{title}</span>
+          </h1>
+        )}
         {subtitle ? (
           <div className={styles.marqueeWrap}>
             <div className={styles.marqueeTrack}>{subtitle}</div>

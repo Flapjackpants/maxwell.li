@@ -74,6 +74,7 @@ export default async function OrderPage({
     <RetroShell
       title="ORDER STATUS"
       subtitle={`Order #${order.id.slice(0, 8)}`}
+      showAudio={false}
     >
       <OrderStatusPanel order={order} currency={getCurrency()} />
     </RetroShell>

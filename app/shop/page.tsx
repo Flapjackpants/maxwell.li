@@ -6,6 +6,7 @@ import { AdminLoginPrompt } from "./components/ShopAuthBar";
 import { db } from "@/lib/db";
 import { listings } from "@/lib/db/schema";
 import { getCurrency } from "@/lib/shop/constants";
+import { SHOP_TITLE_IMAGE } from "@/lib/shop/shop-media";
 import type { Listing } from "@/lib/shop/types";
 
 function mapListing(row: typeof listings.$inferSelect): Listing {
@@ -54,8 +55,10 @@ export default async function ShopPage({
 
   return (
     <RetroShell
-      title="SQUING SHOP"
+      title="Squing Shop"
+      titleImage={SHOP_TITLE_IMAGE}
       subtitle="the most UMAZING shopping experience"
+      showAudio={false}
     >
       {errorMsg ? <ShopErrorBanner message={errorMsg} /> : null}
       {params.error === "admin_required" ? (
