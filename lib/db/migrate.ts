@@ -2,6 +2,11 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
 import path from "path";
+import {
+  describeDatabaseConfig,
+  getDatabaseAuthToken,
+  getDatabaseUrl,
+} from "./env";
 
 let migrationPromise: Promise<void> | null = null;
 
@@ -10,14 +15,15 @@ export async function runMigrations(): Promise<void> {
 
   if (!migrationPromise) {
     migrationPromise = (async () => {
-      const url = process.env.DATABASE_URL;
-      if (!url) {
-        throw new Error("DATABASE_URL is not set");
+      const configWarning = describeDatabaseConfig();
+      if (configWarning) {
+        throw new Error(configWarning);
       }
 
+      const url = getDatabaseUrl()!;
       const client = createClient({
         url,
-        authToken: process.env.DATABASE_AUTH_TOKEN,
+        authToken: getDatabaseAuthToken(),
       });
       const db = drizzle(client);
       const migrationsFolder = path.join(process.cwd(), "lib/db/migrations");
