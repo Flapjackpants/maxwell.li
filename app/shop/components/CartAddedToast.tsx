@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { retroBtnStyle, retroLinkStyle } from "@/lib/retro-theme";
+import { retroBtnStyle, retroFontFamily, retroLinkStyle } from "@/lib/retro-theme";
 import { formatQuantityBreakdown } from "@/lib/shop/minecraft-quantity";
 
 type Props = {
@@ -29,7 +29,7 @@ export function CartAddedToast({ itemName, quantity, onDismiss }: Props) {
       minWidth: 220,
       maxWidth: 320,
       padding: "12px 14px",
-      fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+      fontFamily: retroFontFamily,
       backgroundColor: "#000033",
       color: "#ffff00",
       border: "4px ridge #ff00ff",

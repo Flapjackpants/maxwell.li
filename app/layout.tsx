@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { retroFont } from "@/lib/retro-font";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jetbrainsMono.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} ${retroFont.variable} h-full antialiased`}
     >
       <body className="portfolio-body-shell min-h-full">{children}</body>
     </html>

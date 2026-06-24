@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { createPortal } from "react-dom";
-import { retroBtnStyle, retroInputStyle } from "@/lib/retro-theme";
+import { retroBtnStyle, retroFontFamily, retroInputStyle } from "@/lib/retro-theme";
 import {
   formatQuantityBreakdown,
   parseQuantityFields,
@@ -80,7 +80,7 @@ export function CartQuantityPicker({
     >
       <div
         style={{
-          fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+          fontFamily: retroFontFamily,
           backgroundColor: "#000033",
           color: "#ffff00",
           border: "4px ridge #ff00ff",

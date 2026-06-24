@@ -11,6 +11,7 @@ import {
 } from "@/lib/shop/order-status";
 import {
   retroBtnStyle,
+  retroFontFamily,
   retroInputStyle,
   retroLinkStyle,
 } from "@/lib/retro-theme";
@@ -269,7 +270,7 @@ export default function AdminOrdersPage() {
         >
           <div
             style={{
-              fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+              fontFamily: retroFontFamily,
               backgroundColor: "#000033",
               color: "#ffff00",
               border: "4px ridge #ff00ff",
@@ -331,7 +332,7 @@ export default function AdminOrdersPage() {
         >
           <div
             style={{
-              fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+              fontFamily: retroFontFamily,
               backgroundColor: "#000033",
               color: "#ffff00",
               border: "4px ridge #ff00ff",

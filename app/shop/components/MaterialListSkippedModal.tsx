@@ -1,7 +1,7 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { retroBtnStyle } from "@/lib/retro-theme";
+import { retroBtnStyle, retroFontFamily } from "@/lib/retro-theme";
 import { formatQuantityBreakdown } from "@/lib/shop/minecraft-quantity";
 import type { MaterialListSkipped } from "@/lib/shop/litematica-material-list";
 
@@ -47,7 +47,7 @@ export function MaterialListSkippedModal({
     >
       <div
         style={{
-          fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+          fontFamily: retroFontFamily,
           backgroundColor: "#000033",
           color: "#ffff00",
           border: "4px ridge #ff00ff",

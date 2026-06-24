@@ -1,10 +1,14 @@
 import type { CSSProperties } from "react";
 
+/** Loaded via next/font in app/layout.tsx; avoid generic `cursive` on mobile. */
+export const retroFontFamily =
+  'var(--font-retro), "Comic Sans MS", "Comic Sans", sans-serif';
+
 export const retroPageStyle: CSSProperties = {
   minHeight: "100dvh",
   margin: 0,
   padding: "12px",
-  fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+  fontFamily: retroFontFamily,
   backgroundColor: "#000080",
   backgroundImage:
     "repeating-linear-gradient(180deg, #000060 0px, #000080 2px, #0000a0 4px)",
@@ -44,7 +48,7 @@ export const retroTagStyle: CSSProperties = {
 };
 
 export const retroBtnStyle: CSSProperties = {
-  fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+  fontFamily: retroFontFamily,
   fontSize: "12px",
   fontWeight: "bold",
   color: "#000080",
@@ -77,7 +81,7 @@ export const retroHeadingStyle: CSSProperties = {
 };
 
 export const retroInputStyle: CSSProperties = {
-  fontFamily: '"Comic Sans MS", "Comic Sans", cursive, sans-serif',
+  fontFamily: retroFontFamily,
   fontSize: "14px",
   padding: "4px 8px",
   border: "2px inset #ccc",
