@@ -35,6 +35,64 @@ export function itemsPerPriceBundle(price: ListingPrice): number {
   return price.perCount * itemsPerUnit;
 }
 
+/** Greatest common divisor for rational price math. */
+export function gcd(a: number, b: number): number {
+  let x = Math.abs(Math.trunc(a));
+  let y = Math.abs(Math.trunc(b));
+  while (y !== 0) {
+    const t = y;
+    y = x % y;
+    x = t;
+  }
+  return x || 1;
+}
+
+/**
+ * Convert craft cost (numerator/denominator emeralds per output item) into a
+ * listing bundle, preferring 1 currency per N items when the item is cheap enough.
+ */
+export function suggestedCraftBundlePrice(
+  numerator: number,
+  denominator: number,
+): ListingPrice & { currencyPerItem: number } {
+  if (numerator <= 0 || denominator <= 0) {
+    return { amount: 1, unit: "item", perCount: 1, currencyPerItem: 0 };
+  }
+
+  const g = gcd(numerator, denominator);
+  const n = numerator / g;
+  const d = denominator / g;
+  const currencyPerItem = n / d;
+
+  // Prefer 1 currency per N items (accounts for recipe inputs and output count).
+  if (d >= n) {
+    return {
+      amount: 1,
+      unit: "item",
+      perCount: Math.max(1, Math.floor(d / n)),
+      currencyPerItem,
+    };
+  }
+
+  // Item costs more than 1 currency each — fall back to N currency per 1 item.
+  return {
+    amount: Math.ceil(n / d),
+    unit: "item",
+    perCount: 1,
+    currencyPerItem,
+  };
+}
+
+/** Compare two currency-per-item rationals (a/b vs c/d). */
+export function cheaperRational(
+  aNum: number,
+  aDen: number,
+  bNum: number,
+  bDen: number,
+): boolean {
+  return aNum * bDen < bNum * aDen;
+}
+
 /** Currency per item as an exact rational (numerator / denominator). */
 export function currencyPerItemRate(price: ListingPrice): {
   numerator: number;

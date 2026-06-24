@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
-import { retroTableBorder } from "@/lib/retro-theme";
+import { listingCardStyle, retroTableBorder } from "@/lib/retro-theme";
+
+export { listingCardStyle };
 
 type ListingImageProps = {
   src: string;
@@ -64,13 +66,4 @@ export function ListingImage({
       style={{ border: "2px solid lime", objectFit: "contain", background: "#111" }}
     />
   );
-}
-
-export function listingCardStyle(): CSSProperties {
-  return {
-    ...retroTableBorder,
-    marginBottom: 14,
-    padding: 8,
-    backgroundColor: "#000033",
-  };
 }

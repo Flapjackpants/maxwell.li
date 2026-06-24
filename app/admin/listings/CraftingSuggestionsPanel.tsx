@@ -42,7 +42,9 @@ export function CraftingSuggestionsPanel({
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/listings/crafting-suggestions");
+      const res = await fetch("/api/listings/crafting-suggestions", {
+        credentials: "include",
+      });
       if (!res.ok) {
         setSuggestions([]);
         return;
@@ -85,7 +87,7 @@ export function CraftingSuggestionsPanel({
               Items craftable from ingredients on your listings. Recipes from
               official Minecraft {(craftingData as { minecraftVersion?: string }).minecraftVersion ?? "26.2"} data
               ({(craftingData as { recipeCount?: number }).recipeCount ?? "1000+"}{" "}
-              crafting recipes). Prices use the cheapest listed materials per item.
+              crafting recipes). Prices use cheapest materials as 1 {currency} per N items.
             </p>
             {loading ? (
               <p style={{ fontSize: 13, color: "#aaa" }}>Loading recipes...</p>
@@ -128,8 +130,8 @@ export function CraftingSuggestionsPanel({
                               name: suggestion.name,
                               description: `Crafted from ${formatIngredientList(suggestion.ingredients)}.`,
                               price: String(suggestion.price),
-                              priceUnit: "item",
-                              pricePerCount: "1",
+                              priceUnit: suggestion.priceUnit,
+                              pricePerCount: String(suggestion.pricePerCount),
                               purchaseLimitMode: "uncapped",
                               maxPurchaseQuantity: "64",
                               imageUrl: "",

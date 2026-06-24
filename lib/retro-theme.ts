@@ -22,6 +22,16 @@ export const retroTableBorder: CSSProperties = {
   backgroundColor: "#000033",
 };
 
+/** Card wrapper used for each shop/admin listing row. */
+export function listingCardStyle(): CSSProperties {
+  return {
+    ...retroTableBorder,
+    marginBottom: 14,
+    padding: 8,
+    backgroundColor: "#000033",
+  };
+}
+
 export const retroTagStyle: CSSProperties = {
   display: "inline-block",
   margin: "2px",
