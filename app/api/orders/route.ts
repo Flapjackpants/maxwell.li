@@ -4,7 +4,10 @@ import { z } from "zod";
 import { requireUser, resolveAdminSession } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems, orders, users } from "@/lib/db/schema";
-import { sendAdminNewOrderDm } from "@/lib/discord/dm";
+import {
+  sendAdminNewOrderDm,
+  sendBuyerOrderPlacedDm,
+} from "@/lib/discord/dm";
 import { calculateDeliveryFee, getCurrency } from "@/lib/shop/constants";
 import { cartSubtotal, listingPrice } from "@/lib/shop/pricing";
 import { exceedsPurchaseLimit } from "@/lib/shop/purchase-limit";
@@ -220,7 +223,7 @@ export async function POST(request: Request) {
 
   // Confirm buyer still exists so admin innerJoin never drops the order.
   const buyer = await db
-    .select({ id: users.id })
+    .select({ id: users.id, discordId: users.discordId })
     .from(users)
     .where(eq(users.id, session!.userId))
     .limit(1);
@@ -301,14 +304,26 @@ export async function POST(request: Request) {
     order.items.map((item) => `${item.name}×${item.quantity}`).join(", ") ||
     "(no items)";
 
-  const adminDm = await sendAdminNewOrderDm({
+  const notifyInput = {
     orderId: order.id,
     buyerUsername: order.buyerUsername,
     total: order.total,
     currency: getCurrency(),
     fulfillmentType: order.fulfillmentType,
     itemSummary,
-  });
+  };
+
+  const buyerDm = await sendBuyerOrderPlacedDm(buyer[0].discordId, notifyInput);
+  if (!buyerDm.ok) {
+    console.warn("Buyer new-order DM failed:", order.id, buyerDm.reason);
+    await db
+      .update(orders)
+      .set({ dmFailed: true })
+      .where(eq(orders.id, order.id));
+    order.dmFailed = true;
+  }
+
+  const adminDm = await sendAdminNewOrderDm(notifyInput);
   if (!adminDm.ok) {
     console.warn("Admin new-order DM failed:", order.id, adminDm.reason);
   }

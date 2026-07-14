@@ -104,7 +104,7 @@ export async function sendOrderStatusDm(
   return sendDiscordDm(discordUserId, buildStatusMessage(orderId, status, options));
 }
 
-export type AdminOrderNotifyInput = {
+export type OrderNotifyInput = {
   orderId: string;
   buyerUsername: string;
   total: number;
@@ -113,8 +113,29 @@ export type AdminOrderNotifyInput = {
   itemSummary: string;
 };
 
+/** @deprecated Use OrderNotifyInput — kept as alias for call sites. */
+export type AdminOrderNotifyInput = OrderNotifyInput;
+
+export async function sendBuyerOrderPlacedDm(
+  discordUserId: string,
+  input: OrderNotifyInput,
+): Promise<DmResult> {
+  const orderUrl = `${getAppUrl()}/shop/orders/${input.orderId}`;
+  const shortId = input.orderId.slice(0, 8);
+  const content = [
+    `**Order placed** (#${shortId})`,
+    `Fulfillment: **${input.fulfillmentType}**`,
+    `Items: ${input.itemSummary}`,
+    `Total: **${input.total} ${input.currency}**`,
+    `We'll update you here as your order progresses.`,
+    `View your order: ${orderUrl}`,
+  ].join("\n");
+
+  return sendDiscordDm(discordUserId, content);
+}
+
 export async function sendAdminNewOrderDm(
-  input: AdminOrderNotifyInput,
+  input: OrderNotifyInput,
 ): Promise<DmResult> {
   const adminId = getAdminDiscordId();
   if (!adminId) {

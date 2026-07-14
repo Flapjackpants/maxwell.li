@@ -36,9 +36,15 @@ type Props = {
   order: OrderView;
   currency: string;
   isOwner: boolean;
+  isAdmin?: boolean;
 };
 
-export function OrderStatusPanel({ order, currency, isOwner }: Props) {
+export function OrderStatusPanel({
+  order,
+  currency,
+  isOwner,
+  isAdmin = false,
+}: Props) {
   const router = useRouter();
   const columns = getProgressColumns();
   const normalized = normalizeOrderStatus(order.status);
@@ -193,7 +199,7 @@ export function OrderStatusPanel({ order, currency, isOwner }: Props) {
         </tbody>
       </table>
 
-      {isOwner && canCancelOrder(order.status) ? (
+      {(isOwner || isAdmin) && canCancelOrder(order.status) ? (
         <p style={{ textAlign: "center", marginTop: 16 }}>
           {cancelError ? (
             <span style={{ color: "#f00", display: "block", marginBottom: 8 }}>
@@ -210,7 +216,11 @@ export function OrderStatusPanel({ order, currency, isOwner }: Props) {
             disabled={cancelling}
             onClick={() => void handleCancel()}
           >
-            {cancelling ? "[ CANCELLING... ]" : "[ CANCEL ORDER ]"}
+            {cancelling
+              ? "[ CANCELLING... ]"
+              : isOwner
+                ? "[ CANCEL ORDER ]"
+                : "[ CANCEL (ADMIN) ]"}
           </button>
         </p>
       ) : null}

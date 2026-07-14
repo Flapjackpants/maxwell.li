@@ -5,6 +5,11 @@ import {
   normalizeName,
   type ListingIndex,
 } from "@/lib/shop/crafting-suggestions";
+import {
+  cheaperRational,
+  currencyPerItemRate,
+  listingPrice,
+} from "@/lib/shop/pricing";
 import type { Listing } from "@/lib/shop/types";
 
 type CraftRecipe = (typeof craftingData.recipes)[number];
@@ -150,6 +155,53 @@ export function getDescendantDepths(
   return depthMap(rootListingId, listings);
 }
 
+/**
+ * Longest craft-chain depth among listed items (ingredients → products).
+ * Used to apply catalog reprices in dependency order.
+ */
+export function getCatalogCraftDepths(listings: Listing[]): Map<number, number> {
+  const index = buildListingIndex(listings);
+  const parentsByChild = new Map<number, Set<number>>();
+
+  for (const listing of listings) {
+    const recipes = recipesUsingListing(listing, index);
+    const resultIds = new Set(recipes.map((recipe) => recipe.id));
+    for (const resultId of resultIds) {
+      const child = findListedChild(resultId, index, listings);
+      if (!child || child.id === listing.id) continue;
+      const parents = parentsByChild.get(child.id) ?? new Set<number>();
+      parents.add(listing.id);
+      parentsByChild.set(child.id, parents);
+    }
+  }
+
+  const depths = new Map<number, number>();
+  const visiting = new Set<number>();
+
+  function depthOf(id: number): number {
+    const cached = depths.get(id);
+    if (cached !== undefined) return cached;
+    if (visiting.has(id)) return 0;
+    visiting.add(id);
+    const parents = parentsByChild.get(id);
+    let depth = 0;
+    if (parents) {
+      for (const parentId of parents) {
+        depth = Math.max(depth, depthOf(parentId) + 1);
+      }
+    }
+    visiting.delete(id);
+    depths.set(id, depth);
+    return depth;
+  }
+
+  for (const listing of listings) {
+    depthOf(listing.id);
+  }
+
+  return depths;
+}
+
 function priceBundleChanged(
   listing: Listing,
   suggested: {
@@ -162,6 +214,28 @@ function priceBundleChanged(
     listing.price !== suggested.price ||
     listing.priceUnit !== suggested.priceUnit ||
     listing.pricePerCount !== suggested.pricePerCount
+  );
+}
+
+function isLowerSuggestedPrice(
+  listing: Listing,
+  suggested: {
+    price: number;
+    priceUnit: string;
+    pricePerCount: number;
+  },
+): boolean {
+  const current = currencyPerItemRate(listingPrice(listing));
+  const next = currencyPerItemRate({
+    amount: suggested.price,
+    unit: suggested.priceUnit as "item" | "stack" | "chest",
+    perCount: suggested.pricePerCount,
+  });
+  return cheaperRational(
+    next.numerator,
+    next.denominator,
+    current.numerator,
+    current.denominator,
   );
 }
 
@@ -209,6 +283,40 @@ export function getDescendantSuggestions(
     })
     .filter((entry): entry is DescendantSuggestion => entry !== null)
     .sort((a, b) => a.depth - b.depth || a.name.localeCompare(b.name));
+}
+
+/** All listed crafts whose suggested recipe price is strictly lower than current. */
+export function getCatalogLowerPriceSuggestions(
+  listings: Listing[],
+): DescendantSuggestion[] {
+  const depths = getCatalogCraftDepths(listings);
+
+  const suggestions: DescendantSuggestion[] = [];
+
+  for (const listing of listings) {
+    const suggested = getSuggestedPriceForListing(listing, listings);
+    if (!suggested) continue;
+    if (!priceBundleChanged(listing, suggested)) continue;
+    if (!isLowerSuggestedPrice(listing, suggested)) continue;
+
+    suggestions.push({
+      listingId: listing.id,
+      name: listing.name,
+      depth: depths.get(listing.id) ?? 0,
+      currentPrice: listing.price,
+      currentPriceUnit: listing.priceUnit,
+      currentPricePerCount: listing.pricePerCount,
+      inStock: listing.inStock,
+      suggestedPrice: suggested.price,
+      suggestedPriceUnit: suggested.priceUnit,
+      suggestedPricePerCount: suggested.pricePerCount,
+      currencyPerItem: suggested.currencyPerItem,
+    });
+  }
+
+  return suggestions.sort(
+    (a, b) => a.depth - b.depth || a.name.localeCompare(b.name),
+  );
 }
 
 export function listingHadPriceChange(

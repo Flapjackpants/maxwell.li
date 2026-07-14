@@ -23,6 +23,7 @@ import {
   DescendantCascadePanel,
   type DescendantCascadeState,
 } from "./DescendantCascadePanel";
+import { CatalogCascadePanel } from "./CatalogCascadePanel";
 import {
   listingHadPriceChange,
   type DescendantSuggestion,
@@ -48,6 +49,7 @@ export default function AdminListingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [suggestionsKey, setSuggestionsKey] = useState(0);
   const [cascade, setCascade] = useState<DescendantCascadeState | null>(null);
+  const [catalogCascadeOpen, setCatalogCascadeOpen] = useState(false);
   const [editingSnapshot, setEditingSnapshot] = useState<Listing | null>(null);
 
   const [currency, setCurrency] = useState("emeralds");
@@ -121,12 +123,14 @@ export default function AdminListingsPage() {
 
     if (wasEditing && before) {
       if (takenOffSale) {
+        setCatalogCascadeOpen(false);
         setCascade({
           action: "offsale",
           sourceListingId: wasEditing,
           sourceName: before.name,
         });
       } else if (priceChanged) {
+        setCatalogCascadeOpen(false);
         setCascade({
           action: "reprice",
           sourceListingId: wasEditing,
@@ -174,6 +178,7 @@ export default function AdminListingsPage() {
     await refreshListings();
 
     if (descendantSuggestions.length > 0) {
+      setCatalogCascadeOpen(false);
       setCascade({
         action: "delete",
         sourceListingId: listing.id,
@@ -336,6 +341,26 @@ export default function AdminListingsPage() {
         currency={currency}
         listingCount={listings.length}
         onApply={applySuggestion}
+      />
+
+      <p style={{ marginBottom: 16 }}>
+        <button
+          type="button"
+          style={retroBtnStyle}
+          onClick={() => {
+            setCascade(null);
+            setCatalogCascadeOpen(true);
+          }}
+        >
+          [ CHECK ALL LOWER PRICES ]
+        </button>
+      </p>
+
+      <CatalogCascadePanel
+        open={catalogCascadeOpen}
+        currency={currency}
+        onDone={() => setCatalogCascadeOpen(false)}
+        onRefreshListings={() => void refreshListings()}
       />
 
       <DescendantCascadePanel

@@ -1,9 +1,12 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth/require-user";
+import { requireUser, resolveAdminSession } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { orderItems, orders, users } from "@/lib/db/schema";
-import { sendAdminCancelledOrderDm } from "@/lib/discord/dm";
+import {
+  sendAdminCancelledOrderDm,
+  sendOrderStatusDm,
+} from "@/lib/discord/dm";
 import { getCurrency } from "@/lib/shop/constants";
 import { canCancelOrder } from "@/lib/shop/order-status";
 
@@ -14,12 +17,14 @@ export async function POST(
   const { error, session } = await requireUser();
   if (error) return error;
 
+  const resolved = await resolveAdminSession(session!);
   const { id } = await params;
 
   const orderRows = await db
     .select({
       order: orders,
       buyerUsername: users.username,
+      buyerDiscordId: users.discordId,
     })
     .from(orders)
     .innerJoin(users, eq(orders.userId, users.id))
@@ -31,10 +36,10 @@ export async function POST(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Only the buyer who placed the order may cancel it (not admins acting for them).
-  if (row.order.userId !== session!.userId) {
+  const isBuyer = row.order.userId === resolved.userId;
+  if (!isBuyer && !resolved.isAdmin) {
     return NextResponse.json(
-      { error: "Only the buyer can cancel this order" },
+      { error: "Only the buyer or an admin can cancel this order" },
       { status: 403 },
     );
   }
@@ -62,7 +67,20 @@ export async function POST(
   const itemSummary =
     items.map((item) => `${item.name}×${item.quantity}`).join(", ") || "(no items)";
 
-  const dmResult = await sendAdminCancelledOrderDm({
+  const buyerDm = await sendOrderStatusDm(
+    row.buyerDiscordId,
+    id,
+    "cancelled",
+  );
+  if (!buyerDm.ok) {
+    console.warn("Buyer cancel DM failed for order", id, buyerDm.reason);
+    await db
+      .update(orders)
+      .set({ dmFailed: true })
+      .where(eq(orders.id, id));
+  }
+
+  const adminDm = await sendAdminCancelledOrderDm({
     orderId: id,
     buyerUsername: row.buyerUsername,
     total: row.order.total,
@@ -70,9 +88,8 @@ export async function POST(
     fulfillmentType: row.order.fulfillmentType,
     itemSummary,
   });
-
-  if (!dmResult.ok) {
-    console.warn("Admin cancel DM failed for order", id, dmResult.reason);
+  if (!adminDm.ok) {
+    console.warn("Admin cancel DM failed for order", id, adminDm.reason);
   }
 
   return NextResponse.json({ id, status: "cancelled" });

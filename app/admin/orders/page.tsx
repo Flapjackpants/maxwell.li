@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ORDER_STATUS_LABELS,
+  canCancelOrder,
   getKanbanColumns,
   getNextStatus,
   normalizeOrderStatus,
@@ -58,6 +59,7 @@ export default function AdminOrdersPage() {
   >(null);
   const [estimatedReadyTimeInput, setEstimatedReadyTimeInput] = useState("");
   const [advanceError, setAdvanceError] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   async function loadBoard() {
     setLoadError(null);
@@ -148,6 +150,39 @@ export default function AdminOrdersPage() {
     setReadyTimePromptOrderId(null);
     setEstimatedReadyTimeInput("");
     await refresh();
+  }
+
+  async function cancelOrder(order: OrderCard) {
+    if (
+      !confirm(
+        `Cancel order #${order.id.slice(0, 8)} for ${order.buyerUsername}? The buyer will be notified.`,
+      )
+    ) {
+      return;
+    }
+
+    setCancellingId(order.id);
+    setAdvanceError(null);
+    try {
+      const res = await fetch(`/api/orders/${order.id}/cancel`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        setAdvanceError(
+          typeof data.error === "string"
+            ? data.error
+            : "Failed to cancel order",
+        );
+        return;
+      }
+      await refresh();
+    } catch {
+      setAdvanceError("Failed to cancel order");
+    } finally {
+      setCancellingId(null);
+    }
   }
 
   const allColumns = getKanbanColumns();
@@ -267,13 +302,31 @@ export default function AdminOrdersPage() {
                         </Link>
                       </p>
                       {normalized !== "completed" && normalized !== "cancelled" ? (
-                        <button
-                          type="button"
-                          style={retroBtnStyle}
-                          onClick={() => openAdvance(order)}
-                        >
-                          [ ADVANCE ]
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            style={retroBtnStyle}
+                            onClick={() => openAdvance(order)}
+                          >
+                            [ ADVANCE ]
+                          </button>{" "}
+                          {canCancelOrder(order.status) ? (
+                            <button
+                              type="button"
+                              style={{
+                                ...retroBtnStyle,
+                                background: "#f66",
+                                color: "#200",
+                              }}
+                              disabled={cancellingId === order.id}
+                              onClick={() => void cancelOrder(order)}
+                            >
+                              {cancellingId === order.id
+                                ? "[ ... ]"
+                                : "[ CANCEL ]"}
+                            </button>
+                          ) : null}
+                        </>
                       ) : null}
                     </div>
                   );

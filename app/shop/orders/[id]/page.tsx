@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import { RetroShell } from "../../components/RetroShell";
 import { OrderStatusPanel } from "../../components/OrderStatusPanel";
+import { resolveAdminSession } from "@/lib/auth/require-user";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { orderItems, orders, users } from "@/lib/db/schema";
@@ -69,11 +70,12 @@ export default async function OrderPage({
   }
 
   const { id } = await params;
-  const order = await getOrder(id, session.userId, session.isAdmin);
+  const resolved = await resolveAdminSession(session);
+  const order = await getOrder(id, resolved.userId, resolved.isAdmin);
 
   if (!order) notFound();
 
-  const isOwner = order.userId === session.userId;
+  const isOwner = order.userId === resolved.userId;
 
   return (
     <RetroShell
@@ -85,6 +87,7 @@ export default async function OrderPage({
         order={order}
         currency={getCurrency()}
         isOwner={isOwner}
+        isAdmin={resolved.isAdmin}
       />
     </RetroShell>
   );
