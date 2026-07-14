@@ -19,6 +19,7 @@ function mapListing(row: typeof listings.$inferSelect): Listing {
     pricePerCount: row.pricePerCount,
     imageUrl: row.imageUrl,
     inStock: row.inStock,
+    specialOffer: row.specialOffer,
     maxPurchaseQuantity: row.maxPurchaseQuantity,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

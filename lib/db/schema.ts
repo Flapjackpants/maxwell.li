@@ -25,6 +25,9 @@ export const listings = sqliteTable("listings", {
   pricePerCount: integer("price_per_count").notNull().default(1),
   imageUrl: text("image_url").notNull().default(""),
   inStock: integer("in_stock", { mode: "boolean" }).notNull().default(true),
+  specialOffer: integer("special_offer", { mode: "boolean" })
+    .notNull()
+    .default(false),
   maxPurchaseQuantity: integer("max_purchase_quantity"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()

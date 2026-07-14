@@ -11,6 +11,7 @@ export type Listing = {
   pricePerCount: number;
   imageUrl: string;
   inStock: boolean;
+  specialOffer: boolean;
   maxPurchaseQuantity: number | null;
   createdAt: Date;
   updatedAt: Date;

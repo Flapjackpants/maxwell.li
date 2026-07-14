@@ -27,12 +27,18 @@ export const retroTableBorder: CSSProperties = {
 };
 
 /** Card wrapper used for each shop/admin listing row. */
-export function listingCardStyle(): CSSProperties {
+export function listingCardStyle(options?: {
+  specialOffer?: boolean;
+}): CSSProperties {
+  const special = options?.specialOffer === true;
   return {
     ...retroTableBorder,
-    marginBottom: 14,
+    border: special ? "3px ridge #ff0033" : retroTableBorder.border,
+    marginBottom: 0,
     padding: 8,
-    backgroundColor: "#000033",
+    backgroundColor: special ? "#330011" : "#000033",
+    height: "100%",
+    boxSizing: "border-box",
   };
 }
 

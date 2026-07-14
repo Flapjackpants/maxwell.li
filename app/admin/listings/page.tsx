@@ -38,6 +38,7 @@ const emptyForm = {
   maxPurchaseQuantity: "64",
   imageUrl: "",
   inStock: true,
+  specialOffer: false,
 };
 
 export default function AdminListingsPage() {
@@ -84,6 +85,7 @@ export default function AdminListingsPage() {
           : null,
       imageUrl: form.imageUrl,
       inStock: form.inStock,
+      specialOffer: form.specialOffer,
     };
 
     const res = await fetch(
@@ -148,6 +150,7 @@ export default function AdminListingsPage() {
       maxPurchaseQuantity: String(listing.maxPurchaseQuantity ?? 64),
       imageUrl: listing.imageUrl,
       inStock: listing.inStock,
+      specialOffer: listing.specialOffer === true,
     });
   }
 
@@ -263,6 +266,16 @@ export default function AdminListingsPage() {
                 }
               />{" "}
               In stock
+            </label>{" "}
+            <label>
+              <input
+                type="checkbox"
+                checked={form.specialOffer}
+                onChange={(e) =>
+                  setForm({ ...form, specialOffer: e.target.checked })
+                }
+              />{" "}
+              Special offer
             </label>
           </p>
           <p>
@@ -334,7 +347,12 @@ export default function AdminListingsPage() {
 
       <div>
         {listings.map((listing) => (
-          <div key={listing.id} style={listingCardStyle()}>
+          <div
+            key={listing.id}
+            style={listingCardStyle({
+              specialOffer: listing.specialOffer === true,
+            })}
+          >
             <table
               width="100%"
               cellPadding={6}
@@ -348,9 +366,31 @@ export default function AdminListingsPage() {
                 <tr>
                   <td
                     valign="top"
-                    style={{ backgroundColor: "#0a0a44", wordBreak: "break-word" }}
+                    style={{
+                      backgroundColor:
+                        listing.specialOffer === true ? "#2a0011" : "#0a0a44",
+                      wordBreak: "break-word",
+                    }}
                   >
-                    <b style={{ fontSize: "17px", color: "#ff6600" }}>
+                    {listing.specialOffer === true ? (
+                      <span
+                        style={{
+                          color: "#ff6688",
+                          fontWeight: "bold",
+                          fontSize: 12,
+                        }}
+                      >
+                        SPECIAL OFFER
+                        <br />
+                      </span>
+                    ) : null}
+                    <b
+                      style={{
+                        fontSize: "17px",
+                        color:
+                          listing.specialOffer === true ? "#ff2244" : "#ff6600",
+                      }}
+                    >
                       {listing.name}
                     </b>{" "}
                     — {formatListingPrice(listingPrice(listing), currency)}

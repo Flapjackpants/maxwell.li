@@ -20,6 +20,7 @@ type FormState = {
   maxPurchaseQuantity: string;
   imageUrl: string;
   inStock: boolean;
+  specialOffer: boolean;
 };
 
 export function CraftingSuggestionsPanel({
@@ -136,6 +137,7 @@ export function CraftingSuggestionsPanel({
                               maxPurchaseQuantity: "64",
                               imageUrl: "",
                               inStock: true,
+                              specialOffer: false,
                             })
                           }
                         >

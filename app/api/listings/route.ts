@@ -15,6 +15,7 @@ function mapListing(row: typeof listings.$inferSelect) {
     pricePerCount: row.pricePerCount,
     imageUrl: row.imageUrl,
     inStock: row.inStock,
+    specialOffer: row.specialOffer,
     maxPurchaseQuantity: row.maxPurchaseQuantity,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -39,6 +40,7 @@ const createSchema = z
     ...priceFields,
     imageUrl: z.string().max(2000).optional(),
     inStock: z.boolean().optional(),
+    specialOffer: z.boolean().optional(),
     maxPurchaseQuantity: z.number().int().min(1).max(1_000_000_000).nullable(),
   })
   .superRefine((data, ctx) => {
@@ -71,6 +73,7 @@ export async function POST(request: Request) {
       pricePerCount: parsed.data.pricePerCount,
       imageUrl: parsed.data.imageUrl ?? "",
       inStock: parsed.data.inStock ?? true,
+      specialOffer: parsed.data.specialOffer ?? false,
       maxPurchaseQuantity: parsed.data.maxPurchaseQuantity ?? null,
       updatedAt: new Date(),
     })
