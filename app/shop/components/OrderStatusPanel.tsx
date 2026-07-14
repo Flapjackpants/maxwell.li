@@ -1,12 +1,17 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   ORDER_STATUS_LABELS,
-  getKanbanColumns,
+  canCancelOrder,
+  getProgressColumns,
   normalizeOrderStatus,
   type OrderStatus,
 } from "@/lib/shop/order-status";
 import { PAYMENT_INSTRUCTIONS } from "@/lib/shop/constants";
 import { formatListingPrice, listingPrice } from "@/lib/shop/pricing";
-import { retroTableBorder } from "@/lib/retro-theme";
+import { retroBtnStyle, retroTableBorder } from "@/lib/retro-theme";
 import { MinecraftQuantityLabel } from "./MinecraftQuantityInputs";
 import type { OrderItem } from "@/lib/shop/types";
 
@@ -30,13 +35,49 @@ type OrderView = {
 type Props = {
   order: OrderView;
   currency: string;
+  isOwner: boolean;
 };
 
-export function OrderStatusPanel({ order, currency }: Props) {
-  const columns = getKanbanColumns();
+export function OrderStatusPanel({ order, currency, isOwner }: Props) {
+  const router = useRouter();
+  const columns = getProgressColumns();
   const normalized = normalizeOrderStatus(order.status);
-  const currentIdx = columns.indexOf(normalized);
+  const isCancelled = normalized === "cancelled";
+  const currentIdx = isCancelled ? -1 : columns.indexOf(normalized);
   const itemsSubtotal = order.total - order.deliveryFee;
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
+  async function handleCancel() {
+    if (
+      !confirm(
+        "Cancel this order? This cannot be undone.",
+      )
+    ) {
+      return;
+    }
+
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      const res = await fetch(`/api/orders/${order.id}/cancel`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setCancelError(
+          typeof data.error === "string" ? data.error : "Could not cancel order",
+        );
+        return;
+      }
+      router.refresh();
+    } catch {
+      setCancelError("Could not cancel order");
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   return (
     <>
@@ -48,28 +89,43 @@ export function OrderStatusPanel({ order, currency }: Props) {
 
       <p>
         <b>Status:</b>{" "}
-        {ORDER_STATUS_LABELS[normalized as OrderStatus] ?? order.status}
+        <span style={{ color: isCancelled ? "#f00" : undefined }}>
+          {ORDER_STATUS_LABELS[normalized as OrderStatus] ?? order.status}
+        </span>
       </p>
 
-      <table cellPadding={4} style={{ ...retroTableBorder, marginBottom: 12 }}>
-        <tbody>
-          {columns.map((status, idx) => {
-            const done = currentIdx >= 0 && idx <= currentIdx;
-            return (
-              <tr key={status}>
-                <td
-                  style={{
-                    backgroundColor: done ? "#003300" : "#222",
-                    color: done ? "#0f0" : "#888",
-                  }}
-                >
-                  {done ? "[X]" : "[ ]"} {ORDER_STATUS_LABELS[status]}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {isCancelled ? (
+        <p
+          style={{
+            background: "#440000",
+            padding: 8,
+            border: "2px ridge #f00",
+            color: "#faa",
+          }}
+        >
+          This order was cancelled.
+        </p>
+      ) : (
+        <table cellPadding={4} style={{ ...retroTableBorder, marginBottom: 12 }}>
+          <tbody>
+            {columns.map((status, idx) => {
+              const done = currentIdx >= 0 && idx <= currentIdx;
+              return (
+                <tr key={status}>
+                  <td
+                    style={{
+                      backgroundColor: done ? "#003300" : "#222",
+                      color: done ? "#0f0" : "#888",
+                    }}
+                  >
+                    {done ? "[X]" : "[ ]"} {ORDER_STATUS_LABELS[status]}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
 
       {normalized === "awaiting_payment" ? (
         <p style={{ background: "#440044", padding: 8, border: "2px dotted #ff0" }}>
@@ -78,6 +134,7 @@ export function OrderStatusPanel({ order, currency }: Props) {
       ) : null}
 
       {order.estimatedReadyTime &&
+      !isCancelled &&
       normalized !== "order_queued" &&
       normalized !== "completed" ? (
         <p style={{ background: "#330033", padding: 8, border: "2px ridge #f0f" }}>
@@ -135,6 +192,28 @@ export function OrderStatusPanel({ order, currency }: Props) {
           </tr>
         </tbody>
       </table>
+
+      {isOwner && canCancelOrder(order.status) ? (
+        <p style={{ textAlign: "center", marginTop: 16 }}>
+          {cancelError ? (
+            <span style={{ color: "#f00", display: "block", marginBottom: 8 }}>
+              {cancelError}
+            </span>
+          ) : null}
+          <button
+            type="button"
+            style={{
+              ...retroBtnStyle,
+              background: "#f66",
+              color: "#200",
+            }}
+            disabled={cancelling}
+            onClick={() => void handleCancel()}
+          >
+            {cancelling ? "[ CANCELLING... ]" : "[ CANCEL ORDER ]"}
+          </button>
+        </p>
+      ) : null}
     </>
   );
 }

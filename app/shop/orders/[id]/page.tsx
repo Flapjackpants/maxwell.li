@@ -73,13 +73,19 @@ export default async function OrderPage({
 
   if (!order) notFound();
 
+  const isOwner = order.userId === session.userId;
+
   return (
     <RetroShell
       title="ORDER STATUS"
       subtitle={`Order #${order.id.slice(0, 8)}`}
       showAudio={false}
     >
-      <OrderStatusPanel order={order} currency={getCurrency()} />
+      <OrderStatusPanel
+        order={order}
+        currency={getCurrency()}
+        isOwner={isOwner}
+      />
     </RetroShell>
   );
 }

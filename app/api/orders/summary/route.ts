@@ -1,4 +1,4 @@
-import { eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
@@ -15,7 +15,9 @@ export async function GET() {
     })
     .from(orderItems)
     .innerJoin(orders, eq(orderItems.orderId, orders.id))
-    .where(ne(orders.status, "completed"))
+    .where(
+      and(ne(orders.status, "completed"), ne(orders.status, "cancelled")),
+    )
     .groupBy(orderItems.name)
     .orderBy(orderItems.name);
 

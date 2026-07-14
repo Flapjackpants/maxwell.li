@@ -4,6 +4,7 @@ export const ORDER_STATUSES = [
   "awaiting_pickup",
   "awaiting_payment",
   "completed",
+  "cancelled",
 ] as const;
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
@@ -16,6 +17,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   awaiting_pickup: "Awaiting Pickup",
   awaiting_payment: "Awaiting Payment",
   completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 const STATUS_TRANSITIONS: Partial<Record<OrderStatus, OrderStatus>> = {
@@ -33,8 +35,8 @@ export function isValidStatus(value: string): value is OrderStatus {
   return ORDER_STATUSES.includes(value as OrderStatus);
 }
 
-/** Kanban column order for admin board */
-export function getKanbanColumns(): OrderStatus[] {
+/** Active fulfillment pipeline (excludes cancelled). */
+export function getProgressColumns(): OrderStatus[] {
   return [
     "order_queued",
     "gathering_materials",
@@ -42,6 +44,17 @@ export function getKanbanColumns(): OrderStatus[] {
     "awaiting_payment",
     "completed",
   ];
+}
+
+/** Kanban column order for admin board */
+export function getKanbanColumns(): OrderStatus[] {
+  return [...getProgressColumns(), "cancelled"];
+}
+
+/** Buyer may cancel until the order is completed or already cancelled. */
+export function canCancelOrder(status: string): boolean {
+  const normalized = normalizeOrderStatus(status);
+  return normalized !== "completed" && normalized !== "cancelled";
 }
 
 /** Map legacy statuses from earlier versions for admin display */

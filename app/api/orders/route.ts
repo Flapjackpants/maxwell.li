@@ -4,7 +4,8 @@ import { z } from "zod";
 import { requireUser, resolveAdminSession } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems, orders, users } from "@/lib/db/schema";
-import { calculateDeliveryFee } from "@/lib/shop/constants";
+import { sendAdminNewOrderDm } from "@/lib/discord/dm";
+import { calculateDeliveryFee, getCurrency } from "@/lib/shop/constants";
 import { cartSubtotal, listingPrice } from "@/lib/shop/pricing";
 import { exceedsPurchaseLimit } from "@/lib/shop/purchase-limit";
 import type { MinecraftDimension } from "@/lib/shop/constants";
@@ -294,6 +295,22 @@ export async function POST(request: Request) {
       { error: "Order was created but could not be loaded" },
       { status: 500 },
     );
+  }
+
+  const itemSummary =
+    order.items.map((item) => `${item.name}×${item.quantity}`).join(", ") ||
+    "(no items)";
+
+  const adminDm = await sendAdminNewOrderDm({
+    orderId: order.id,
+    buyerUsername: order.buyerUsername,
+    total: order.total,
+    currency: getCurrency(),
+    fulfillmentType: order.fulfillmentType,
+    itemSummary,
+  });
+  if (!adminDm.ok) {
+    console.warn("Admin new-order DM failed:", order.id, adminDm.reason);
   }
 
   return NextResponse.json(order, { status: 201 });

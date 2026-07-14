@@ -56,6 +56,13 @@ export async function PATCH(
     ? (order.status as OrderStatus)
     : normalizeOrderStatus(order.status);
 
+  if (currentStatus === "cancelled" || currentStatus === "completed") {
+    return NextResponse.json(
+      { error: `Cannot advance a ${currentStatus} order` },
+      { status: 400 },
+    );
+  }
+
   if (parsed.data.action === "advance") {
     newStatus = getNextStatus(currentStatus);
     if (!newStatus) {

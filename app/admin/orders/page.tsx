@@ -266,7 +266,7 @@ export default function AdminOrdersPage() {
                           {order.id.slice(0, 8)}
                         </Link>
                       </p>
-                      {normalized !== "completed" ? (
+                      {normalized !== "completed" && normalized !== "cancelled" ? (
                         <button
                           type="button"
                           style={retroBtnStyle}
