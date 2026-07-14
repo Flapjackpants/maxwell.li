@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { listings, orderItems } from "@/lib/db/schema";
 import {
+  getDescendantDepths,
   getDescendantSuggestions,
   type DescendantCascadeAction,
 } from "@/lib/shop/listing-descendants";
@@ -79,9 +80,18 @@ const batchSchema = z.object({
   listingIds: z.array(z.number().int().positive()).min(1),
 });
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const { error } = await requireAdmin();
   if (error) return error;
+
+  const { id } = await params;
+  const rootListingId = Number(id);
+  if (!Number.isFinite(rootListingId)) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
 
   const body = await request.json();
   const parsed = batchSchema.safeParse(body);
@@ -91,12 +101,18 @@ export async function POST(request: Request) {
 
   const { action, listingIds } = parsed.data;
   const rows = await db.select().from(listings);
-  const catalog = rows.map(mapListing);
+  let catalog = rows.map(mapListing);
   const byId = new Map(catalog.map((listing) => [listing.id, listing]));
   const updated: number[] = [];
 
   if (action === "reprice") {
-    for (const listingId of listingIds) {
+    // Apply shallow recipes first so deeper crafts see updated ingredient prices.
+    const depths = getDescendantDepths(rootListingId, catalog);
+    const orderedIds = [...listingIds].sort(
+      (a, b) => (depths.get(a) ?? 999) - (depths.get(b) ?? 999),
+    );
+
+    for (const listingId of orderedIds) {
       const listing = byId.get(listingId);
       if (!listing) continue;
       const suggested = getSuggestedPriceForListing(listing, catalog);
@@ -113,7 +129,20 @@ export async function POST(request: Request) {
         .where(eq(listings.id, listingId))
         .returning({ id: listings.id });
 
-      if (result[0]) updated.push(result[0].id);
+      if (result[0]) {
+        updated.push(result[0].id);
+        const nextListing: Listing = {
+          ...listing,
+          price: suggested.price,
+          priceUnit: suggested.priceUnit,
+          pricePerCount: suggested.pricePerCount,
+          updatedAt: new Date(),
+        };
+        byId.set(listingId, nextListing);
+        catalog = catalog.map((entry) =>
+          entry.id === listingId ? nextListing : entry,
+        );
+      }
     }
   } else if (action === "offsale") {
     for (const listingId of listingIds) {
@@ -141,5 +170,17 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ action, updated });
+  // After a reprice wave, tell the client if more descendants still need updating.
+  let remaining = 0;
+  if (action === "reprice") {
+    const freshRows = await db.select().from(listings).orderBy(listings.name);
+    const freshCatalog = freshRows.map(mapListing);
+    remaining = getDescendantSuggestions(
+      rootListingId,
+      freshCatalog,
+      "reprice",
+    ).length;
+  }
+
+  return NextResponse.json({ action, updated, remaining });
 }

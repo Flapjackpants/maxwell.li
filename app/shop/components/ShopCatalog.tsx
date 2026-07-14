@@ -12,53 +12,6 @@ type Props = {
   currency: string;
 };
 
-/** Re-insert a special offer every this many regular items (~2 rows at 3-wide). */
-const SPECIAL_EVERY_N_REGULARS = 6;
-
-type CatalogEntry = {
-  key: string;
-  listing: Listing;
-};
-
-function buildCatalogEntries(listings: Listing[]): {
-  featured: CatalogEntry[];
-  feed: CatalogEntry[];
-} {
-  const specials = listings.filter((listing) => listing.specialOffer);
-  const regulars = listings.filter((listing) => !listing.specialOffer);
-
-  const featured = specials.map((listing) => ({
-    key: `featured-${listing.id}`,
-    listing,
-  }));
-
-  const feed: CatalogEntry[] = [];
-  let specialCursor = 0;
-
-  regulars.forEach((listing, index) => {
-    feed.push({ key: `regular-${listing.id}`, listing });
-
-    if (
-      specials.length > 0 &&
-      (index + 1) % SPECIAL_EVERY_N_REGULARS === 0
-    ) {
-      const special = specials[specialCursor % specials.length]!;
-      specialCursor += 1;
-      feed.push({
-        key: `repeat-${special.id}-${index}`,
-        listing: special,
-      });
-    }
-  });
-
-  // If the catalog is mostly specials (few/no regulars), still show them.
-  if (regulars.length === 0) {
-    return { featured, feed: [] };
-  }
-
-  return { featured, feed };
-}
-
 export function ShopCatalog({ listings, currency }: Props) {
   const [query, setQuery] = useState("");
 
@@ -72,8 +25,12 @@ export function ShopCatalog({ listings, currency }: Props) {
     );
   }, [listings, query]);
 
-  const { featured, feed } = useMemo(
-    () => buildCatalogEntries(filtered),
+  const featured = useMemo(
+    () => filtered.filter((listing) => listing.specialOffer),
+    [filtered],
+  );
+  const regulars = useMemo(
+    () => filtered.filter((listing) => !listing.specialOffer),
     [filtered],
   );
 
@@ -106,10 +63,10 @@ export function ShopCatalog({ listings, currency }: Props) {
             <section className={styles.specialSection}>
               <h2 className={styles.sectionTitle}>:: SPECIAL OFFERS ::</h2>
               <div className={styles.grid}>
-                {featured.map((entry) => (
+                {featured.map((listing) => (
                   <ListingCard
-                    key={entry.key}
-                    listing={entry.listing}
+                    key={listing.id}
+                    listing={listing}
                     currency={currency}
                   />
                 ))}
@@ -117,13 +74,13 @@ export function ShopCatalog({ listings, currency }: Props) {
             </section>
           ) : null}
 
-          {feed.length > 0 ? (
+          {regulars.length > 0 ? (
             <section className={styles.catalogSection}>
               <div className={styles.grid}>
-                {feed.map((entry) => (
+                {regulars.map((listing) => (
                   <ListingCard
-                    key={entry.key}
-                    listing={entry.listing}
+                    key={listing.id}
+                    listing={listing}
                     currency={currency}
                   />
                 ))}

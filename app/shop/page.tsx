@@ -64,6 +64,21 @@ export default async function ShopPage({
       subtitle="Or head to the Susland Plaza (-266, 92, -288) for our brick-and-mortar shopping experience!"
       showAudio={false}
     >
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: 18,
+          fontWeight: "bold",
+          color: "#0ff",
+          margin: "0 0 12px",
+          textShadow: "2px 2px #003",
+        }}
+      >
+        Currently selling{" "}
+        <span style={{ color: "#ff0" }}>{catalog.length}</span>{" "}
+        {catalog.length === 1 ? "item type" : "item types"}!
+      </p>
+
       {errorMsg ? <ShopErrorBanner message={errorMsg} /> : null}
       {params.error === "admin_required" ? (
         <AdminLoginPrompt returnTo={loginReturnTo} />

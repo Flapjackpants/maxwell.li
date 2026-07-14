@@ -7,7 +7,10 @@ import {
   listingPrice,
   type PriceUnit,
 } from "@/lib/shop/pricing";
-import type { DescendantCascadeAction, DescendantSuggestion } from "@/lib/shop/listing-descendants";
+import type {
+  DescendantCascadeAction,
+  DescendantSuggestion,
+} from "@/lib/shop/listing-descendants";
 
 type CascadeState = {
   action: DescendantCascadeAction;
@@ -24,7 +27,7 @@ const ACTION_LABELS: Record<DescendantCascadeAction, string> = {
 
 const ACTION_DESCRIPTIONS: Record<DescendantCascadeAction, string> = {
   reprice:
-    "These crafted items may need new prices based on your ingredient change.",
+    "Crafted items may need new prices. Apply a wave, then recalculate again for deeper recipes (e.g. planks → stairs).",
   offsale: "These crafted items also use the item you took off sale.",
   delete: "These crafted items depend on the item you deleted.",
 };
@@ -38,26 +41,20 @@ export function DescendantCascadePanel({
   cascade: CascadeState | null;
   currency: string;
   onDone: () => void;
-  onRefreshListings: () => void;
+  onRefreshListings: () => void | Promise<void>;
 }) {
   const [suggestions, setSuggestions] = useState<DescendantSuggestion[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [skipInitial, setSkipInitial] = useState(false);
 
-  const load = useCallback(async () => {
+  const loadFresh = useCallback(async () => {
     if (!cascade) {
       setSuggestions([]);
       setSelected(new Set());
-      return;
-    }
-
-    if (cascade.initialSuggestions) {
-      setSuggestions(cascade.initialSuggestions);
-      setSelected(
-        new Set(cascade.initialSuggestions.map((entry) => entry.listingId)),
-      );
       return;
     }
 
@@ -66,6 +63,7 @@ export function DescendantCascadePanel({
     try {
       const res = await fetch(
         `/api/listings/${cascade.sourceListingId}/descendants?action=${cascade.action}`,
+        { credentials: "include", cache: "no-store" },
       );
       if (!res.ok) {
         setSuggestions([]);
@@ -83,8 +81,27 @@ export function DescendantCascadePanel({
   }, [cascade]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    setSkipInitial(false);
+    setStatusMessage(null);
+  }, [cascade?.sourceListingId, cascade?.action]);
+
+  useEffect(() => {
+    if (!cascade) {
+      setSuggestions([]);
+      setSelected(new Set());
+      return;
+    }
+
+    if (!skipInitial && cascade.initialSuggestions) {
+      setSuggestions(cascade.initialSuggestions);
+      setSelected(
+        new Set(cascade.initialSuggestions.map((entry) => entry.listingId)),
+      );
+      return;
+    }
+
+    void loadFresh();
+  }, [cascade, skipInitial, loadFresh]);
 
   if (!cascade) return null;
 
@@ -92,20 +109,66 @@ export function DescendantCascadePanel({
     if (selected.size === 0) return;
     setApplying(true);
     setError(null);
+    setStatusMessage(null);
     try {
-      const res = await fetch(`/api/listings/${cascade!.sourceListingId}/descendants`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: cascade!.action,
-          listingIds: [...selected],
-        }),
-      });
+      const res = await fetch(
+        `/api/listings/${cascade!.sourceListingId}/descendants`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            action: cascade!.action,
+            listingIds: [...selected],
+          }),
+        },
+      );
       if (!res.ok) {
         setError("Update failed.");
         return;
       }
-      onRefreshListings();
+
+      const data = (await res.json()) as {
+        updated?: number[];
+        remaining?: number;
+      };
+      await onRefreshListings();
+
+      if (cascade!.action === "reprice") {
+        setSkipInitial(true);
+        setStatusMessage(
+          `Updated ${data.updated?.length ?? selected.size} listing(s).`,
+        );
+        setLoading(true);
+        try {
+          const nextRes = await fetch(
+            `/api/listings/${cascade!.sourceListingId}/descendants?action=reprice`,
+            { credentials: "include", cache: "no-store" },
+          );
+          if (nextRes.ok) {
+            const nextData = (await nextRes.json()) as {
+              suggestions: DescendantSuggestion[];
+            };
+            setSuggestions(nextData.suggestions);
+            setSelected(
+              new Set(nextData.suggestions.map((entry) => entry.listingId)),
+            );
+            if (nextData.suggestions.length === 0) {
+              setStatusMessage(
+                `Updated ${data.updated?.length ?? selected.size} listing(s). All descendant prices are up to date.`,
+              );
+            } else {
+              setStatusMessage(
+                `Updated ${data.updated?.length ?? selected.size} listing(s). ${nextData.suggestions.length} further descendant(s) can be recalculated with the new prices.`,
+              );
+            }
+          }
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
       onDone();
     } catch {
       setError("Update failed.");
@@ -132,11 +195,19 @@ export function DescendantCascadePanel({
           {ACTION_DESCRIPTIONS[cascade.action]}
         </p>
 
+        {statusMessage ? (
+          <p style={{ fontSize: 13, color: "#0f0", margin: "0 0 8px" }}>
+            {statusMessage}
+          </p>
+        ) : null}
+
         {loading ? (
           <p style={{ fontSize: 13, color: "#aaa" }}>Loading descendants...</p>
         ) : suggestions.length === 0 ? (
           <p style={{ fontSize: 13, color: "#888" }}>
-            No descendant listings found.
+            {cascade.action === "reprice"
+              ? "No further price changes needed for descendants."
+              : "No descendant listings found."}
             <button
               type="button"
               onClick={onDone}
@@ -144,6 +215,22 @@ export function DescendantCascadePanel({
             >
               [ DISMISS ]
             </button>
+            {cascade.action === "reprice" ? (
+              <>
+                {" "}
+                <button
+                  type="button"
+                  style={{ ...retroBtnStyle, fontSize: 11 }}
+                  onClick={() => {
+                    setSkipInitial(true);
+                    setStatusMessage(null);
+                    void loadFresh();
+                  }}
+                >
+                  [ CHECK AGAIN ]
+                </button>
+              </>
+            ) : null}
           </p>
         ) : (
           <>
@@ -189,7 +276,8 @@ export function DescendantCascadePanel({
                                     amount: suggestion.suggestedPrice,
                                     unit: (suggestion.suggestedPriceUnit ??
                                       "item") as PriceUnit,
-                                    perCount: suggestion.suggestedPricePerCount ?? 1,
+                                    perCount:
+                                      suggestion.suggestedPricePerCount ?? 1,
                                   },
                                   currency,
                                 )
@@ -218,6 +306,20 @@ export function DescendantCascadePanel({
                   ? "[ WORKING... ]"
                   : `[ ${ACTION_LABELS[cascade.action].toUpperCase()} SELECTED ]`}
               </button>{" "}
+              {cascade.action === "reprice" ? (
+                <button
+                  type="button"
+                  style={retroBtnStyle}
+                  disabled={applying || loading}
+                  onClick={() => {
+                    setSkipInitial(true);
+                    setStatusMessage(null);
+                    void loadFresh();
+                  }}
+                >
+                  [ RECALCULATE AGAIN ]
+                </button>
+              ) : null}{" "}
               <button type="button" style={retroBtnStyle} onClick={onDone}>
                 [ DISMISS ]
               </button>

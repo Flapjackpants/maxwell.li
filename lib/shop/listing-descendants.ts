@@ -143,6 +143,28 @@ function depthMap(rootListingId: number, listings: Listing[]): Map<number, numbe
   return depths;
 }
 
+export function getDescendantDepths(
+  rootListingId: number,
+  listings: Listing[],
+): Map<number, number> {
+  return depthMap(rootListingId, listings);
+}
+
+function priceBundleChanged(
+  listing: Listing,
+  suggested: {
+    price: number;
+    priceUnit: string;
+    pricePerCount: number;
+  },
+): boolean {
+  return (
+    listing.price !== suggested.price ||
+    listing.priceUnit !== suggested.priceUnit ||
+    listing.pricePerCount !== suggested.pricePerCount
+  );
+}
+
 export function getDescendantSuggestions(
   rootListingId: number,
   listings: Listing[],
@@ -168,6 +190,7 @@ export function getDescendantSuggestions(
       if (action === "reprice") {
         const suggested = getSuggestedPriceForListing(listing, listings);
         if (!suggested) return null;
+        if (!priceBundleChanged(listing, suggested)) return null;
         return {
           ...base,
           suggestedPrice: suggested.price,
