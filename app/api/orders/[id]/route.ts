@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth/require-user";
+import { requireUser, resolveAdminSession } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 import { orderItems, orders, users } from "@/lib/db/schema";
 import type { MinecraftDimension } from "@/lib/shop/constants";
@@ -12,6 +12,7 @@ export async function GET(
   const { error, session } = await requireUser();
   if (error) return error;
 
+  const resolved = await resolveAdminSession(session!);
   const { id } = await params;
 
   const rows = await db
@@ -29,7 +30,7 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (!session!.isAdmin && rows[0].order.userId !== session!.userId) {
+  if (!resolved.isAdmin && rows[0].order.userId !== resolved.userId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -3,6 +3,15 @@ import type { NextRequest } from "next/server";
 import { appUrl } from "@/lib/app-url";
 import { SESSION_COOKIE, verifySessionTokenEdge } from "@/lib/auth/session";
 
+function isAdminSession(session: {
+  isAdmin: boolean;
+  discordId: string;
+}): boolean {
+  if (session.isAdmin) return true;
+  const adminDiscordId = process.env.ADMIN_DISCORD_ID?.trim();
+  return Boolean(adminDiscordId && adminDiscordId === session.discordId);
+}
+
 export async function middleware(request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.next();
@@ -18,7 +27,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const session = await verifySessionTokenEdge(token);
-  if (!session?.isAdmin) {
+  if (!session || !isAdminSession(session)) {
     return NextResponse.redirect(
       appUrl(`/shop?error=admin_required&returnTo=${returnTo}`),
     );

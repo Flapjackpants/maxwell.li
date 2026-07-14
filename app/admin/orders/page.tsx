@@ -47,6 +47,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderCard[]>([]);
   const [summary, setSummary] = useState<SummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [currency, setCurrency] = useState("emeralds");
   const [pickupPromptOrderId, setPickupPromptOrderId] = useState<string | null>(
     null,
@@ -58,30 +59,48 @@ export default function AdminOrdersPage() {
   const [estimatedReadyTimeInput, setEstimatedReadyTimeInput] = useState("");
   const [advanceError, setAdvanceError] = useState<string | null>(null);
 
+  async function loadBoard() {
+    setLoadError(null);
+    const [ordersRes, summaryRes, configRes] = await Promise.all([
+      fetch("/api/orders", { credentials: "include", cache: "no-store" }),
+      fetch("/api/orders/summary", { credentials: "include", cache: "no-store" }),
+      fetch("/api/shop/config", { credentials: "include", cache: "no-store" }),
+    ]);
+
+    if (ordersRes.status === 401 || ordersRes.status === 403) {
+      setLoadError("Admin session expired or missing — log out and log in again.");
+      setOrders([]);
+    } else if (!ordersRes.ok) {
+      setLoadError("Failed to load orders.");
+      setOrders([]);
+    } else {
+      const data = (await ordersRes.json()) as OrderCard[];
+      setOrders(Array.isArray(data) ? data : []);
+    }
+
+    if (summaryRes.ok) setSummary(await summaryRes.json());
+    if (configRes.ok) {
+      const config = (await configRes.json()) as ShopConfig;
+      setCurrency(config.currency);
+    }
+  }
+
   useEffect(() => {
     void (async () => {
-      const [ordersRes, summaryRes, configRes] = await Promise.all([
-        fetch("/api/orders"),
-        fetch("/api/orders/summary"),
-        fetch("/api/shop/config"),
-      ]);
-      if (ordersRes.ok) setOrders(await ordersRes.json());
-      if (summaryRes.ok) setSummary(await summaryRes.json());
-      if (configRes.ok) {
-        const config = (await configRes.json()) as ShopConfig;
-        setCurrency(config.currency);
-      }
+      await loadBoard();
       setLoading(false);
     })();
   }, []);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      void loadBoard();
+    }, 20_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   async function refresh() {
-    const [ordersRes, summaryRes] = await Promise.all([
-      fetch("/api/orders"),
-      fetch("/api/orders/summary"),
-    ]);
-    if (ordersRes.ok) setOrders(await ordersRes.json());
-    if (summaryRes.ok) setSummary(await summaryRes.json());
+    await loadBoard();
   }
 
   function openAdvance(order: OrderCard) {
@@ -155,8 +174,19 @@ export default function AdminOrdersPage() {
           onClick={() => setTab("summary")}
         >
           [ MATERIALS SUMMARY ]
+        </button>{" "}
+        <button
+          type="button"
+          style={retroBtnStyle}
+          onClick={() => void refresh()}
+        >
+          [ REFRESH ]
         </button>
       </p>
+
+      {loadError ? (
+        <p style={{ color: "#f00", textAlign: "center" }}>{loadError}</p>
+      ) : null}
 
       {advanceError ? (
         <p style={{ color: "#f00", textAlign: "center" }}>{advanceError}</p>

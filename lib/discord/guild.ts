@@ -5,7 +5,7 @@ export function isGuildMember(guilds: DiscordGuild[], guildId: string): boolean 
 }
 
 export function getRequiredGuildId(): string {
-  const guildId = process.env.DISCORD_GUILD_ID;
+  const guildId = process.env.DISCORD_GUILD_ID?.trim();
   if (!guildId) throw new Error("DISCORD_GUILD_ID is not set");
   return guildId;
 }

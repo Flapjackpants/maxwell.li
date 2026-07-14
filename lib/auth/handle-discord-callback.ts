@@ -57,8 +57,8 @@ export async function handleDiscordCallback(request: Request) {
       );
     }
 
-    const adminDiscordId = process.env.ADMIN_DISCORD_ID;
-    const isAdmin = adminDiscordId === discordUser.id;
+    const adminDiscordId = process.env.ADMIN_DISCORD_ID?.trim();
+    const isAdmin = Boolean(adminDiscordId && adminDiscordId === discordUser.id);
     const avatarUrl = discordAvatarUrl(discordUser);
 
     const existing = await db
