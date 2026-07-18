@@ -63,6 +63,7 @@ export const homeProjectsIntro = {
   heading: "Selected work",
   intro:
     "Deployments, interfaces, and fun projects.",
+  listAllLabel: "List all projects",
 } as const;
 
 export const homeCv = {

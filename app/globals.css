@@ -52,6 +52,10 @@
   --header-bg: rgb(0 0 0 / 0.72);
   --panel-bg: rgb(0 0 0 / 0.5);
   --panel-bg-strong: rgb(0 0 0 / 0.55);
+  --panel-pinned-bg: rgb(120 90 20 / 0.28);
+  --border-pinned: rgb(212 175 55 / 0.45);
+  --border-pinned-hover: rgb(232 200 80 / 0.7);
+  --text-pinned: rgb(232 200 100 / 0.9);
   --portrait-bg: rgb(10 10 10);
   --ghost-btn-bg: rgb(0 0 0 / 0.4);
   --ghost-btn-bg-hover: rgb(23 23 23);
@@ -668,6 +672,18 @@ body {
   color: var(--text-muted);
 }
 
+.home-projects-cta {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .home-projects-cta {
+    margin-top: 3rem;
+  }
+}
+
 .home-cv-panel {
   display: grid;
   gap: 2.5rem;
@@ -1061,6 +1077,23 @@ body {
   border-color: var(--border-sky-strong);
 }
 
+.projects-archive-card--pinned {
+  background-color: var(--panel-pinned-bg);
+  border-color: var(--border-pinned);
+  box-shadow: inset 0 0 0 1px rgb(212 175 55 / 0.12);
+}
+
+.projects-archive-card--pinned:hover {
+  border-color: var(--border-pinned-hover);
+}
+
+.projects-archive-card-pin {
+  margin: 0 0 0.5rem;
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  color: var(--text-pinned);
+}
+
 .projects-archive-card-media {
   position: relative;
   aspect-ratio: 16 / 10;
@@ -1187,8 +1220,11 @@ body {
   margin-top: 1.25rem;
 }
 
-.project-detail-github {
+.project-detail-actions {
   margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .project-detail-body {
@@ -1205,6 +1241,32 @@ body {
 
 .project-detail-para + .project-detail-para {
   margin-top: 1.25rem;
+}
+
+.project-detail-demo {
+  margin-top: 2.5rem;
+  max-width: 48rem;
+}
+
+.project-detail-demo-label {
+  margin: 0 0 0.75rem;
+}
+
+.project-detail-demo-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--border-medium);
+  background-color: var(--panel-bg);
+}
+
+.project-detail-demo-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .project-detail-nav {

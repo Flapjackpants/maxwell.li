@@ -7,11 +7,138 @@ export type Project = {
   imageUrl: string;
   githubUrl: string;
   tags: readonly string[];
+  /** YouTube watch / youtu.be / embed URL — rendered as an iframe on the detail page when set */
+  demoYoutubeUrl?: string;
+  /** Live deployment or download page — shown as a second CTA when set */
+  liveUrl?: string;
 };
 
+/** Extract a YouTube video id from common URL shapes, or null if unrecognized. */
+export function getYoutubeVideoId(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    if (host === "youtu.be") {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id || null;
+    }
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (parsed.pathname === "/watch") {
+        return parsed.searchParams.get("v");
+      }
+      const embed = parsed.pathname.match(/^\/(?:embed|shorts|live)\/([^/?#]+)/);
+      return embed?.[1] ?? null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 const GH = "https://github.com/Flapjackpants";
+const PLACEHOLDER = "/project-placeholder.png";
 
 export const PROJECTS = [
+  {
+    id: "captain",
+    title: "Captain",
+    description:
+      "Lightweight AI-driven DaVinci Resolve plugin — local Whisper transcription, text-edit cuts, and apply back to the timeline on Free or Studio.",
+    detail:
+      "Captain turns a Resolve clip into a word-level transcript so you can delete, reorder, and auto-trim like editing a document, then apply those cuts back into DaVinci Resolve — replace in place, ripple, or a new timeline.\n\nTranscription runs entirely offline with faster-whisper, so footage never leaves your machine. A Lua bridge owns the live Resolve API while a PySide6 UI handles the transcript editor, silence markers, retake detection, and optional script compare against imported .txt / .fountain / .srt / .vtt.\n\nI built the install path for macOS (venv + FFmpeg + Whisper model), the file-based JSON-RPC bridge between Lua and Python, and the keep-range assembly that maps edited words into timeline ops.",
+    imageUrl: "/captain.png",
+    githubUrl: `${GH}/Captain`,
+    tags: ["Python", "Lua", "PySide6", "Whisper", "FFmpeg"],
+  },
+  {
+    id: "majorscout",
+    title: "MajorScout",
+    description:
+      "College major matching site — a categorized quiz maps you to ~2,000 programs across 25 top U.S. universities with real acceptance rates.",
+    detail:
+      "MajorScout helps prospective students find a tailor-fit college program. A short quiz covers extracurriculars and stats, interests, personality, and preferences, then ranks programs drawn from about two thousand offerings across twenty-five universities.\n\nMatching builds a student vector from quiz answers (including SAT/ACT) and scores programs by cosine similarity blended with selectivity and campus preference fit, capped at two programs per school. Free users see ranks #2–#8; premium unlocks AI follow-ups, rank #1 and #9+, and per-school essay guidance via OpenAI.\n\nThe stack is Flask + SQLAlchemy (SQLite) and pandas on the backend, React + Tailwind via Vite on the frontend, with Google OAuth and Stripe subscriptions for auth and billing.",
+    imageUrl: "/majorScout.png",
+    githubUrl: `${GH}/majorScout`,
+    tags: ["Python", "Flask", "React", "Stripe", "OpenAI"],
+  },
+  {
+    id: "susping",
+    title: "SusPing",
+    description:
+      "[sp]1itKGeejJItN4GCGae1vb7D5Kol_pOvSpLiXWZXVzqHHirQ4bR4mhBBWGH90bFPkAM8STp90JSDEgg",
+    detail:
+      "We reject the light at the tunnel's apex. We reject the lust of capital. We reject the pride of the stars. \n\nWe fight to the last man.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/susPing`,
+    tags: ["Java", "Fabric API", "Memetic Warfare", "Shendigladon", "Eidpan Death"]
+  },
+  {
+    id: "umazing",
+    title: "umazing",
+    description:
+      "In-site Minecraft SMP shop for the Prairie community — Discord auth, cart/checkout, Litematica imports, good deals, and good times 😎",
+    detail:
+      "umazing is the shopping experience built into this site for the Prairie SMP: browse listings, add to cart with chest/stack/item quantities, check out, and track orders — or walk to Susland Plaza (-266, 92, -288) for the brick-and-mortar version.\n\nPlayers sign in with Discord (guild membership required). Admins manage listings, crafting suggestions from recipe data, and order status with Discord DM notifications. Litematica material lists can be imported to fill the cart from a schematic export.\n\nBuilt with Next.js, TypeScript, Discord OAuth, and Drizzle. Visit the live shop at /shop. Hothlica please lmk when you send in the test order. I've been here for years.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/maxwell.li`,
+    tags: ["TypeScript", "Next.js", "Discord OAuth", "Drizzle"],
+    liveUrl: "/shop",
+  },
+  {
+    id: "hvtp",
+    title: "Hudson Valley Textile Project",
+    description:
+      "Hack4Impact Cornell — software for HVTP / NEFX, a nonprofit building a sustainable Northeast fiber supply chain.",
+    detail:
+      "The Hudson Valley Textile Project is a nonprofit strengthening the regional fiber economy; through Northeast Fiber Exchange (NEFX) it connects farmers and consumers around wool and related inventory. I work on the platform as a developer with Hack4Impact Cornell.\n\nMy contributions include multi-field inventory sorting (shear date, updated date, quantity, grade, wool type) for admin and public inventory tables, a dashboard chart PNG export utility, and sales-history surfaces for individual items.\n\nDay to day that means TypeScript and React in an Agile team shipping tools the nonprofit can actually run warehouse and marketplace operations with.",
+    imageUrl: "/hvtp.png",
+    githubUrl: "https://github.com/cornellh4i/HVTP",
+    tags: ["TypeScript", "React", "Firebase", "Rest APIs"],
+  },
+  {
+    id: "stacksquing",
+    title: "stackSquing",
+    description:
+      "Interactive terminal utility for Litematica ASCII material lists — stacks, chests, filter groups, and fulfillment tracking.",
+    detail:
+      "stackSquing is a C++/ncurses tool for Minecraft builders who live in Litematica exports. Open a material_list_*.txt (or a folder and pick the newest), view totals in raw or chest/stack/item format, organize items into filter-based groups, and mark lines fulfilled — saved back with an a suffix.\n\nThe TUI supports reload when Litematica writes a newer timestamped file, scrollable help, and a one-line install script that builds with CMake and drops the binary in ~/.local/bin.\n\nI wrote it because having an accounting calculator on the desk shouldn't be a requirement to play fucking Minecraft, and I wanted something fast that stays in the terminal next to the game.",
+    imageUrl: "/stackSquing.png",
+    githubUrl: `${GH}/stackSquing`,
+    tags: ["C++", "CMake", "ncurses"],
+  },
+  {
+    id: "enchantping",
+    title: "enchantPing",
+    description:
+      "Minecraft Fabric client mod — configurable XP-level ping plus enchanting-table hover previews.",
+    detail:
+      "enchantPing is a client-side Fabric mod for Minecraft 26.1+ that plays a configurable sound when you hit a target XP level.\n\nConfiguration goes through Cloth Config with a Mod Menu entry. The implementation uses client mixins against the modern loader stack (Fabric API, Java 25 toolchain).\n\nSmall quality-of-life, shipped so Susland could grind enchants to #FREESOLON.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/enchantPing`,
+    tags: ["Java", "Fabric API", "Cloth Config", "ModMenu"],
+  },
+  {
+    id: "historical-textures",
+    title: "Historical Textures",
+    description:
+      "Fabric mod that lets you pick historical textures and sounds per block, item, entity, and sound event.",
+    detail:
+      "Historical Textures indexes assets documented on minecraft.wiki and bundles them so you can restore older looks and sounds without hunting packs by hand. In Mod Menu you pick a target, choose a historical variant, and Apply & Reload writes a dynamic overlay resource pack.\n\nA build-time wiki-indexer crawls MediaWiki pages and downloads catalog assets into the mod JAR. At runtime HistoricalCatalog, ModConfig, and OverlayPackManager keep selections offline-safe after the first build.\n\nTargeted at Minecraft 26.1+ with Fabric Loader and Fabric API — a deliberate nostalgia tool for old school chuddies 😣.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/Historical-Textures`,
+    tags: ["Java", "Fabric API", "ModMenu"],
+  },
+  {
+    id: "prairiemap",
+    title: "PrairieMap",
+    description:
+      "Mapping video creation tool — import map frames, draw territories, document events, and compile timelapse video.",
+    detail:
+      "PrairieMap is a chronological map tool. Import a folder of map images, draw faction territories on a Konva canvas, add labels and per-frame intel, then play back or export a timelapse.\n\nThe frontend is React 19, Vite, TypeScript, and Tailwind; the backend is FastAPI with Shapely for polygon overlap transfer and ffmpeg for MP4 compile. Map image bytes stay in the browser via the folder picker; project JSON and geometry mutations go through the API.\n\nFeatures include a three-panel timeline/canvas/intel layout, duplicate and reorder frames, markdown notes, faction stats, and JSON import/export — so war history becomes a shareable video instead of a paragraph.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/prairieMap`,
+    tags: ["TypeScript", "React", "FastAPI", "Konva", "Shapely"],
+  },
   {
     id: "image2banners",
     title: "Image2Banners",
@@ -29,10 +156,11 @@ export const PROJECTS = [
     description:
       "ASCIIify is a tool that converts videos to ASCII art. It can be used as a CLI or integrated into DaVinci Resolve through OpenFX.",
     detail:
-      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. It can be used as a CLI or integrated into DaVinci Resolve through OpenFX. Demo video [here](https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui).",
+      "ASCIIify is a tool that converts videos to ASCII art. It uses FFMPEG to convert the video to a series of images, and then uses a custom algorithm to convert the images to ASCII art. It is written in C++ for efficient memory management and concurrency and uses FFMPEG for video processing. It can be used as a CLI or integrated into DaVinci Resolve through OpenFX.",
     imageUrl: "/asciiify.png",
     githubUrl: "https://github.com/Flapjackpants/ASCIIify",
     tags: ["C++", "FFMPEG", "CMake", "Shell", "OpenCV"],
+    demoYoutubeUrl: "https://youtu.be/-28ysRzY3lc?si=eVkLyBYAxTIc7xui",
   },
   {
     id: "burger-ai",
@@ -60,9 +188,9 @@ export const PROJECTS = [
     id: "critterland",
     title: "Critterland",
     description:
-    "A game simulating critter habitats and critter evolution. Made as a final project for CS 2112 at Cornell.",
+      "A game simulating critter habitats and critter evolution. Made as a final project for CS 2112 at Cornell.",
     detail:
-    "Critter World is a simulation game in which programmable critters move, eat, reproduce, and mutate in a shared world. You define their behavior; the world runs step by step while evolutionary pressure emerges from competition for energy, survival, and offspring. Over time, populations can diverge as mutations stack and successful strategies spread.",
+      "Critter World is a simulation game in which programmable critters move, eat, reproduce, and mutate in a shared world. You define their behavior; the world runs step by step while evolutionary pressure emerges from competition for energy, survival, and offspring. Over time, populations can diverge as mutations stack and successful strategies spread.",
     imageUrl: "/critterland.png",
     githubUrl: "https://github.com/Flapjackpants/CritterLand",
     tags: ["Java", "JavaFX", "Gradle", "Maven"],
@@ -106,10 +234,11 @@ export const PROJECTS = [
     description:
       "Minecraft Fabric mod that rewrites the lighting engine for dynamic brightness — 175+ downloads on Modrinth.",
     detail:
-      "Daylite (May–July 2025) is a client-side Fabric mod that replaces slices of Minecraft's lighting engine so brightness can respond to in-game state instead of staying clamped to vanilla gamma rules.\n\nThe implementation stays careful about frame time: hot paths avoid allocations and unnecessary chunk redraws, and ModMenu exposes toggles for pack makers who want predictable defaults.\n\nThe build is published on Modrinth and has passed 175 downloads — small by AAA standards, but a nice signal that other players wanted the same quality-of-life tweak. You can download it [here](https://modrinth.com/mod/daylite).",
+      "Daylite (May–July 2025) is a client-side Fabric mod that replaces slices of Minecraft's lighting engine so brightness can respond to in-game state instead of staying clamped to vanilla gamma rules.\n\nThe implementation stays careful about frame time: hot paths avoid allocations and unnecessary chunk redraws, and ModMenu exposes toggles for pack makers who want predictable defaults.\n\nThe build is published on Modrinth and has passed 175 downloads — small by AAA standards, but a nice signal that other players wanted the same quality-of-life tweak.",
     imageUrl: "/daylite.gif",
     githubUrl: "https://github.com/Flapjackpants/Daylite",
     tags: ["Java", "Fabric API", "ModMenu API"],
+    liveUrl: "https://modrinth.com/mod/daylite",
   },
   {
     id: "independent-research",
@@ -126,10 +255,35 @@ export const PROJECTS = [
 
 export type ProjectId = (typeof PROJECTS)[number]["id"];
 
+export const PINNED_PROJECT_IDS = [
+  "hvtp",
+  "medexplain",
+  "majorscout",
+  "captain",
+  "burger-ai",
+  "prairiemap",
+] as const satisfies readonly ProjectId[];
+
 export function getProjectById(id: string): Project | undefined {
   return PROJECTS.find((p) => p.id === id);
 }
 
 export function getAllProjectIds(): string[] {
   return PROJECTS.map((p) => p.id);
+}
+
+export function isProjectPinned(id: string): boolean {
+  return (PINNED_PROJECT_IDS as readonly string[]).includes(id);
+}
+
+export function getPinnedProjects(): Project[] {
+  return PINNED_PROJECT_IDS.map((id) => getProjectById(id)!);
+}
+
+/** Pinned first (pin order), then unpinned in chronological PROJECTS order. */
+export function getArchiveProjects(): Project[] {
+  const pinned = getPinnedProjects();
+  const pinnedIds = new Set<string>(PINNED_PROJECT_IDS);
+  const unpinned = PROJECTS.filter((p) => !pinnedIds.has(p.id));
+  return [...pinned, ...unpinned];
 }

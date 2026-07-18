@@ -20,10 +20,11 @@ import {
   navLinks,
   PROFILE_IMAGE_URL,
 } from "@/lib/home-content";
-import { PROJECTS } from "@/lib/projects";
+import { getPinnedProjects } from "@/lib/projects";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 
 const MotionProjectLink = motion(Link);
+const pinnedProjects = getPinnedProjects();
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -172,7 +173,7 @@ export default function Home() {
               </motion.div>
 
               <div className="home-project-grid">
-                {PROJECTS.map((project, index) => (
+                {pinnedProjects.map((project, index) => (
                   <MotionProjectLink
                     key={project.id}
                     href={`/projects/${project.id}`}
@@ -214,6 +215,13 @@ export default function Home() {
                   </MotionProjectLink>
                 ))}
               </div>
+
+              <motion.div {...fadeUp} className="home-projects-cta">
+                <Link href="/projects" className="btn btn--ghost">
+                  {homeProjectsIntro.listAllLabel}
+                  <ArrowRight className="btn-icon-fade" aria-hidden />
+                </Link>
+              </motion.div>
             </div>
           </section>
 

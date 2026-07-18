@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PROJECTS } from "@/lib/projects";
+import { getArchiveProjects, isProjectPinned } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Projects — Portfolio",
@@ -10,6 +10,8 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsIndexPage() {
+  const projects = getArchiveProjects();
+
   return (
     <div className="projects-archive">
       <header className="projects-archive-hero">
@@ -23,38 +25,54 @@ export default function ProjectsIndexPage() {
       </header>
 
       <ul className="projects-archive-list">
-        {PROJECTS.map((project) => (
-          <li key={project.id}>
-            <Link
-              href={`/projects/${project.id}`}
-              className="projects-archive-card"
-            >
-              <div className="projects-archive-card-media">
-                <Image
-                  src={project.imageUrl}
-                  alt=""
-                  fill
-                  className="img-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-              <div className="projects-archive-card-body">
-                <h2 className="projects-archive-card-title">{project.title}</h2>
-                <p className="projects-archive-card-desc">{project.description}</p>
-                <ul className="tag-list projects-archive-card-tags">
-                  {project.tags.map((tag) => (
-                    <li key={tag} className="tag mono-data">
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-                <span className="mono-data projects-archive-card-cta">
-                  Open case study →
-                </span>
-              </div>
-            </Link>
-          </li>
-        ))}
+        {projects.map((project) => {
+          const pinned = isProjectPinned(project.id);
+          return (
+            <li key={project.id}>
+              <Link
+                href={`/projects/${project.id}`}
+                className={
+                  pinned
+                    ? "projects-archive-card projects-archive-card--pinned"
+                    : "projects-archive-card"
+                }
+              >
+                <div className="projects-archive-card-media">
+                  <Image
+                    src={project.imageUrl}
+                    alt=""
+                    fill
+                    className="img-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
+                <div className="projects-archive-card-body">
+                  {pinned ? (
+                    <p className="mono-data projects-archive-card-pin">
+                      PINNED
+                    </p>
+                  ) : null}
+                  <h2 className="projects-archive-card-title">
+                    {project.title}
+                  </h2>
+                  <p className="projects-archive-card-desc">
+                    {project.description}
+                  </p>
+                  <ul className="tag-list projects-archive-card-tags">
+                    {project.tags.map((tag) => (
+                      <li key={tag} className="tag mono-data">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="mono-data projects-archive-card-cta">
+                    Open case study →
+                  </span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
