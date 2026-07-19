@@ -186,7 +186,7 @@ export default function Home() {
                       delay: index * 0.06,
                       ease: [0.22, 1, 0.36, 1] as const,
                     }}
-                    className="home-project-card"
+                    className="home-project-card home-project-card--featured"
                   >
                     <div className="home-project-card-media">
                       <Image
@@ -198,6 +198,9 @@ export default function Home() {
                       />
                     </div>
                     <div className="home-project-card-body">
+                      <p className="mono-data home-project-card-badge">
+                        FEATURED
+                      </p>
                       <h3 className="home-project-card-title">
                         {project.title}
                       </h3>

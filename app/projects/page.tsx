@@ -18,9 +18,9 @@ export default function ProjectsIndexPage() {
         <p className="mono-data">MODULE_ARCHIVE // FULL_INDEX</p>
         <h1 className="projects-archive-title">Projects</h1>
         <p className="projects-archive-lede">
-          Deployments, interfaces, and infrastructure — each case study expands
-          on the snapshot from the home rail. Open any entry for narrative,
-          stack, and links.
+          Featured picks (gold) sit at the top — the same short list from the
+          home page. Everything below is the full chronological archive. Open
+          any entry for narrative, stack, and links.
         </p>
       </header>
 
@@ -49,7 +49,7 @@ export default function ProjectsIndexPage() {
                 <div className="projects-archive-card-body">
                   {pinned ? (
                     <p className="mono-data projects-archive-card-pin">
-                      PINNED
+                      FEATURED
                     </p>
                   ) : null}
                   <h2 className="projects-archive-card-title">

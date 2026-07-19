@@ -68,7 +68,7 @@ export const PROJECTS = [
       "[sp]1itKGeejJItN4GCGae1vb7D5Kol_pOvSpLiXWZXVzqHHirQ4bR4mhBBWGH90bFPkAM8STp90JSDEgg",
     detail:
       "We reject the light at the tunnel's apex. We reject the lust of capital. We reject the pride of the stars. \n\nWe fight to the last man.",
-    imageUrl: "susPing.png",
+    imageUrl: "/susPing.png",
     githubUrl: `${GH}/susPing`,
     tags: ["Java", "Fabric API", "Memetic Warfare", "Shendigladon", "Eidpan Death"]
   },
@@ -275,6 +275,8 @@ export const PINNED_PROJECT_IDS = [
   "captain",
   "burger-ai",
   "prairiemap",
+  "debately",
+  "independent-research",
 ] as const satisfies readonly ProjectId[];
 
 export function getProjectById(id: string): Project | undefined {

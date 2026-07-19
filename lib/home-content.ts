@@ -60,17 +60,17 @@ export const homeHero = {
 } as const;
 
 export const homeProjectsIntro = {
-  heading: "Selected work",
+  heading: "Featured projects",
   intro:
-    "Deployments, interfaces, and fun projects.",
-  listAllLabel: "List all projects",
+    "Some highlights from my time as a dev. Full list of projects below!",
+  listAllLabel: "See all projects",
 } as const;
 
 export const homeCv = {
   heading: "Download my resume",
   lede:
     "A synopsis of my work experience and projects.",
-  pdfHref: "/MaxwellLi033126.pdf",
+  pdfHref: "/MaxwellLi061226.pdf",
 } as const;
 
 export const homeFooter = {
