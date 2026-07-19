@@ -68,7 +68,7 @@ export const PROJECTS = [
       "[sp]1itKGeejJItN4GCGae1vb7D5Kol_pOvSpLiXWZXVzqHHirQ4bR4mhBBWGH90bFPkAM8STp90JSDEgg",
     detail:
       "We reject the light at the tunnel's apex. We reject the lust of capital. We reject the pride of the stars. \n\nWe fight to the last man.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "susPing.png",
     githubUrl: `${GH}/susPing`,
     tags: ["Java", "Fabric API", "Memetic Warfare", "Shendigladon", "Eidpan Death"]
   },
@@ -79,7 +79,7 @@ export const PROJECTS = [
       "In-site Minecraft SMP shop for the Prairie community — Discord auth, cart/checkout, Litematica imports, good deals, and good times 😎",
     detail:
       "umazing is the shopping experience built into this site for the Prairie SMP: browse listings, add to cart with chest/stack/item quantities, check out, and track orders — or walk to Susland Plaza (-266, 92, -288) for the brick-and-mortar version.\n\nPlayers sign in with Discord (guild membership required). Admins manage listings, crafting suggestions from recipe data, and order status with Discord DM notifications. Litematica material lists can be imported to fill the cart from a schematic export.\n\nBuilt with Next.js, TypeScript, Discord OAuth, and Drizzle. Visit the live shop at /shop. Hothlica please lmk when you send in the test order. I've been here for years.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "/umazing.png",
     githubUrl: `${GH}/maxwell.li`,
     tags: ["TypeScript", "Next.js", "Discord OAuth", "Drizzle"],
     liveUrl: "/shop",
@@ -113,7 +113,7 @@ export const PROJECTS = [
       "Minecraft Fabric client mod — configurable XP-level ping plus enchanting-table hover previews.",
     detail:
       "enchantPing is a client-side Fabric mod for Minecraft 26.1+ that plays a configurable sound when you hit a target XP level.\n\nConfiguration goes through Cloth Config with a Mod Menu entry. The implementation uses client mixins against the modern loader stack (Fabric API, Java 25 toolchain).\n\nSmall quality-of-life, shipped so Susland could grind enchants to #FREESOLON.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "/enchantPing.png",
     githubUrl: `${GH}/enchantPing`,
     tags: ["Java", "Fabric API", "Cloth Config", "ModMenu"],
   },
@@ -124,7 +124,7 @@ export const PROJECTS = [
       "Fabric mod that lets you pick historical textures and sounds per block, item, entity, and sound event.",
     detail:
       "Historical Textures indexes assets documented on minecraft.wiki and bundles them so you can restore older looks and sounds without hunting packs by hand. In Mod Menu you pick a target, choose a historical variant, and Apply & Reload writes a dynamic overlay resource pack.\n\nA build-time wiki-indexer crawls MediaWiki pages and downloads catalog assets into the mod JAR. At runtime HistoricalCatalog, ModConfig, and OverlayPackManager keep selections offline-safe after the first build.\n\nTargeted at Minecraft 26.1+ with Fabric Loader and Fabric API — a deliberate nostalgia tool for old school chuddies 😣.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "/historicalTextures.png",
     githubUrl: `${GH}/Historical-Textures`,
     tags: ["Java", "Fabric API", "ModMenu"],
   },
@@ -135,9 +135,22 @@ export const PROJECTS = [
       "Mapping video creation tool — import map frames, draw territories, document events, and compile timelapse video.",
     detail:
       "PrairieMap is a chronological map tool. Import a folder of map images, draw faction territories on a Konva canvas, add labels and per-frame intel, then play back or export a timelapse.\n\nThe frontend is React 19, Vite, TypeScript, and Tailwind; the backend is FastAPI with Shapely for polygon overlap transfer and ffmpeg for MP4 compile. Map image bytes stay in the browser via the folder picker; project JSON and geometry mutations go through the API.\n\nFeatures include a three-panel timeline/canvas/intel layout, duplicate and reorder frames, markdown notes, faction stats, and JSON import/export — so war history becomes a shareable video instead of a paragraph.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "/prairieMap.png",
     githubUrl: `${GH}/prairieMap`,
     tags: ["TypeScript", "React", "FastAPI", "Konva", "Shapely"],
+    demoYoutubeUrl: "https://youtu.be/n1pv22zrlVo",
+  },
+  {
+    id: "enclosecamel",
+    title: "Enclose Camel",
+    description:
+      "CS 3110 final project — puzzle game inspired by enclose.horse: trap a camel in the largest area you can with a limited wall budget.",
+    detail:
+      "Enclose Camel is a grid puzzle I built with a five-person team for Cornell CS 3110 (Spring). Inspired by enclose.horse, you place walls around a roaming camel and try to enclose the largest reachable territory — every free tile inside the enclosure scores a point, under a tight wall budget.\n\nLevels are text-loaded boards with water hazards, score pickups (cherries, golden apples), bees that dock points, portals, lava buckets that grant bonus walls, and mouse/cheese puzzles. The core engine is pure OCaml (model, parser, terminal render); a Raylib frontend drives home, level select, in-game, and credits scenes.\n\nI contributed across the OCaml game logic and tooling alongside Ben Han, Daniel Lee, Caleb Helsel, and Jiayi Bai. Run with dune exec gui/frontend.exe after installing Raylib and ANSITerminal via opam.",
+    imageUrl: "/encloseCamel.png",
+    githubUrl: "https://github.coecis.cornell.edu/dl2276/EncloseCamel",
+    tags: ["OCaml", "Raylib", "Dune", "ANSITerminal"],
+    demoYoutubeUrl: "https://youtu.be/yv8rTLFoT6Y?si=P6qJxtUUJweCJ7X4",
   },
   {
     id: "image2banners",
