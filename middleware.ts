@@ -12,17 +12,24 @@ function isAdminSession(session: {
   return Boolean(adminDiscordId && adminDiscordId === session.discordId);
 }
 
+function isProtectedPath(pathname: string): boolean {
+  return (
+    pathname.startsWith("/admin") || pathname.startsWith("/dashboard")
+  );
+}
+
 export async function middleware(request: NextRequest) {
-  if (!request.nextUrl.pathname.startsWith("/admin")) {
+  const { pathname } = request.nextUrl;
+  if (!isProtectedPath(pathname)) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
-  const returnTo = encodeURIComponent(request.nextUrl.pathname);
+  const returnTo = encodeURIComponent(pathname);
 
   if (!token) {
     return NextResponse.redirect(
-      appUrl(`/shop?error=admin_required&returnTo=${returnTo}`),
+      appUrl(`/api/auth/discord?returnTo=${returnTo}`),
     );
   }
 
@@ -37,5 +44,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/dashboard", "/dashboard/:path*"],
 };

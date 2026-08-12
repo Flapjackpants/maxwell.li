@@ -75,3 +75,31 @@ export const orderItems = sqliteTable("order_items", {
   pricePerCount: integer("price_per_count").notNull().default(1),
   quantity: integer("quantity").notNull(),
 });
+
+/** Per-admin dashboard module toggles + module-specific JSON config. */
+export const dashboardSettings = sqliteTable("dashboard_settings", {
+  userId: integer("user_id")
+    .primaryKey()
+    .references(() => users.id),
+  modulesJson: text("modules_json").notNull().default("{}"),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+/** Encrypted OAuth / API tokens for dashboard providers (google, slack, canvas). */
+export const dashboardOauthTokens = sqliteTable("dashboard_oauth_tokens", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  provider: text("provider").notNull(),
+  accessTokenEnc: text("access_token_enc").notNull(),
+  refreshTokenEnc: text("refresh_token_enc"),
+  expiresAt: integer("expires_at", { mode: "timestamp" }),
+  scopes: text("scopes"),
+  metaJson: text("meta_json").notNull().default("{}"),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
