@@ -470,38 +470,47 @@ export default function AdminListingsPage() {
                   <td
                     valign="top"
                     style={{
-                      whiteSpace: "nowrap",
                       textAlign: "right",
                       verticalAlign: "top",
                     }}
                   >
-                    <button
-                      type="button"
+                    <div
                       style={{
-                        ...retroBtnStyle,
-                        background: listing.inStock ? "#ff8888" : "#88ff88",
-                        color: "#000000",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        gap: 6,
                       }}
-                      onClick={() => void handleToggleSale(listing)}
                     >
-                      {listing.inStock
-                        ? "[ TAKE OFF SALE ]"
-                        : "[ PUT ON SALE ]"}
-                    </button>{" "}
-                    <button
-                      type="button"
-                      style={retroBtnStyle}
-                      onClick={() => startEdit(listing)}
-                    >
-                      [ EDIT ]
-                    </button>{" "}
-                    <button
-                      type="button"
-                      style={retroBtnStyle}
-                      onClick={() => handleDelete(listing)}
-                    >
-                      [ DEL ]
-                    </button>
+                      <button
+                        type="button"
+                        style={{
+                          ...retroBtnStyle,
+                          background: listing.inStock ? "#ff8888" : "#88ff88",
+                          color: "#000000",
+                          whiteSpace: "nowrap",
+                        }}
+                        onClick={() => void handleToggleSale(listing)}
+                      >
+                        {listing.inStock
+                          ? "[ TAKE OFF SALE ]"
+                          : "[ PUT ON SALE ]"}
+                      </button>
+                      <button
+                        type="button"
+                        style={{ ...retroBtnStyle, whiteSpace: "nowrap" }}
+                        onClick={() => startEdit(listing)}
+                      >
+                        [ EDIT ]
+                      </button>
+                      <button
+                        type="button"
+                        style={{ ...retroBtnStyle, whiteSpace: "nowrap" }}
+                        onClick={() => handleDelete(listing)}
+                      >
+                        [ DEL ]
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
