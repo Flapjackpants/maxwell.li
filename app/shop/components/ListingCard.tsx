@@ -18,7 +18,7 @@ type Props = {
 };
 
 export function ListingCard({ listing, currency }: Props) {
-  const { addItem, items } = useCart();
+  const { addItem, items, storeOpen, openShopClosedModal } = useCart();
   const [pickerOpen, setPickerOpen] = useState(false);
   const purchaseLimitLabel = formatPurchaseLimit(listing);
   const existingQuantity =
@@ -96,7 +96,13 @@ export function ListingCard({ listing, currency }: Props) {
                     background: special ? "#ff6688" : retroBtnStyle.background,
                   }}
                   disabled={!listing.inStock}
-                  onClick={() => setPickerOpen(true)}
+                  onClick={() => {
+                    if (!storeOpen) {
+                      openShopClosedModal();
+                      return;
+                    }
+                    setPickerOpen(true);
+                  }}
                 >
                   [ ADD TO CART ]
                 </button>

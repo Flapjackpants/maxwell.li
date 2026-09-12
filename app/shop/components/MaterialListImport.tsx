@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function MaterialListImport({ listings }: Props) {
-  const { items, mergeCartQuantities } = useCart();
+  const { items, mergeCartQuantities, storeOpen, openShopClosedModal } = useCart();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState("");
@@ -28,6 +28,10 @@ export function MaterialListImport({ listings }: Props) {
   } | null>(null);
 
   function processText(text: string) {
+    if (!storeOpen) {
+      openShopClosedModal();
+      return;
+    }
     setError(null);
     setSuccess(null);
     const entries = parseLitematicaMaterialList(text);
@@ -103,7 +107,13 @@ export function MaterialListImport({ listings }: Props) {
           <button
             type="button"
             style={retroBtnStyle}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => {
+              if (!storeOpen) {
+                openShopClosedModal();
+                return;
+              }
+              fileInputRef.current?.click();
+            }}
           >
             [ UPLOAD .TXT ]
           </button>{" "}
@@ -111,6 +121,10 @@ export function MaterialListImport({ listings }: Props) {
             type="button"
             style={retroBtnStyle}
             onClick={() => {
+              if (!storeOpen) {
+                openShopClosedModal();
+                return;
+              }
               setPasteOpen((open) => !open);
               setError(null);
             }}

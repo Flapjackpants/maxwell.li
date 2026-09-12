@@ -17,7 +17,7 @@ type CraftRecipe = (typeof craftingData.recipes)[number];
 const itemNames = craftingData.itemNames as Record<string, string>;
 const tagItems = craftingData.tagItems as Record<string, string[]>;
 
-export type DescendantCascadeAction = "reprice" | "offsale" | "delete";
+export type DescendantCascadeAction = "reprice" | "offsale" | "onsale" | "delete";
 
 export type DescendantSuggestion = {
   listingId: number;
@@ -276,6 +276,11 @@ export function getDescendantSuggestions(
 
       if (action === "offsale") {
         if (!listing.inStock) return null;
+        return base;
+      }
+
+      if (action === "onsale") {
+        if (listing.inStock) return null;
         return base;
       }
 

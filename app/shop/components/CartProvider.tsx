@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { CartItem } from "@/lib/shop/types";
 import { CartAddedToast } from "./CartAddedToast";
+import { ShopClosedModal } from "./ShopClosedModal";
 
 const STORAGE_KEY = "shop_cart";
 
@@ -24,6 +25,8 @@ type CartContextValue = {
   clearCart: () => void;
   itemCount: number;
   hydrated: boolean;
+  storeOpen: boolean;
+  openShopClosedModal: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -47,6 +50,8 @@ function saveCart(items: CartItem[]) {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [storeOpen, setStoreOpen] = useState(true);
+  const [closedModalOpen, setClosedModalOpen] = useState(false);
   const [addedToast, setAddedToast] = useState<{
     name: string;
     quantity: number;
@@ -61,11 +66,30 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    fetch("/api/shop/config")
+      .then((r) => r.json())
+      .then((data: { storeOpen?: boolean }) => {
+        if (typeof data.storeOpen === "boolean") {
+          setStoreOpen(data.storeOpen);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     if (hydrated) saveCart(items);
   }, [items, hydrated]);
 
+  const openShopClosedModal = useCallback(() => {
+    setClosedModalOpen(true);
+  }, []);
+
   const addItem = useCallback(
     (listingId: number, quantity = 1, itemName?: string) => {
+      if (!storeOpen) {
+        setClosedModalOpen(true);
+        return;
+      }
       setItems((prev) => {
         const existing = prev.find((i) => i.listingId === listingId);
         if (existing) {
@@ -79,26 +103,40 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       });
       if (itemName) setAddedToast({ name: itemName, quantity });
     },
-    [],
+    [storeOpen],
   );
 
   const removeItem = useCallback((listingId: number) => {
     setItems((prev) => prev.filter((i) => i.listingId !== listingId));
   }, []);
 
-  const setQuantity = useCallback((listingId: number, quantity: number) => {
-    if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => i.listingId !== listingId));
-      return;
-    }
-    setItems((prev) =>
-      prev.map((i) => (i.listingId === listingId ? { ...i, quantity } : i)),
-    );
-  }, []);
+  const setQuantity = useCallback(
+    (listingId: number, quantity: number) => {
+      if (quantity <= 0) {
+        setItems((prev) => prev.filter((i) => i.listingId !== listingId));
+        return;
+      }
+      setItems((prev) => {
+        const existing = prev.find((i) => i.listingId === listingId);
+        if (!storeOpen && (!existing || quantity > existing.quantity)) {
+          setClosedModalOpen(true);
+          return prev;
+        }
+        return prev.map((i) =>
+          i.listingId === listingId ? { ...i, quantity } : i,
+        );
+      });
+    },
+    [storeOpen],
+  );
 
   const mergeCartQuantities = useCallback(
     (updates: { listingId: number; quantity: number }[]) => {
       if (updates.length === 0) return;
+      if (!storeOpen) {
+        setClosedModalOpen(true);
+        return;
+      }
       setItems((prev) => {
         const next = new Map(prev.map((item) => [item.listingId, item]));
         for (const { listingId, quantity } of updates) {
@@ -111,7 +149,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return [...next.values()];
       });
     },
-    [],
+    [storeOpen],
   );
 
   const clearCart = useCallback(() => setItems([]), []);
@@ -131,8 +169,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       clearCart,
       itemCount,
       hydrated,
+      storeOpen,
+      openShopClosedModal,
     }),
-    [items, addItem, removeItem, setQuantity, mergeCartQuantities, clearCart, itemCount, hydrated],
+    [
+      items,
+      addItem,
+      removeItem,
+      setQuantity,
+      mergeCartQuantities,
+      clearCart,
+      itemCount,
+      hydrated,
+      storeOpen,
+      openShopClosedModal,
+    ],
   );
 
   return (
@@ -145,6 +196,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           onDismiss={() => setAddedToast(null)}
         />
       ) : null}
+      <ShopClosedModal
+        isOpen={closedModalOpen}
+        onDismiss={() => setClosedModalOpen(false)}
+      />
     </CartContext.Provider>
   );
 }

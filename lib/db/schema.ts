@@ -103,3 +103,12 @@ export const dashboardOauthTokens = sqliteTable("dashboard_oauth_tokens", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+/** Global shop configuration / store open toggle. Single row with id = 1. */
+export const shopSettings = sqliteTable("shop_settings", {
+  id: integer("id").primaryKey(),
+  storeOpen: integer("store_open", { mode: "boolean" }).notNull().default(true),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});

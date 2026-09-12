@@ -11,6 +11,7 @@ import {
 import { calculateDeliveryFee, getCurrency } from "@/lib/shop/constants";
 import { cartSubtotal, listingPrice } from "@/lib/shop/pricing";
 import { exceedsPurchaseLimit } from "@/lib/shop/purchase-limit";
+import { isStoreOpen } from "@/lib/shop/store-settings";
 import type { MinecraftDimension } from "@/lib/shop/constants";
 
 type OrderRow = {
@@ -168,6 +169,16 @@ const createOrderSchema = z.object({
 export async function POST(request: Request) {
   const { error, session } = await requireUser();
   if (error) return error;
+
+  if (!(await isStoreOpen())) {
+    return NextResponse.json(
+      {
+        error:
+          "The shop is currently closed. Please come back when the shop is open.",
+      },
+      { status: 403 },
+    );
+  }
 
   const body = await request.json();
   const parsed = createOrderSchema.safeParse(body);

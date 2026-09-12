@@ -22,6 +22,7 @@ type CascadeState = {
 const ACTION_LABELS: Record<DescendantCascadeAction, string> = {
   reprice: "Recalculate prices",
   offsale: "Take off sale",
+  onsale: "Put on sale",
   delete: "Delete",
 };
 
@@ -29,6 +30,7 @@ const ACTION_DESCRIPTIONS: Record<DescendantCascadeAction, string> = {
   reprice:
     "Crafted items may need new prices. Apply a wave, then recalculate again for deeper recipes (e.g. planks → stairs).",
   offsale: "These crafted items also use the item you took off sale.",
+  onsale: "These crafted items also use the item you put on sale.",
   delete: "These crafted items depend on the item you deleted.",
 };
 
@@ -285,7 +287,9 @@ export function DescendantCascadePanel({
                           </span>
                         </>
                       ) : cascade.action === "offsale" ? (
-                        <span style={{ color: "#f00" }}>Currently in stock</span>
+                        <span style={{ color: "#0f0" }}>Currently on sale</span>
+                      ) : cascade.action === "onsale" ? (
+                        <span style={{ color: "#f00" }}>Currently off sale</span>
                       ) : (
                         <span style={{ color: "#ccc" }}>Listed crafted item</span>
                       )}

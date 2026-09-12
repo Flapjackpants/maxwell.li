@@ -18,7 +18,7 @@ import { retroBtnStyle, retroLinkStyle, retroTableBorder } from "@/lib/retro-the
 import type { Listing } from "@/lib/shop/types";
 
 export default function CartPage() {
-  const { items, setQuantity, removeItem, itemCount } = useCart();
+  const { items, setQuantity, removeItem, itemCount, storeOpen, openShopClosedModal } = useCart();
   const [listings, setListings] = useState<Listing[]>([]);
   const [currency, setCurrency] = useState("emeralds");
   const [loading, setLoading] = useState(true);
@@ -62,6 +62,22 @@ export default function CartPage() {
         </p>
       ) : (
         <>
+          {!storeOpen ? (
+            <div
+              style={{
+                textAlign: "center",
+                margin: "12px 0",
+                padding: 8,
+                border: "2px solid #f00",
+                backgroundColor: "#330000",
+              }}
+            >
+              <b style={{ color: "#ff4444" }}>THE SHOP IS CURRENTLY CLOSED</b>
+              <p style={{ margin: "4px 0 0", fontSize: 13, color: "#fff" }}>
+                You cannot add items or check out until the shop reopens.
+              </p>
+            </div>
+          ) : null}
           <table width="100%" cellPadding={6} style={retroTableBorder}>
             <tbody>
               {items.map((item) => {
@@ -103,9 +119,25 @@ export default function CartPage() {
             </b>
           </p>
           <center>
-            <Link href="/shop/checkout" style={{ ...retroLinkStyle, fontSize: 18 }}>
-              [ PROCEED TO CHECKOUT ]
-            </Link>
+            {storeOpen ? (
+              <Link href="/shop/checkout" style={{ ...retroLinkStyle, fontSize: 18 }}>
+                [ PROCEED TO CHECKOUT ]
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={openShopClosedModal}
+                style={{
+                  ...retroBtnStyle,
+                  fontSize: 18,
+                  background: "#cc0000",
+                  color: "#ffffff",
+                  borderColor: "#ff6666",
+                }}
+              >
+                [ SHOP CLOSED — CANNOT CHECKOUT ]
+              </button>
+            )}
           </center>
         </>
       )}

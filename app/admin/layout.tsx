@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RetroShell } from "@/app/shop/components/RetroShell";
 import { retroLinkStyle } from "@/lib/retro-theme";
+import { AdminStoreToggle } from "./components/AdminStoreToggle";
 
 export default function AdminLayout({
   children,
@@ -9,7 +10,16 @@ export default function AdminLayout({
 }) {
   return (
     <RetroShell title="ADMIN ZONE" subtitle="Staff only" showAudio={false}>
-      <p style={{ textAlign: "center" }}>
+      <p
+        style={{
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "8px",
+          flexWrap: "wrap",
+        }}
+      >
         <Link href="/admin/orders" style={retroLinkStyle}>
           Orders
         </Link>
@@ -17,6 +27,8 @@ export default function AdminLayout({
         <Link href="/admin/listings" style={retroLinkStyle}>
           Listings
         </Link>
+        {" | "}
+        <AdminStoreToggle />
         {" | "}
         <form action="/api/auth/logout" method="POST" style={{ display: "inline" }}>
           <button

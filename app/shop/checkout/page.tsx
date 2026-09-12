@@ -34,7 +34,7 @@ type SessionInfo = {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, clearCart } = useCart();
+  const { items, clearCart, storeOpen, openShopClosedModal } = useCart();
   const [listings, setListings] = useState<Listing[]>([]);
   const [session, setSession] = useState<SessionInfo | undefined>(undefined);
   const [fulfillmentType, setFulfillmentType] = useState<"pickup" | "delivery">(
@@ -70,6 +70,12 @@ export default function CheckoutPage() {
       .catch(() => setSession(null));
   }, []);
 
+  useEffect(() => {
+    if (!storeOpen) {
+      openShopClosedModal();
+    }
+  }, [storeOpen, openShopClosedModal]);
+
   const listingMap = new Map(listings.map((l) => [l.id, l]));
   const subtotal = cartSubtotal(
     items
@@ -88,6 +94,10 @@ export default function CheckoutPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!storeOpen) {
+      openShopClosedModal();
+      return;
+    }
     setError(null);
     setSubmitting(true);
 
@@ -274,10 +284,36 @@ export default function CheckoutPage() {
           </b>
         </p>
 
+        {!storeOpen ? (
+          <div
+            style={{
+              textAlign: "center",
+              margin: "16px 0",
+              padding: 12,
+              border: "2px solid #f00",
+              backgroundColor: "#330000",
+            }}
+          >
+            <b style={{ color: "#ff4444", fontSize: 16 }}>
+              THE SHOP IS CURRENTLY CLOSED
+            </b>
+            <p style={{ margin: "6px 0 0", color: "#fff" }}>
+              Please come back when the shop is open to place orders.
+            </p>
+          </div>
+        ) : null}
+
         {error ? <p style={{ color: "#f00" }}>{error}</p> : null}
 
         <center>
-          <button type="submit" style={retroBtnStyle} disabled={submitting}>
+          <button
+            type="submit"
+            style={{
+              ...retroBtnStyle,
+              opacity: submitting || !storeOpen ? 0.5 : 1,
+            }}
+            disabled={submitting || !storeOpen}
+          >
             {submitting ? "[ PLACING ORDER... ]" : "[ PLACE ORDER ]"}
           </button>
         </center>

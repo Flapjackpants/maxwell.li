@@ -115,6 +115,7 @@ export default function AdminListingsPage() {
         pricePerCount: payload.pricePerCount,
       });
     const takenOffSale = before !== null && before.inStock && !payloadInStock;
+    const putOnSale = before !== null && !before.inStock && payloadInStock;
 
     setForm(emptyForm);
     setEditingId(null);
@@ -126,6 +127,13 @@ export default function AdminListingsPage() {
         setCatalogCascadeOpen(false);
         setCascade({
           action: "offsale",
+          sourceListingId: wasEditing,
+          sourceName: before.name,
+        });
+      } else if (putOnSale) {
+        setCatalogCascadeOpen(false);
+        setCascade({
+          action: "onsale",
           sourceListingId: wasEditing,
           sourceName: before.name,
         });
@@ -186,6 +194,26 @@ export default function AdminListingsPage() {
         initialSuggestions: descendantSuggestions,
       });
     }
+  }
+
+  async function handleToggleSale(listing: Listing) {
+    const nextInStock = !listing.inStock;
+    const res = await fetch(`/api/listings/${listing.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inStock: nextInStock }),
+    });
+    if (!res.ok) {
+      setError(`Failed to update ${listing.name}`);
+      return;
+    }
+    await refreshListings();
+    setCatalogCascadeOpen(false);
+    setCascade({
+      action: nextInStock ? "onsale" : "offsale",
+      sourceListingId: listing.id,
+      sourceName: listing.name,
+    });
   }
 
   function applySuggestion(next: CraftingSuggestionFormState) {
@@ -270,7 +298,7 @@ export default function AdminListingsPage() {
                   setForm({ ...form, inStock: e.target.checked })
                 }
               />{" "}
-              In stock
+              On sale
             </label>{" "}
             <label>
               <input
@@ -431,9 +459,9 @@ export default function AdminListingsPage() {
                     )}
                     <br />
                     {listing.inStock ? (
-                      <span style={{ color: "#0f0" }}>IN STOCK</span>
+                      <span style={{ color: "#0f0" }}>ON SALE</span>
                     ) : (
-                      <span style={{ color: "#f00" }}>OUT OF STOCK</span>
+                      <span style={{ color: "#f00" }}>OFF SALE</span>
                     )}
                     <p style={{ fontSize: 12, margin: "8px 0 0" }}>
                       {listing.description}
@@ -447,6 +475,19 @@ export default function AdminListingsPage() {
                       verticalAlign: "top",
                     }}
                   >
+                    <button
+                      type="button"
+                      style={{
+                        ...retroBtnStyle,
+                        background: listing.inStock ? "#ff8888" : "#88ff88",
+                        color: "#000000",
+                      }}
+                      onClick={() => void handleToggleSale(listing)}
+                    >
+                      {listing.inStock
+                        ? "[ TAKE OFF SALE ]"
+                        : "[ PUT ON SALE ]"}
+                    </button>{" "}
                     <button
                       type="button"
                       style={retroBtnStyle}

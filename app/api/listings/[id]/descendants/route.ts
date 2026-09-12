@@ -29,7 +29,12 @@ function mapListing(row: typeof listings.$inferSelect): Listing {
   };
 }
 
-const ACTIONS = new Set<DescendantCascadeAction>(["reprice", "offsale", "delete"]);
+const ACTIONS = new Set<DescendantCascadeAction>([
+  "reprice",
+  "offsale",
+  "onsale",
+  "delete",
+]);
 
 export async function GET(
   request: Request,
@@ -47,7 +52,7 @@ export async function GET(
   const action = new URL(request.url).searchParams.get("action");
   if (!action || !ACTIONS.has(action as DescendantCascadeAction)) {
     return NextResponse.json(
-      { error: "action must be reprice, offsale, or delete" },
+      { error: "action must be reprice, offsale, onsale, or delete" },
       { status: 400 },
     );
   }
@@ -76,7 +81,7 @@ export async function GET(
 }
 
 const batchSchema = z.object({
-  action: z.enum(["reprice", "offsale", "delete"]),
+  action: z.enum(["reprice", "offsale", "onsale", "delete"]),
   listingIds: z.array(z.number().int().positive()).min(1),
 });
 
@@ -149,6 +154,15 @@ export async function POST(
       const result = await db
         .update(listings)
         .set({ inStock: false, updatedAt: new Date() })
+        .where(eq(listings.id, listingId))
+        .returning({ id: listings.id });
+      if (result[0]) updated.push(result[0].id);
+    }
+  } else if (action === "onsale") {
+    for (const listingId of listingIds) {
+      const result = await db
+        .update(listings)
+        .set({ inStock: true, updatedAt: new Date() })
         .where(eq(listings.id, listingId))
         .returning({ id: listings.id });
       if (result[0]) updated.push(result[0].id);

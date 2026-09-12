@@ -80,15 +80,12 @@ export function CraftingSuggestionsPanel({
           >
             {expanded ? "[ - ]" : "[ + ]"}
           </button>{" "}
-          Craftable suggestions
+          Item Propagation
         </legend>
         {expanded ? (
           <>
             <p style={{ fontSize: 12, color: "#aaa", margin: "0 0 8px" }}>
-              Items craftable from ingredients on your listings. Recipes from
-              official Minecraft {(craftingData as { minecraftVersion?: string }).minecraftVersion ?? "26.2"} data
-              ({(craftingData as { recipeCount?: number }).recipeCount ?? "1000+"}{" "}
-              crafting recipes). Prices use cheapest materials as 1 {currency} per N items.
+              Manage item propagation across your catalog: discover new craftable listings from existing ingredients, and propagate on/off sale status and price updates to child items when parent materials change. Recipes from official Minecraft {(craftingData as { minecraftVersion?: string }).minecraftVersion ?? "26.2"} data ({(craftingData as { recipeCount?: number }).recipeCount ?? "1000+"} recipes). Prices use cheapest materials as 1 {currency} per N items.
             </p>
             {loading ? (
               <p style={{ fontSize: 13, color: "#aaa" }}>Loading recipes...</p>
