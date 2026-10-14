@@ -34,7 +34,7 @@ function readGraphTokens() {
 
 /**
  * Fixed full-viewport stack: blue gradient, data grid, animated node graph,
- * vignette, light film grain. Tokens in globals.css (`:root` + `.portfolio-bg*`).
+ * vignette. Tokens in globals.css (`:root` + `.portfolio-bg*`).
  */
 export function PortfolioBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -143,7 +143,6 @@ export function PortfolioBackground() {
       <div className="portfolio-bg__grid" />
       <canvas ref={canvasRef} className="portfolio-bg__canvas" />
       <div className="portfolio-bg__vignette" />
-      <div className="portfolio-bg__grain" />
     </div>
   );
 }

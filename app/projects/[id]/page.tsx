@@ -72,62 +72,63 @@ export default async function ProjectDetailPage({ params }: Props) {
     : null;
 
   return (
-    <article className="project-detail">
-      <Link href="/projects" className="project-detail-back mono-data">
-        <ArrowLeft className="project-detail-back-icon" aria-hidden />
+    <article>
+      <Link href="/projects" className="detail__back">
+        <ArrowLeft aria-hidden />
         All projects
       </Link>
 
-      <div className="project-detail-hero">
-        <div className="project-detail-media">
-          <Image
-            src={project.imageUrl}
-            alt=""
-            fill
-            priority
-            className="img-cover"
-            sizes="100vw"
-          />
+      <header className="detail__head">
+        <p className="eyebrow">CASE_STUDY // {project.id.toUpperCase()}</p>
+        <h1 className="detail__title">{project.title}</h1>
+        <ul className="tag-list">
+          {project.tags.map((tag) => (
+            <li key={tag} className="tag">
+              {tag}
+            </li>
+          ))}
+        </ul>
+        <div className="detail__actions">
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn--ghost"
+          >
+            <Github aria-hidden />
+            Repository
+          </a>
+          {project.liveUrl ? (
+            <LiveLink href={project.liveUrl} className="btn btn--ghost" />
+          ) : null}
         </div>
-        <div className="project-detail-hero-copy">
-          <p className="mono-data">CASE_STUDY // {project.id.toUpperCase()}</p>
-          <h1 className="project-detail-title">{project.title}</h1>
-          <ul className="tag-list project-detail-tags">
-            {project.tags.map((tag) => (
-              <li key={tag} className="tag mono-data">
-                {tag}
-              </li>
-            ))}
-          </ul>
-          <div className="project-detail-actions">
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn--ghost"
-            >
-              <Github aria-hidden />
-              Repository
-            </a>
-            {project.liveUrl ? (
-              <LiveLink href={project.liveUrl} className="btn btn--ghost" />
-            ) : null}
-          </div>
-        </div>
+      </header>
+
+      <div className="detail__hero">
+        <Image
+          src={project.imageUrl}
+          alt=""
+          fill
+          preload
+          className="img-cover"
+          sizes="(max-width: 1152px) 100vw, 1152px"
+        />
       </div>
 
-      <div className="project-detail-body">
-        {project.detail.split("\n\n").map((para, i) => (
-          <p key={i} className="project-detail-para">
-            {para}
-          </p>
-        ))}
+      <div className="detail__body grid-12">
+        <div className="detail__prose">
+          {project.detail.split("\n\n").map((para, i) => (
+            <p key={i} className="detail__para">
+              {para}
+            </p>
+          ))}
+        </div>
       </div>
 
       {youtubeId ? (
-        <div className="project-detail-demo">
-          <p className="mono-data project-detail-demo-label">DEMO</p>
-          <div className="project-detail-demo-frame">
+        <div className="detail__demo">
+          <p className="eyebrow detail__demo-label">DEMO</p>
+          <div className="detail__demo-frame">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
               title={`${project.title} demo`}
@@ -140,22 +141,20 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
       ) : null}
 
-      <nav className="project-detail-nav" aria-label="Adjacent projects">
+      <nav className="pager" aria-label="Adjacent projects">
         {prev ? (
-          <Link href={`/projects/${prev.id}`} className="project-detail-nav-link">
-            <span className="mono-data">Prev</span>
-            <span className="project-detail-nav-title">{prev.title}</span>
+          <Link href={`/projects/${prev.id}`} className="pager__link">
+            <span className="eyebrow">Prev</span>
+            <span className="pager__title">{prev.title}</span>
           </Link>
-        ) : (
-          <span className="project-detail-nav-spacer" aria-hidden />
-        )}
+        ) : null}
         {next ? (
           <Link
             href={`/projects/${next.id}`}
-            className="project-detail-nav-link project-detail-nav-link--next"
+            className="pager__link pager__link--next"
           >
-            <span className="mono-data">Next</span>
-            <span className="project-detail-nav-title">{next.title}</span>
+            <span className="eyebrow">Next</span>
+            <span className="pager__title">{next.title}</span>
           </Link>
         ) : null}
       </nav>

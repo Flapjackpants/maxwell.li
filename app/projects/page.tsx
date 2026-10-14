@@ -13,61 +13,51 @@ export default function ProjectsIndexPage() {
   const projects = getArchiveProjects();
 
   return (
-    <div className="projects-archive">
-      <header className="projects-archive-hero">
-        <p className="mono-data">MODULE_ARCHIVE // FULL_INDEX</p>
-        <h1 className="projects-archive-title">Projects</h1>
-        <p className="projects-archive-lede">
-          Featured picks (gold) sit at the top — the same short list from the
-          home page. Everything below is the full chronological archive. Open
-          any entry for narrative, stack, and links.
+    <div>
+      <header className="page-head">
+        <p className="eyebrow">MODULE_ARCHIVE // FULL_INDEX</p>
+        <h1 className="page-head__title">Projects</h1>
+        <p className="page-head__lede">
+          Featured picks (marked Featured) sit at the top — the same short list
+          from the home page. Everything below is the full chronological
+          archive. Open any entry for narrative, stack, and links.
         </p>
       </header>
 
-      <ul className="projects-archive-list">
+      <ul className="project-list">
         {projects.map((project) => {
           const pinned = isProjectPinned(project.id);
           return (
             <li key={project.id}>
               <Link
                 href={`/projects/${project.id}`}
-                className={
-                  pinned
-                    ? "projects-archive-card projects-archive-card--pinned"
-                    : "projects-archive-card"
-                }
+                className="project-row grid-12"
               >
-                <div className="projects-archive-card-media">
+                <div className="project-row__media">
                   <Image
                     src={project.imageUrl}
                     alt=""
                     fill
                     className="img-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, 280px"
                   />
                 </div>
-                <div className="projects-archive-card-body">
+                <div className="project-row__body">
                   {pinned ? (
-                    <p className="mono-data projects-archive-card-pin">
-                      FEATURED
-                    </p>
+                    <span className="project-row__marker">FEATURED</span>
                   ) : null}
-                  <h2 className="projects-archive-card-title">
-                    {project.title}
-                  </h2>
-                  <p className="projects-archive-card-desc">
-                    {project.description}
-                  </p>
-                  <ul className="tag-list projects-archive-card-tags">
+                  <h2 className="project-row__title">{project.title}</h2>
+                  <p className="project-row__desc">{project.description}</p>
+                </div>
+                <div className="project-row__meta">
+                  <ul className="tag-list">
                     {project.tags.map((tag) => (
-                      <li key={tag} className="tag mono-data">
+                      <li key={tag} className="tag">
                         {tag}
                       </li>
                     ))}
                   </ul>
-                  <span className="mono-data projects-archive-card-cta">
-                    Open case study →
-                  </span>
+                  <span className="text-link">Open case study →</span>
                 </div>
               </Link>
             </li>
