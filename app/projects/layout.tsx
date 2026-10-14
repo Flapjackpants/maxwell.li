@@ -7,18 +7,18 @@ export default function ProjectsLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="page-root projects-archive-root">
+    <div className="page-root site-root">
       <PortfolioBackground />
-      <div className="page-layer projects-archive-layer">
-        <header className="projects-archive-header">
-          <Link href="/" className="projects-archive-back mono-data">
-            ← Index
-          </Link>
-          <span className="projects-archive-label mono-data">
-            ARCHIVE // WORK
-          </span>
+      <div className="page-layer">
+        <header className="site-header">
+          <div className="site-header__inner">
+            <Link href="/" className="site-brand">
+              ← Index
+            </Link>
+            <span className="site-label">ARCHIVE // WORK</span>
+          </div>
         </header>
-        <div className="projects-archive-main">{children}</div>
+        <div className="site-main">{children}</div>
       </div>
     </div>
   );

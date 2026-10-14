@@ -1,15 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Image from "next/image";
+import { MotionConfig, motion } from "framer-motion";
 import Link from "next/link";
-import {
-  ArrowRight,
-  FileText,
-  Github,
-  Linkedin,
-  Mail,
-} from "lucide-react";
+import { ArrowDown, ArrowRight, FileText, Github, Linkedin, Mail } from "lucide-react";
 import {
   homeAboutBlocks,
   homeAboutSection,
@@ -21,287 +14,197 @@ import {
   PROFILE_IMAGE_URL,
 } from "@/lib/home-content";
 import { getPinnedProjects } from "@/lib/projects";
+import { FeaturedCarousel } from "./components/FeaturedCarousel";
+import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
+import { SectionRail, useActiveSection } from "./components/SectionRail";
 
-const MotionProjectLink = motion(Link);
 const pinnedProjects = getPinnedProjects();
+const sectionIds = navLinks.map((link) => link.href.slice(1));
+const railLinks = navLinks.filter((link) => link.href !== "#socials");
 
 const fadeUp = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 8 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-12% 0px" },
-  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
+  transition: { duration: 0.4, ease: [0.2, 0, 0, 1] as const },
 };
 
 export default function Home() {
+  const activeSection = useActiveSection(sectionIds);
+
   return (
-    <div className="page-root home-root">
-      <PortfolioBackground />
-      <div className="page-layer">
-        <header className="projects-archive-header">
-          <a href="#bio" className="home-nav-brand">
-            Home
-          </a>
-          <nav aria-label="Primary">
-            <ul className="home-header-nav">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <a href={link.href} className="home-nav-link">
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
-
-        <main className="home-main">
-          <section
-            id="bio"
-            className="home-section home-section--hero"
-          >
-            <div className="home-inner home-inner--hero">
-              <motion.div {...fadeUp} className="home-hero-split">
-                <div className="home-portrait home-portrait--hero">
-                  <Image
-                    src={PROFILE_IMAGE_URL}
-                    alt="Profile"
-                    fill
-                    className="img-cover"
-                    sizes="(max-width: 640px) 88vw, (max-width: 1024px) 42vw, 480px"
-                    priority
-                  />
-                </div>
-                <div className="home-hero-copy">
-                  <p className="mono-data home-hero-eyebrow">
-                    {homeHero.eyebrow}
-                  </p>
-                  <h1 className="home-hero-title">{homeHero.title}</h1>
-                  <p className="home-lede home-lede--hero">{homeHero.lede}</p>
-                  <div className="home-cta-row home-cta-row--hero">
-                    <a href="#cv" className="btn btn--primary">
-                      <FileText aria-hidden />
-                      View CV
-                    </a>
-                    <a
-                      href="https://github.com/Flapjackpants"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn--ghost"
-                    >
-                      <Github aria-hidden />
-                      GitHub
-                      <ArrowRight className="btn-icon-fade" aria-hidden />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </section>
-
-          <section id="about" className="home-section home-section--about">
-            <div className="home-inner">
-              <motion.div {...fadeUp} className="home-about-section-intro">
-                <p className="mono-data home-about-eyebrow">
-                  {homeAboutSection.eyebrow}
-                </p>
-                <h2 className="home-section-heading home-about-heading">
-                  {homeAboutSection.heading}
-                </h2>
-              </motion.div>
-
-              <div className="home-about-blocks">
-                {homeAboutBlocks.map((block, index) => (
-                  <div
-                    key={block.title}
-                    className={
-                      index % 2 === 1
-                        ? "home-about-block home-about-block--reverse"
-                        : "home-about-block"
-                    }
-                  >
-                    <motion.div {...fadeUp} className="home-about-split">
-                      <div
-                        className="home-about-collage-wrap"
-                        aria-hidden="true"
+    <MotionConfig reducedMotion="user">
+      <div className="page-root site-root">
+        <PortfolioBackground />
+        <div className="page-layer">
+          <header className="site-header">
+            <div className="site-header__inner">
+              <a href="#bio" className="site-brand">
+                Home
+              </a>
+              <nav aria-label="Primary" className="site-nav">
+                <ul>
+                  {navLinks.map((link) => (
+                    <li key={link.href}>
+                      <a
+                        href={link.href}
+                        aria-current={
+                          link.href.slice(1) === activeSection
+                            ? "true"
+                            : undefined
+                        }
                       >
-                        <div className="home-about-collage-grid">
-                          {block.imageRows.map((row, rowIndex) => (
-                            <div
-                              key={rowIndex}
-                              className="home-about-collage-row"
-                              style={
-                                {
-                                  "--about-row-n": row.length,
-                                } as React.CSSProperties
-                              }
-                            >
-                              {row.map((src, cellIndex) => (
-                                // Natural dimensions + max-* caps for variable-aspect mosaic (Next/Image fill always uses a box).
-                                // eslint-disable-next-line @next/next/no-img-element -- see above
-                                <img
-                                  key={`${rowIndex}-${cellIndex}-${src}`}
-                                  src={src}
-                                  alt=""
-                                  className="home-about-collage-img"
-                                  loading="lazy"
-                                  decoding="async"
-                                />
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="home-about-copy">
-                        <h3 className="home-about-subheading">{block.title}</h3>
-                        <p className="home-about-body">{block.body}</p>
-                      </div>
-                    </motion.div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section id="projects" className="home-section">
-            <div className="home-inner">
-              <motion.div {...fadeUp} className="home-intro-block">
-                <h2 className="home-section-heading">
-                  {homeProjectsIntro.heading}
-                </h2>
-                <p className="home-section-intro">{homeProjectsIntro.intro}</p>
-              </motion.div>
-
-              <div className="home-project-grid">
-                {pinnedProjects.map((project, index) => (
-                  <MotionProjectLink
-                    key={project.id}
-                    href={`/projects/${project.id}`}
-                    aria-label={`${project.title} — open case study`}
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-10% 0px" }}
-                    transition={{
-                      duration: 0.5,
-                      delay: index * 0.06,
-                      ease: [0.22, 1, 0.36, 1] as const,
-                    }}
-                    className="home-project-card home-project-card--featured"
-                  >
-                    <div className="home-project-card-media">
-                      <Image
-                        src={project.imageUrl}
-                        alt=""
-                        fill
-                        className="img-cover"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
-                      />
-                    </div>
-                    <div className="home-project-card-body">
-                      <p className="mono-data home-project-card-badge">
-                        FEATURED
-                      </p>
-                      <h3 className="home-project-card-title">
-                        {project.title}
-                      </h3>
-                      <p className="home-project-card-desc">
-                        {project.description}
-                      </p>
-                      <ul className="tag-list">
-                        {project.tags.map((tag) => (
-                          <li key={tag} className="tag mono-data">
-                            {tag}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </MotionProjectLink>
-                ))}
-              </div>
-
-              <motion.div {...fadeUp} className="home-projects-cta">
-                <Link href="/projects" className="btn btn--ghost">
-                  {homeProjectsIntro.listAllLabel}
-                  <ArrowRight className="btn-icon-fade" aria-hidden />
-                </Link>
-              </motion.div>
-            </div>
-          </section>
-
-          <section id="cv" className="home-section">
-            <div className="home-inner">
-              <motion.div {...fadeUp} className="home-cv-panel">
-                <div>
-                  <h2 className="home-section-heading">{homeCv.heading}</h2>
-                  <p className="home-cv-lede">{homeCv.lede}</p>
-                </div>
-                <a href={homeCv.pdfHref} className="btn btn--download">
-                  <FileText aria-hidden />
-                  Download
-                </a>
-              </motion.div>
-            </div>
-          </section>
-        </main>
-
-        <footer id="socials" className="home-footer-outer">
-          <div className="home-inner">
-            <motion.div {...fadeUp} className="home-footer-rule">
-              <div className="home-footer-row">
-                <div>
-                  <p className="mono-data home-footer-label">
-                    {homeFooter.connectLabel}
-                  </p>
-                  <p className="home-footer-copy">{homeFooter.copy}</p>
-                </div>
-                <ul className="home-social-list">
-                  <li>
-                    <a
-                      href={homeFooter.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="home-social-link"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={homeFooter.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="home-social-link"
-                      aria-label="GitHub"
-                    >
-                      <Github />
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={homeFooter.mailHref}
-                      className="home-social-link"
-                      aria-label="Email"
-                    >
-                      <Mail />
-                    </a>
-                  </li>
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
-              </div>
-              <p className="home-copyright mono-data">
-                © {new Date().getFullYear()} — All rights reserved
-              </p>
-            </motion.div>
-          </div>
-        </footer>
+              </nav>
+            </div>
+          </header>
 
-        <Link
-          href="/retro"
-          prefetch={false}
-          className="home-retro-easter-egg"
-          aria-label="Open Y2K-style alternate homepage"
-        />
+          <SectionRail items={railLinks} active={activeSection} />
+
+          <main>
+            <section id="bio" className="hero">
+              <div className="section__inner">
+                <motion.div {...fadeUp}>
+                  <HeroScene imageUrl={PROFILE_IMAGE_URL}>
+                    <p className="eyebrow">{homeHero.eyebrow}</p>
+                    <h1 className="hero__name">{homeHero.title}</h1>
+                    <p className="hero__lede">{homeHero.lede}</p>
+                    <div className="hero__cta">
+                      <a href="#cv" className="btn btn--primary">
+                        <FileText aria-hidden />
+                        View CV
+                      </a>
+                      <a
+                        href="https://github.com/Flapjackpants"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn--ghost"
+                      >
+                        <Github aria-hidden />
+                        GitHub
+                        <ArrowRight aria-hidden />
+                      </a>
+                    </div>
+                  </HeroScene>
+                </motion.div>
+              </div>
+              <a href="#about" className="hero__cue eyebrow">
+                Scroll
+                <ArrowDown aria-hidden />
+              </a>
+            </section>
+
+            <section id="about" className="section">
+              <div className="section__inner">
+                <motion.div {...fadeUp} className="section__head grid-12">
+                  <div>
+                    <p className="eyebrow">{homeAboutSection.eyebrow}</p>
+                    <h2 className="section__title">
+                      {homeAboutSection.heading}
+                    </h2>
+                  </div>
+                </motion.div>
+
+                {homeAboutBlocks.map((block, index) => (
+                  <AboutScene key={block.title} block={block} index={index} />
+                ))}
+              </div>
+            </section>
+
+            <section id="projects" className="section">
+              <div className="section__inner">
+                <motion.div {...fadeUp} className="section__head grid-12">
+                  <h2 className="section__title">
+                    {homeProjectsIntro.heading}
+                  </h2>
+                  <p className="section__intro">{homeProjectsIntro.intro}</p>
+                </motion.div>
+
+                <FeaturedCarousel
+                  projects={pinnedProjects}
+                  seeAllLabel={homeProjectsIntro.listAllLabel}
+                />
+              </div>
+            </section>
+
+            <section id="cv" className="section">
+              <div className="section__inner">
+                <motion.div {...fadeUp} className="cv-row">
+                  <div>
+                    <h2 className="cv-row__heading">{homeCv.heading}</h2>
+                    <p className="cv-row__lede">{homeCv.lede}</p>
+                  </div>
+                  <a href={homeCv.pdfHref} className="btn btn--primary">
+                    <FileText aria-hidden />
+                    Download
+                  </a>
+                </motion.div>
+              </div>
+            </section>
+          </main>
+
+          <footer id="socials" className="site-footer">
+            <div className="section__inner">
+              <motion.div {...fadeUp}>
+                <div className="site-footer__row">
+                  <div>
+                    <p className="eyebrow">{homeFooter.connectLabel}</p>
+                    <p className="site-footer__copy">{homeFooter.copy}</p>
+                  </div>
+                  <ul className="site-footer__social">
+                    <li>
+                      <a
+                        href={homeFooter.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="site-footer__link"
+                        aria-label="LinkedIn"
+                      >
+                        <Linkedin />
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={homeFooter.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="site-footer__link"
+                        aria-label="GitHub"
+                      >
+                        <Github />
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={homeFooter.mailHref}
+                        className="site-footer__link"
+                        aria-label="Email"
+                      >
+                        <Mail />
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <p className="eyebrow site-footer__legal">
+                  © {new Date().getFullYear()} — All rights reserved
+                </p>
+              </motion.div>
+            </div>
+          </footer>
+
+          <Link
+            href="/retro"
+            prefetch={false}
+            className="home-retro-easter-egg"
+            aria-label="Open Y2K-style alternate homepage"
+          />
+        </div>
       </div>
-    </div>
+    </MotionConfig>
   );
 }
