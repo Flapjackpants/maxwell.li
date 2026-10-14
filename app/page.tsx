@@ -1,9 +1,8 @@
 "use client";
 
 import { MotionConfig, motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, FileText, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowDown, ArrowRight, FileText, Github, Linkedin, Mail } from "lucide-react";
 import {
   homeAboutBlocks,
   homeAboutSection,
@@ -16,9 +15,13 @@ import {
 } from "@/lib/home-content";
 import { getPinnedProjects } from "@/lib/projects";
 import { FeaturedCarousel } from "./components/FeaturedCarousel";
+import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
+import { SectionRail, useActiveSection } from "./components/SectionRail";
 
 const pinnedProjects = getPinnedProjects();
+const sectionIds = navLinks.map((link) => link.href.slice(1));
+const railLinks = navLinks.filter((link) => link.href !== "#socials");
 
 const fadeUp = {
   initial: { opacity: 0, y: 8 },
@@ -28,6 +31,8 @@ const fadeUp = {
 };
 
 export default function Home() {
+  const activeSection = useActiveSection(sectionIds);
+
   return (
     <MotionConfig reducedMotion="user">
       <div className="page-root site-root">
@@ -42,7 +47,16 @@ export default function Home() {
                 <ul>
                   {navLinks.map((link) => (
                     <li key={link.href}>
-                      <a href={link.href}>{link.label}</a>
+                      <a
+                        href={link.href}
+                        aria-current={
+                          link.href.slice(1) === activeSection
+                            ? "true"
+                            : undefined
+                        }
+                      >
+                        {link.label}
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -50,21 +64,13 @@ export default function Home() {
             </div>
           </header>
 
+          <SectionRail items={railLinks} active={activeSection} />
+
           <main>
             <section id="bio" className="hero">
               <div className="section__inner">
-                <motion.div {...fadeUp} className="hero__inner grid-12">
-                  <div className="hero__portrait">
-                    <Image
-                      src={PROFILE_IMAGE_URL}
-                      alt="Profile"
-                      fill
-                      className="img-cover"
-                      sizes="(max-width: 768px) 320px, 480px"
-                      preload
-                    />
-                  </div>
-                  <div className="hero__copy">
+                <motion.div {...fadeUp}>
+                  <HeroScene imageUrl={PROFILE_IMAGE_URL}>
                     <p className="eyebrow">{homeHero.eyebrow}</p>
                     <h1 className="hero__name">{homeHero.title}</h1>
                     <p className="hero__lede">{homeHero.lede}</p>
@@ -84,9 +90,13 @@ export default function Home() {
                         <ArrowRight aria-hidden />
                       </a>
                     </div>
-                  </div>
+                  </HeroScene>
                 </motion.div>
               </div>
+              <a href="#about" className="hero__cue eyebrow">
+                Scroll
+                <ArrowDown aria-hidden />
+              </a>
             </section>
 
             <section id="about" className="section">
@@ -100,55 +110,9 @@ export default function Home() {
                   </div>
                 </motion.div>
 
-                <ul>
-                  {homeAboutBlocks.map((block, index) => (
-                    <motion.li
-                      key={block.title}
-                      {...fadeUp}
-                      className={
-                        index % 2 === 1
-                          ? "about-item about-item--reverse grid-12"
-                          : "about-item grid-12"
-                      }
-                    >
-                      <div className="about-item__copy">
-                        <p className="eyebrow about-item__index">
-                          {String(index + 1).padStart(2, "0")}
-                        </p>
-                        <h3 className="about-item__title">{block.title}</h3>
-                        <p className="about-item__body">{block.body}</p>
-                      </div>
-                      <div className="about-item__media" aria-hidden="true">
-                        <div className="home-about-collage-grid">
-                          {block.imageRows.map((row, rowIndex) => (
-                            <div
-                              key={rowIndex}
-                              className="home-about-collage-row"
-                              style={
-                                {
-                                  "--about-row-n": row.length,
-                                } as React.CSSProperties
-                              }
-                            >
-                              {row.map((src, cellIndex) => (
-                                // Natural dimensions + max-* caps for variable-aspect mosaic (Next/Image fill always uses a box).
-                                // eslint-disable-next-line @next/next/no-img-element -- see above
-                                <img
-                                  key={`${rowIndex}-${cellIndex}-${src}`}
-                                  src={src}
-                                  alt=""
-                                  className="home-about-collage-img"
-                                  loading="lazy"
-                                  decoding="async"
-                                />
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.li>
-                  ))}
-                </ul>
+                {homeAboutBlocks.map((block, index) => (
+                  <AboutScene key={block.title} block={block} index={index} />
+                ))}
               </div>
             </section>
 

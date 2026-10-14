@@ -337,13 +337,12 @@ a:hover .text-link,
 
 /* ─── Home: hero ────────────────────────────────────────────────────────── */
 .hero {
-  padding-block: var(--s-16);
-}
-
-@media (min-width: 768px) {
-  .hero {
-    padding-block: var(--s-24);
-  }
+  position: relative;
+  display: flex;
+  min-height: var(--stage-h);
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--s-12) var(--s-16);
 }
 
 .hero__inner {
@@ -354,12 +353,17 @@ a:hover .text-link,
 .hero__portrait {
   position: relative;
   width: 100%;
-  max-width: var(--portrait-max);
   aspect-ratio: 4 / 5;
+  max-height: var(--media-tall);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background-color: var(--n-900);
+}
+
+.hero__portrait-inner {
+  position: absolute;
+  inset: 0;
 }
 
 .hero__name {
@@ -380,105 +384,241 @@ a:hover .text-link,
   margin-top: var(--s-8);
 }
 
+.hero__cue {
+  position: absolute;
+  bottom: var(--s-4);
+  left: 50%;
+  display: none;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--s-12);
+  translate: -50% 0;
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+
+.hero__cue:hover {
+  color: var(--n-50);
+}
+
+.hero__cue svg {
+  width: var(--s-4);
+  height: var(--s-4);
+}
+
 @media (min-width: 768px) {
   .hero__portrait {
-    grid-column: 1 / 6;
-    max-width: none;
+    grid-column: 1 / 8;
+    aspect-ratio: auto;
+    height: var(--media-tall);
+    max-height: none;
   }
 
   .hero__copy {
-    grid-column: 7 / 13;
+    grid-column: 8 / 13;
   }
 
   .hero__lede {
     font-size: var(--fs-lg);
   }
+
+  .hero__cue {
+    display: inline-flex;
+  }
 }
 
-/* ─── Home: about ───────────────────────────────────────────────────────── */
-.about-item {
+/* ─── Scroll scenes: tall track, sticky stage (pins ≥768px only) ────────── */
+.scene + .scene {
+  margin-top: var(--s-16);
+}
+
+@media (min-width: 768px) {
+  .scene {
+    height: calc(var(--scene-steps) * var(--stage-h));
+  }
+
+  .scene + .scene {
+    margin-top: 0;
+  }
+
+  .scene__stage {
+    position: sticky;
+    top: var(--header-h);
+    display: flex;
+    height: var(--stage-h);
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene {
+    height: auto;
+  }
+
+  .scene + .scene {
+    margin-top: var(--s-16);
+  }
+
+  .scene__stage {
+    position: static;
+    height: auto;
+  }
+}
+
+/* ─── Home: about stages ────────────────────────────────────────────────── */
+.about-stage {
+  width: 100%;
   row-gap: var(--s-8);
   align-items: center;
-  border-top: 1px solid var(--line);
-  padding-block: var(--s-12);
 }
 
-.about-item:last-child {
-  padding-bottom: 0;
+.mosaic {
+  display: grid;
+  height: var(--media-tall);
+  grid-template-rows: 3fr 2fr;
+  gap: var(--s-2);
 }
 
-.about-item__index {
-  margin-bottom: var(--s-3);
+.mosaic__row {
+  display: flex;
+  min-height: 0;
+  gap: var(--s-2);
 }
 
-.about-item__title {
-  font-size: var(--fs-lg);
+.mosaic__cell {
+  position: relative;
+  flex: 2 1 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background-color: var(--n-900);
 }
 
-.about-item__body {
+.mosaic__row:nth-child(odd) .mosaic__cell:first-child,
+.mosaic__row:nth-child(even) .mosaic__cell:last-child {
+  flex-grow: 3;
+}
+
+.mosaic__img {
+  position: absolute;
+  inset: 0;
+}
+
+.about-stage__index {
+  font-family: var(--font-mono);
+  font-size: var(--index-size);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  letter-spacing: var(--track-mono);
+  color: var(--line-strong);
+}
+
+.about-stage__title {
+  margin-top: var(--s-4);
+  font-size: var(--fs-xl);
+}
+
+.about-stage__body {
   margin-top: var(--s-4);
   max-width: var(--prose-max);
   color: var(--n-200);
 }
 
-.about-item__media {
-  min-width: 0;
+@media (max-width: 767px) {
+  .mosaic {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
 }
 
 @media (min-width: 768px) {
-  .about-item {
-    padding-block: var(--s-16);
+  .about-stage__media {
+    grid-column: 1 / 9;
   }
 
-  .about-item__copy {
-    grid-column: 1 / 6;
+  .about-stage__copy {
+    grid-column: 9 / 13;
   }
 
-  .about-item__media {
-    grid-column: 7 / 13;
-  }
-
-  .about-item--reverse .about-item__copy {
-    grid-column: 8 / 13;
+  .about-stage--reverse .about-stage__media {
+    grid-column: 5 / 13;
     grid-row: 1;
   }
 
-  .about-item--reverse .about-item__media {
-    grid-column: 1 / 7;
+  .about-stage--reverse .about-stage__copy {
+    grid-column: 1 / 5;
     grid-row: 1;
   }
 }
 
-/* ─── Home: featured carousel ───────────────────────────────────────────── */
+/* ─── Home: featured carousel (scroll-snap + ::scroll-* pseudo-elements) ── */
 .carousel {
+  position: relative;
   min-width: 0;
 }
 
-.carousel__viewport {
-  touch-action: pan-y;
+/* Track bleeds to the viewport edges; side padding lets end cards centre.
+   Doubled class beats the `.site-root ul` margin/padding reset. */
+.carousel__track.carousel__track {
+  display: flex;
+  gap: var(--s-4);
+  margin-inline: calc(50% - 50vw);
+  padding-inline: calc(50vw - var(--card-w) / 2);
+  padding-block: var(--s-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
 }
 
-.carousel__slide {
-  row-gap: var(--s-6);
-  align-items: stretch;
-  color: inherit;
-  text-decoration: none;
+.carousel__track::-webkit-scrollbar {
+  display: none;
 }
 
-.carousel__media {
+.carousel__card {
+  flex: none;
+  width: var(--card-w);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.carousel__card:first-child {
+  scroll-initial-target: nearest;
+}
+
+.carousel__link {
   position: relative;
-  aspect-ratio: 16 / 10;
+  display: block;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background-color: var(--n-900);
+  color: inherit;
+  text-decoration: none;
 }
 
-.carousel__body {
+.carousel__img {
+  transition: scale var(--dur) var(--ease);
+}
+
+.carousel__link:hover .carousel__img {
+  scale: 1.03;
+}
+
+.carousel__caption {
+  position: absolute;
+  inset: auto 0 0;
   display: flex;
-  min-height: var(--carousel-text-min);
   flex-direction: column;
-  gap: var(--s-4);
+  gap: var(--s-3);
+  padding: var(--s-16) var(--s-6) var(--s-6);
+  background-image: var(--scrim);
+}
+
+.carousel__caption .eyebrow {
+  color: var(--n-200);
 }
 
 .carousel__title {
@@ -486,31 +626,65 @@ a:hover .text-link,
   transition: color var(--dur) var(--ease);
 }
 
-.carousel__slide:hover .carousel__title {
+.carousel__link:hover .carousel__title {
   color: var(--accent);
 }
 
 .carousel__desc {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: none;
+  max-width: var(--prose-max);
   color: var(--n-200);
 }
 
 .carousel__cta {
-  margin-top: auto;
+  margin-top: var(--s-1);
 }
 
-.carousel__preload {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
+@media (min-width: 768px) {
+  .carousel__link {
+    aspect-ratio: 16 / 10;
+  }
+
+  .carousel__caption {
+    padding: var(--s-24) var(--s-8) var(--s-8);
+  }
+
+  .carousel__desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
+/* Off-centre cards shrink and dim as they leave the middle of the track. */
+@supports (animation-timeline: view()) {
+  .carousel__card {
+    animation: carousel-focus linear both;
+    animation-timeline: view(inline);
+  }
+
+  @keyframes carousel-focus {
+    0%,
+    100% {
+      scale: var(--card-scale-off);
+      opacity: var(--card-dim);
+    }
+
+    50% {
+      scale: 1;
+      opacity: 1;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__card {
+    animation: none;
+  }
+}
+
+/* Controls row: fallback React buttons/dashes, plus "See all". */
 .carousel__controls {
   display: flex;
   flex-wrap: wrap;
@@ -578,23 +752,100 @@ a:hover .text-link,
 }
 
 @media (min-width: 768px) {
-  .carousel__slide {
-    row-gap: 0;
-  }
-
-  .carousel__media {
-    grid-column: 1 / 8;
-  }
-
-  .carousel__body {
-    grid-column: 8 / 13;
-    min-height: 0;
-    padding-left: var(--s-4);
-  }
-
   .carousel__dashes {
     flex: 1 1 0;
     order: 0;
+  }
+}
+
+/* Native controls: browser-generated arrows and markers replace the fallback. */
+@supports selector(::scroll-marker) {
+  .carousel__fallback {
+    display: none;
+  }
+
+  .carousel__track {
+    anchor-name: --carousel-track;
+    scroll-marker-group: after;
+  }
+
+  .carousel__track::scroll-marker-group {
+    display: flex;
+    gap: var(--s-1);
+    max-width: var(--content-max);
+    margin: var(--s-6) auto 0;
+    height: var(--s-12);
+    padding-inline: var(--gutter);
+    border-top: 1px solid var(--line);
+  }
+
+  .carousel__card::scroll-marker {
+    content: "";
+    flex: 1 1 0;
+    height: var(--s-12);
+    background: linear-gradient(var(--n-500) 0 0) center / 100%
+      var(--indicator-h) no-repeat;
+    cursor: pointer;
+  }
+
+  .carousel__card::scroll-marker:hover {
+    background-image: linear-gradient(var(--n-200) 0 0);
+  }
+
+  .carousel__card::scroll-marker:target-current {
+    background-image: linear-gradient(var(--accent) 0 0);
+  }
+
+  .carousel__track::scroll-button(*) {
+    position: absolute;
+    position-anchor: --carousel-track;
+    top: calc(anchor(center) - var(--s-6));
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--s-12);
+    height: var(--s-12);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--surface);
+    color: var(--n-50);
+    font-family: var(--font-mono);
+    font-size: var(--fs-lg);
+    cursor: pointer;
+    transition:
+      border-color var(--dur) var(--ease),
+      opacity var(--dur) var(--ease);
+  }
+
+  .carousel__track::scroll-button(*):hover {
+    border-color: var(--accent);
+  }
+
+  .carousel__track::scroll-button(*):focus-visible {
+    outline: var(--focus-width) solid var(--accent);
+    outline-offset: var(--focus-offset);
+  }
+
+  .carousel__track::scroll-button(*):disabled {
+    opacity: 0;
+    cursor: default;
+  }
+
+  .carousel__track::scroll-button(left) {
+    content: "←" / "Previous project";
+    left: calc(anchor(center) - var(--card-w) / 2 + var(--s-4));
+  }
+
+  .carousel__track::scroll-button(right) {
+    content: "→" / "Next project";
+    left: calc(anchor(center) + var(--card-w) / 2 - var(--s-4) - var(--s-12));
+  }
+
+  .carousel__controls {
+    margin-top: 0;
+    padding-top: var(--s-2);
+    border-top: 0;
   }
 }
 
@@ -676,6 +927,108 @@ a:hover .text-link,
     align-items: center;
     justify-content: space-between;
   }
+}
+
+/* ─── Home: section rail (fixed guide, wide screens only) ───────────────── */
+.rail {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .rail {
+    position: fixed;
+    top: 50%;
+    right: var(--s-6);
+    z-index: 30;
+    display: block;
+    translate: 0 -50%;
+  }
+}
+
+.rail__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(var(--s-6) - var(--indicator-h) / 2);
+  width: var(--indicator-h);
+  background-color: var(--line);
+}
+
+.rail__fill {
+  height: 100%;
+  background-color: var(--accent);
+  transform-origin: top;
+}
+
+.rail__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rail-gap);
+}
+
+.rail__item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-3);
+  min-height: var(--s-6);
+  text-decoration: none;
+}
+
+.rail__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--track-mono);
+  color: var(--n-400);
+  opacity: 0;
+  translate: var(--s-2) 0;
+  transition:
+    opacity var(--dur) var(--ease),
+    translate var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.rail:hover .rail__label,
+.rail__item:focus-visible .rail__label {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.rail__item[aria-current="true"] .rail__label {
+  color: var(--n-50);
+}
+
+.rail__dot {
+  display: grid;
+  place-items: center;
+  width: var(--s-12);
+  height: var(--s-6);
+}
+
+.rail__dot::after {
+  content: "";
+  width: var(--rail-dot);
+  height: var(--rail-dot);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background-color: var(--n-950);
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    scale var(--dur) var(--ease);
+}
+
+.rail__item:hover .rail__dot::after {
+  border-color: var(--n-200);
+}
+
+.rail__item[aria-current="true"] .rail__dot::after {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  scale: 1.5;
 }
 
 /* ─── /projects index ───────────────────────────────────────────────────── */

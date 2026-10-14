@@ -1,19 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Project } from "@/lib/projects";
 
-const INTERVAL_MS = 6000;
-const SWIPE_PX = 48;
-const FADE_S = 0.2;
-const IMAGE_SIZES = "(max-width: 768px) 100vw, 660px";
+const IMAGE_SIZES = "(max-width: 768px) 80vw, 900px";
+const EAGER_COUNT = 2;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/*
+ * Native scroll-snap carousel. Browsers with ::scroll-button / ::scroll-marker
+ * get CSS-generated arrows and markers (see portfolio.css); everyone else gets
+ * the React controls below, which CSS hides when the native ones exist.
+ */
 export function FeaturedCarousel({
   projects,
   seeAllLabel,
@@ -21,127 +23,71 @@ export function FeaturedCarousel({
   projects: readonly Project[];
   seeAllLabel: string;
 }) {
-  const reduced = useReducedMotion();
+  const trackRef = useRef<HTMLUListElement>(null);
+  const [active, setActive] = useState(0);
   const count = projects.length;
-  const [index, setIndex] = useState(0);
-  // null = follow the motion preference; otherwise the user's explicit choice.
-  const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const swipeStart = useRef<number | null>(null);
-  const linkRef = useRef<HTMLAnchorElement>(null);
-  const refocusLink = useRef(false);
-
-  const playing = userPlaying ?? !reduced;
-  const running = playing && !hovered && !focused && !hidden && count > 1;
-
-  const go = useCallback(
-    (to: number) => setIndex(((to % count) + count) % count),
-    [count],
-  );
 
   useEffect(() => {
-    const sync = () => setHidden(document.hidden);
-    sync();
-    document.addEventListener("visibilitychange", sync);
-    return () => document.removeEventListener("visibilitychange", sync);
-  }, []);
+    const track = trackRef.current;
+    if (!track) return;
+    const cards = Array.from(track.children) as HTMLElement[];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting)
+            setActive(cards.indexOf(entry.target as HTMLElement));
+        }
+      },
+      { root: track, threshold: 0.6 },
+    );
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [count]);
 
-  // Restarts on every slide change, so manual navigation resets the clock.
-  useEffect(() => {
-    if (!running) return;
-    const id = window.setTimeout(() => go(index + 1), INTERVAL_MS);
-    return () => window.clearTimeout(id);
-  }, [running, index, go]);
+  const go = (to: number) => {
+    const track = trackRef.current;
+    const card = track?.children[(to + count) % count] as HTMLElement | undefined;
+    if (!track || !card) return;
+    track.scrollTo({
+      left: card.offsetLeft - (track.clientWidth - card.clientWidth) / 2,
+    });
+  };
 
   if (count === 0) return null;
-
-  const project = projects[index];
-  const next = projects[(index + 1) % count];
 
   return (
     <section
       className="carousel"
       aria-roledescription="carousel"
       aria-label="Featured projects"
-      onPointerEnter={(e) => {
-        if (e.pointerType === "mouse") setHovered(true);
-      }}
-      onPointerLeave={() => setHovered(false)}
-      onFocus={(e) => setFocused(e.target.matches(":focus-visible"))}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
-      }}
-      onKeyDown={(e) => {
-        // The focused slide link unmounts on change; hand focus to the next one.
-        refocusLink.current = e.target === linkRef.current;
-        if (e.key === "ArrowRight") {
-          e.preventDefault();
-          go(index + 1);
-        } else if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          go(index - 1);
-        }
-      }}
     >
-      <div
-        className="carousel__viewport"
-        aria-live={playing ? "off" : "polite"}
-        aria-atomic="true"
-        onPointerDown={(e) => {
-          swipeStart.current = e.pointerType === "mouse" ? null : e.clientX;
-        }}
-        onPointerUp={(e) => {
-          const start = swipeStart.current;
-          swipeStart.current = null;
-          if (start === null) return;
-          const dx = e.clientX - start;
-          if (Math.abs(dx) > SWIPE_PX) go(index + (dx < 0 ? 1 : -1));
-        }}
-        onPointerCancel={() => {
-          swipeStart.current = null;
-        }}
-      >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
+      <ul ref={trackRef} className="carousel__track">
+        {projects.map((project, i) => (
+          <li
             key={project.id}
+            className="carousel__card"
             role="group"
             aria-roledescription="slide"
-            aria-label={`${index + 1} of ${count}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduced ? 0 : FADE_S, ease: [0.2, 0, 0, 1] }}
-            onAnimationComplete={(def) => {
-              // Ignore the exit animation of the outgoing slide.
-              if (typeof def !== "object" || !("opacity" in def) || def.opacity !== 1)
-                return;
-              if (refocusLink.current) linkRef.current?.focus();
-              refocusLink.current = false;
-            }}
+            aria-label={`${i + 1} of ${count}: ${project.title}`}
           >
             <Link
-              ref={linkRef}
               href={`/projects/${project.id}`}
               aria-label={`${project.title} — open case study`}
-              className="carousel__slide grid-12"
+              className="carousel__link"
               draggable={false}
             >
-              <div className="carousel__media">
-                <Image
-                  src={project.imageUrl}
-                  alt=""
-                  fill
-                  className="img-cover"
-                  sizes={IMAGE_SIZES}
-                  loading="eager"
-                  draggable={false}
-                />
-              </div>
-              <div className="carousel__body">
+              <Image
+                src={project.imageUrl}
+                alt=""
+                fill
+                className="img-cover carousel__img"
+                sizes={IMAGE_SIZES}
+                loading={i < EAGER_COUNT ? "eager" : "lazy"}
+                draggable={false}
+              />
+              <div className="carousel__caption">
                 <p className="eyebrow">
-                  Featured · {pad(index + 1)} / {pad(count)}
+                  {pad(i + 1)} / {pad(count)}
                 </p>
                 <h3 className="carousel__title">{project.title}</h3>
                 <p className="carousel__desc">{project.description}</p>
@@ -157,29 +103,17 @@ export function FeaturedCarousel({
                 </span>
               </div>
             </Link>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {count > 1 ? (
-        <div className="carousel__preload" aria-hidden>
-          <Image
-            src={next.imageUrl}
-            alt=""
-            fill
-            sizes={IMAGE_SIZES}
-            loading="eager"
-          />
-        </div>
-      ) : null}
+          </li>
+        ))}
+      </ul>
 
       <div className="carousel__controls">
-        <div className="carousel__buttons">
+        <div className="carousel__fallback carousel__buttons">
           <button
             type="button"
             className="icon-btn"
             aria-label="Previous project"
-            onClick={() => go(index - 1)}
+            onClick={() => go(active - 1)}
           >
             <ChevronLeft aria-hidden />
           </button>
@@ -187,31 +121,23 @@ export function FeaturedCarousel({
             type="button"
             className="icon-btn"
             aria-label="Next project"
-            onClick={() => go(index + 1)}
+            onClick={() => go(active + 1)}
           >
             <ChevronRight aria-hidden />
           </button>
-          <button
-            type="button"
-            className="icon-btn"
-            aria-label={playing ? "Pause rotation" : "Start rotation"}
-            onClick={() => setUserPlaying(!playing)}
-          >
-            {playing ? <Pause aria-hidden /> : <Play aria-hidden />}
-          </button>
           <span className="carousel__position" aria-hidden>
-            {pad(index + 1)} / {pad(count)}
+            {pad(active + 1)} / {pad(count)}
           </span>
         </div>
 
-        <div className="carousel__dashes">
+        <div className="carousel__fallback carousel__dashes">
           {projects.map((p, i) => (
             <button
               key={p.id}
               type="button"
               className="carousel__dash"
               aria-label={`Show ${p.title}`}
-              aria-current={i === index ? "true" : undefined}
+              aria-current={i === active ? "true" : undefined}
               onClick={() => go(i)}
             />
           ))}
