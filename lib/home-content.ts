@@ -70,7 +70,7 @@ export const homeCv = {
   heading: "Download my resume",
   lede:
     "A synopsis of my work experience and projects.",
-  pdfHref: "/MaxwellLi061226.pdf",
+  pdfHref: "resume.pdf",
 } as const;
 
 export const homeFooter = {
