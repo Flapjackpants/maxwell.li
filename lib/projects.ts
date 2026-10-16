@@ -40,6 +40,62 @@ const PLACEHOLDER = "/project-placeholder.png";
 
 export const PROJECTS = [
   {
+    id: "marko",
+    title: "marko",
+    description:
+      "BigRed//Hacks 2026 BigRedTrack winner — AR indoor maps built from floor plans and a single phone scan, with voice-guided wayfinding.",
+    detail:
+      "marko builds AR maps of indoor spaces like malls, campuses, and hospitals from floor plans and one iPhone LiDAR scan. Visitors say where they want to go, marko localizes them from the camera in about 0.4 s against a map of 7,753 posed photos, and guides them with an on-ground AR path, a Find My-style arrow, and spoken turn-by-turn directions across floors. It took the BigRedTrack prize at BigRed//Hacks 2026.\n\nI built the on-ground AR path in Swift and RealityKit — a GroundPath module that turns routes into floor-hugging geometry, with a destination ring, a green fade-in, and unit tests. On the venue side I built the React analytics dashboard (KPIs, traffic charts, floor map, and 3D scan view), set dark mode as the default with a toggle on a new Settings page, and made the ElevenLabs voice agent opt-in behind an explicit mic button.\n\nThe wider stack runs SuperPoint, LightGlue, and NetVLAD localization on rented RTX 4090s, Dijkstra routing over a 0.5 m grid, and a SwiftUI + ARKit app, built with William Sharpe, Neekon Tabatabai, and Mateo del Rio Lanse.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: "https://github.com/mdelriolanse/marko",
+    tags: ["Swift", "RealityKit", "ARKit", "React", "ElevenLabs"],
+    liveUrl: "https://devpost.com/software/marko-4rivf3",
+  },
+  {
+    id: "cinefile",
+    title: "CineFile",
+    description:
+      "Python TUI that auto-generates Flashback cinematic camera keyframes from Minecraft replays, with AI-scored clip selection.",
+    detail:
+      "CineFile reads a Flashback replay zip and writes an editor state full of cinematic camera keyframes, so a replay becomes a ready-to-render cinematic without hand-placing every shot. You set a target length, clip length, and camera style (or let it pick one automatically), and it fills the timeline with shots and optional timelapse gaps.\n\nClip selection blends heuristics with a locally hosted Laya MLX model and optional DeepSeek review of rendered preview frames, under a configurable per-run spend cap. Each clip tries several camera variants and keeps the best-framed one, and when the replay carries chunk caches, shots that clip through blocks or lose sight of the player are scored down. Existing editor states are merged rather than replaced, with backups.\n\nThe interface is a Textual TUI with a vim-like JSON settings editor, the same pattern I used in CarpetBomber.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/CineFile`,
+    tags: ["Python", "Textual", "MLX", "DeepSeek"],
+  },
+  {
+    id: "mavuno",
+    title: "Mavuno",
+    description:
+      "Hack4Impact Cornell — mobile and web platform for Mavuno, built on a shared Express backend and Supabase Postgres.",
+    detail:
+      "Mavuno is a Hack4Impact Cornell project: a monorepo with an Expo (React Native) mobile app, a React web app, a shared Node/Express backend, and a Supabase Postgres database, tied together by a shared package of Zod schemas, generated database types, and a typed API client.\n\nI built the education catalog backend end to end — SQL migrations, Zod schemas, CRUD routes, and admin-only publishing gated on profile roles and active-user checks. Media is published to the Internet Archive through an upload library, a smoke-test script, and docs I wrote. I also hardened the write paths with URL and environment validation and database-level SQL tests alongside backend unit tests.\n\nThe work is TypeScript throughout, shipped in an Agile team with PR review and CI formatting and type checks.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: "https://github.com/cornellh4i/mavuno",
+    tags: ["TypeScript", "Express", "Supabase", "PostgreSQL", "Zod"],
+  },
+  {
+    id: "anabels-grocery",
+    title: "Anabel's Grocery",
+    description:
+      "Hack4Impact Cornell — volunteer management system for a student-run nonprofit grocery store.",
+    detail:
+      "Anabel's Grocery is a nonprofit grocery store that brings fresh, affordable produce to Cornell students and promotes education on food, justice, and sustainability.\n\nThis Hack4Impact Cornell project gives it a volunteer management system: volunteers sign up for, track, and swap shifts, and admins manage schedules and attendance.\n\nIt's built with Next.js, React, Express, Prisma on PostgreSQL, and Firebase authentication.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: "https://github.com/cornellh4i/anabels-grocery",
+    tags: ["TypeScript", "Next.js", "Prisma", "Firebase"],
+  },
+  {
+    id: "carpetbomber",
+    title: "CarpetBomber",
+    description:
+      "Terminal app that schedules git pushes and commits for later, with a macOS background daemon that catches up after sleep.",
+    detail:
+      "CarpetBomber queues git pushes and staged commits to run at a chosen time. A Textual TUI manages the queue, and a macOS LaunchAgent daemon runs due jobs in the background, catching up after sleep or reboot and uninstalling itself when the queue is empty.\n\nI added a vim-like editor for the add, edit, and settings screens, SSH passphrase support, stash-and-commit scheduling, and a `this` shortcut that fills in the current path. Commit jobs are dropped if HEAD has moved, and jobs that land on the same minute are spaced out by a configurable interval.\n\nIt installs with a one-line curl script that sets up a venv and links the CarpetBomber and carpetbomber-daemon commands, and it's covered by a pytest suite.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/CarpetBomber`,
+    tags: ["Python", "Textual", "launchd", "Git"],
+  },
+  {
     id: "captain",
     title: "Captain",
     description:
@@ -269,6 +325,7 @@ export const PROJECTS = [
 export type ProjectId = (typeof PROJECTS)[number]["id"];
 
 export const PINNED_PROJECT_IDS = [
+  "marko",
   "hvtp",
   "medexplain",
   "majorscout",
