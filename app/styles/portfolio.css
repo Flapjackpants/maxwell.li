@@ -1269,3 +1269,252 @@ a:hover .text-link,
 .pager__link:hover .pager__title {
   color: var(--accent);
 }
+
+/* ─── /youtube sponsor kit ─── */
+.yt-section {
+  margin-top: var(--s-16);
+}
+
+.yt-section__title {
+  font-size: var(--fs-xl);
+}
+
+.yt-muted,
+.yt-chart__caption {
+  color: var(--n-400);
+  font-size: var(--fs-sm);
+}
+
+.yt-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--track-mono);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--s-1) var(--s-2);
+  margin-top: var(--s-6);
+}
+
+.yt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-6);
+  align-items: center;
+  margin-top: var(--s-6);
+}
+
+.yt-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  background: var(--accent);
+  color: var(--n-950);
+  border-radius: var(--radius);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.yt-button:hover {
+  background: var(--accent-strong);
+}
+
+.yt-button svg {
+  width: var(--icon);
+  height: var(--icon);
+}
+
+.yt-kpis {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--s-32) + var(--s-12)), 1fr)
+  );
+  gap: var(--s-4);
+  margin: var(--s-6) 0 0;
+}
+
+.yt-kpi,
+.yt-rate {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--s-4);
+}
+
+.yt-kpi dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  color: var(--n-400);
+}
+
+.yt-kpi dd {
+  margin: 0;
+  font-size: var(--fs-xl);
+  color: var(--n-50);
+}
+
+.yt-kpi dd.yt-kpi__delta {
+  font-size: var(--fs-sm);
+  color: var(--success);
+}
+
+.yt-chart {
+  margin: var(--s-6) 0 0;
+}
+
+.yt-chart figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  margin-bottom: var(--s-4);
+}
+
+.yt-columns {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-2);
+  height: calc(var(--s-32) * 2);
+  border-bottom: 1px solid var(--line-strong);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.yt-columns__item {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 0;
+  font-size: var(--fs-xs);
+}
+
+.yt-columns__value {
+  font-size: var(--fs-xs);
+}
+
+.yt-columns__bar {
+  width: 100%;
+  height: var(--bar);
+  background: var(--n-700);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.yt-columns__item--accent .yt-columns__bar {
+  background: var(--accent);
+}
+
+.yt-columns__label {
+  color: var(--n-400);
+  white-space: nowrap;
+  margin-top: var(--s-1);
+}
+
+.yt-grid {
+  display: grid;
+  gap: var(--s-8);
+  margin-top: var(--s-6);
+}
+
+.yt-barlist ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.yt-barlist__row {
+  display: grid;
+  grid-template-columns: calc(var(--s-32)) 1fr auto;
+  gap: var(--s-3);
+  align-items: center;
+  font-size: var(--fs-sm);
+  margin-top: var(--s-2);
+}
+
+.yt-barlist__track {
+  height: var(--s-3);
+  background: var(--n-800);
+  border-radius: var(--radius-sm);
+}
+
+.yt-barlist__fill {
+  height: 100%;
+  width: var(--bar);
+  background: var(--n-500);
+  border-radius: inherit;
+}
+
+.yt-barlist__fill--accent {
+  background: var(--accent);
+}
+
+.yt-embeds {
+  display: grid;
+  gap: var(--s-6);
+  margin-top: var(--s-6);
+}
+
+.yt-embeds figure {
+  margin: 0;
+}
+
+.yt-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+.yt-table-wrap {
+  overflow-x: auto;
+  margin-top: var(--s-6);
+}
+
+.yt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.yt-table th,
+.yt-table td {
+  padding: var(--s-3);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.yt-table th {
+  color: var(--n-400);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.yt-rates {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, calc(var(--s-32) * 2)), 1fr)
+  );
+  gap: var(--s-4);
+  margin: var(--s-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yt-rate__price {
+  color: var(--accent);
+  margin-top: var(--s-3);
+}
+
+@media (min-width: 48rem) {
+  .yt-grid,
+  .yt-embeds {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
