@@ -193,15 +193,31 @@ export function engagementRate(
   return views > 0 ? round(((likes + comments) / views) * 100, 2) : null;
 }
 
+const bestThumb = (t: Thumbs | undefined) =>
+  (t?.maxres ?? t?.standard ?? t?.high ?? t?.medium ?? t?.default)?.url ?? null;
+
+// bannerExternalUrl serves the full 2560x1440 upload; this suffix asks for the
+// desktop-visible strip, matching what youtube.com shows.
+const BANNER_CROP = "=w2120-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj";
+const bannerCrop = (url: string | undefined) => (url ? `${url}${BANNER_CROP}` : null);
+
 // ─── Live load ───────────────────────────────────────────────────────────
+type Thumbs = Partial<
+  Record<"default" | "medium" | "high" | "standard" | "maxres", { url?: string }>
+>;
 type ChannelsResponse = {
   items?: {
+    snippet?: { title?: string; thumbnails?: Thumbs };
+    brandingSettings?: { image?: { bannerExternalUrl?: string } };
     statistics?: { subscriberCount?: string };
     contentDetails?: { relatedPlaylists?: { uploads?: string } };
   }[];
 };
 type VideosResponse = {
-  items?: { id: string; snippet?: { title?: string; publishedAt?: string } }[];
+  items?: {
+    id: string;
+    snippet?: { title?: string; publishedAt?: string; thumbnails?: Thumbs };
+  }[];
 };
 type PlaylistResponse = {
   items?: { contentDetails?: { videoId?: string } }[];
@@ -242,7 +258,7 @@ async function loadLiveAnalytics(): Promise<SponsorAnalytics> {
         maxResults: "6",
       }),
       dataApi<ChannelsResponse>(token, "channels", {
-        part: "statistics,contentDetails",
+        part: "snippet,statistics,contentDetails,brandingSettings",
         mine: "true",
       }),
     ]);
@@ -281,6 +297,7 @@ async function loadLiveAnalytics(): Promise<SponsorAnalytics> {
       avgViewDurationSec: round(num(r.averageViewDuration)),
       subscribersGained: num(r.subscribersGained),
       engagementRate: engagementRate(num(r.likes), num(r.comments), num(r.views)),
+      thumbnailUrl: bestThumb(sn?.thumbnails),
     };
   });
 
@@ -288,6 +305,11 @@ async function loadLiveAnalytics(): Promise<SponsorAnalytics> {
     source: "live",
     asOf: w.end28,
     subscriberCount: num(ch.statistics?.subscriberCount),
+    channel: {
+      title: ch.snippet?.title ?? null,
+      avatarUrl: bestThumb(ch.snippet?.thumbnails),
+      bannerUrl: bannerCrop(ch.brandingSettings?.image?.bannerExternalUrl),
+    },
     last28: {
       startDate: w.start28,
       endDate: w.end28,
@@ -314,7 +336,7 @@ async function loadLiveAnalytics(): Promise<SponsorAnalytics> {
   };
 }
 
-const getCachedLive = unstable_cache(loadLiveAnalytics, ["youtube-sponsor-analytics-v1"], {
+const getCachedLive = unstable_cache(loadLiveAnalytics, ["youtube-sponsor-analytics-v2"], {
   revalidate: 21600,
   tags: ["youtube-analytics"],
 });

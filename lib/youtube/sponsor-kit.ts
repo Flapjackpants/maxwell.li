@@ -66,6 +66,8 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
   source: "snapshot",
   asOf: "2026-10-14",
   subscriberCount: 1214,
+  // Paste avatar/banner URLs from a live run to show them in snapshot mode.
+  channel: { title: "FJP", avatarUrl: null, bannerUrl: null },
   last28: {
     startDate: "2026-09-16",
     endDate: "2026-10-13",
@@ -122,6 +124,7 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
       avgViewDurationSec: 797,
       subscribersGained: 230,
       engagementRate: null,
+      thumbnailUrl: null,
     },
     {
       id: null,
@@ -131,6 +134,7 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
       avgViewDurationSec: 431,
       subscribersGained: 117,
       engagementRate: null,
+      thumbnailUrl: null,
     },
     {
       id: null,
@@ -140,6 +144,7 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
       avgViewDurationSec: 239,
       subscribersGained: 109,
       engagementRate: null,
+      thumbnailUrl: null,
     },
     {
       id: null,
@@ -149,6 +154,7 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
       avgViewDurationSec: 342,
       subscribersGained: 78,
       engagementRate: null,
+      thumbnailUrl: null,
     },
     {
       id: null,
@@ -158,6 +164,7 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
       avgViewDurationSec: 205,
       subscribersGained: 49,
       engagementRate: null,
+      thumbnailUrl: null,
     },
     {
       id: null,
@@ -167,6 +174,7 @@ export const STATIC_ANALYTICS: SponsorAnalytics = {
       avgViewDurationSec: 452,
       subscribersGained: 84,
       engagementRate: null,
+      thumbnailUrl: null,
     },
   ],
   featured: STATIC_FEATURED_VIDEO_IDS,

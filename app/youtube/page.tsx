@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Youtube } from "lucide-react";
 import { getSponsorAnalytics } from "@/lib/youtube/analytics";
 import {
@@ -15,7 +16,14 @@ import {
   formatMonth,
   formatPercent,
 } from "@/lib/youtube/format";
+import type { TopVideo } from "@/lib/youtube/types";
 import { BarList, ColumnChart } from "./components/Bars";
+
+// Snapshot videos with a known id still get a thumbnail from the public CDN.
+function thumbFor(v: TopVideo): string | null {
+  if (v.thumbnailUrl) return v.thumbnailUrl;
+  return v.id ? `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg` : null;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +36,7 @@ export const metadata: Metadata = {
 export default async function YoutubeSponsorPage() {
   const data = await getSponsorAnalytics();
   const live = data.source === "live";
-  const { last28, audience, featured } = data;
+  const { last28, audience, featured, channel } = data;
   const delta =
     last28.viewsPrior === null ? null : last28.views - last28.viewsPrior;
   const sourceName = live ? "YouTube Analytics" : "YouTube Studio";
@@ -40,6 +48,38 @@ export default async function YoutubeSponsorPage() {
 
   return (
     <main>
+      <div className="yt-hero">
+        <div className="yt-hero__banner">
+          {channel.bannerUrl && (
+            <Image
+              src={channel.bannerUrl}
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 80rem) 80rem, 100vw"
+            />
+          )}
+        </div>
+        <div className="yt-hero__identity">
+          {channel.avatarUrl && (
+            <Image
+              className="yt-hero__avatar"
+              src={channel.avatarUrl}
+              alt={`${channel.title ?? CHANNEL.name} profile picture`}
+              width={96}
+              height={96}
+              priority
+            />
+          )}
+          <div>
+            <p className="yt-hero__name">{channel.title ?? CHANNEL.name}</p>
+            <p className="yt-muted">
+              {CHANNEL.handle} · {data.subscriberCount.toLocaleString()} subscribers
+            </p>
+          </div>
+        </div>
+      </div>
+
       <header className="page-head">
         <p className="eyebrow">SPONSOR_KIT // YOUTUBE</p>
         <h1 className="page-head__title">FJP on YouTube</h1>
@@ -206,47 +246,66 @@ export default async function YoutubeSponsorPage() {
           Top videos
         </h2>
         <p className="yt-muted">Past 12 months</p>
-        <div className="yt-table-wrap">
-          <table className="yt-table">
-            <thead>
-              <tr>
-                <th>Video</th>
-                <th>Published</th>
-                <th>Views</th>
-                <th>Avg. duration</th>
-                <th>Engagement</th>
-                <th>Subs gained</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.topVideos.map((v) => (
-                <tr key={v.id ?? v.title}>
-                  <td>
-                    {v.id ? (
-                      <a
-                        className="text-link"
-                        href={`https://www.youtube.com/watch?v=${v.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {v.title}
-                      </a>
-                    ) : (
-                      v.title
-                    )}
-                  </td>
-                  <td className="mono-data">{formatMonth(v.publishedAt.slice(0, 7))}</td>
-                  <td className="mono-data">{v.views.toLocaleString()}</td>
-                  <td className="mono-data">{formatDuration(v.avgViewDurationSec)}</td>
-                  <td className="mono-data">
-                    {v.engagementRate === null ? "—" : formatPercent(v.engagementRate, 2)}
-                  </td>
-                  <td className="mono-data">{v.subscribersGained}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ol className="yt-videos">
+          {data.topVideos.map((v, i) => {
+            const thumb = thumbFor(v);
+            const href = v.id ? `https://www.youtube.com/watch?v=${v.id}` : null;
+            const media = (
+              <div className="yt-video__thumb">
+                {thumb && (
+                  <Image
+                    src={thumb}
+                    alt=""
+                    fill
+                    sizes="(min-width: 48rem) 33vw, 100vw"
+                  />
+                )}
+                <span className="yt-video__rank mono-data">#{i + 1}</span>
+              </div>
+            );
+            return (
+              <li key={v.id ?? v.title} className="yt-video">
+                {href ? (
+                  <a href={href} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden="true">
+                    {media}
+                  </a>
+                ) : (
+                  media
+                )}
+                <h3 className="yt-video__title">
+                  {href ? (
+                    <a className="text-link" href={href} target="_blank" rel="noopener noreferrer">
+                      {v.title}
+                    </a>
+                  ) : (
+                    v.title
+                  )}
+                </h3>
+                <p className="yt-muted">{formatMonth(v.publishedAt.slice(0, 7))}</p>
+                <dl className="yt-video__stats mono-data">
+                  <div>
+                    <dt>Views</dt>
+                    <dd>{formatCompact(v.views)}</dd>
+                  </div>
+                  <div>
+                    <dt>Avg. duration</dt>
+                    <dd>{formatDuration(v.avgViewDurationSec)}</dd>
+                  </div>
+                  <div>
+                    <dt>Engagement</dt>
+                    <dd>
+                      {v.engagementRate === null ? "—" : formatPercent(v.engagementRate, 2)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Subs gained</dt>
+                    <dd>+{v.subscribersGained}</dd>
+                  </div>
+                </dl>
+              </li>
+            );
+          })}
+        </ol>
       </section>
 
       <section className="yt-section" aria-labelledby="yt-rates-title">

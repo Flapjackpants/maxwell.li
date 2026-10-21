@@ -9,11 +9,18 @@ export type TopVideo = {
   avgViewDurationSec: number;
   subscribersGained: number;
   engagementRate: number | null; // (likes+comments)/views*100; null when unknown
+  thumbnailUrl: string | null;
+};
+export type ChannelBranding = {
+  title: string | null;
+  avatarUrl: string | null;
+  bannerUrl: string | null; // pre-cropped to the desktop banner strip
 };
 export type SponsorAnalytics = {
   source: DataSource;
   asOf: string; // ISO date the numbers describe
   subscriberCount: number;
+  channel: ChannelBranding;
   last28: {
     startDate: string;
     endDate: string; // "YYYY-MM-DD"
