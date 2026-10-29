@@ -13,7 +13,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 /*
  * Native scroll-snap carousel. Browsers with ::scroll-button / ::scroll-marker
- * get CSS-generated arrows and markers (see portfolio.css); everyone else gets
+ * get CSS-generated arrows and markers (see public/carousel-native.css); everyone else gets
  * the React controls below, which CSS hides when the native ones exist.
  */
 export function FeaturedCarousel({
@@ -61,6 +61,7 @@ export function FeaturedCarousel({
       aria-roledescription="carousel"
       aria-label="Featured projects"
     >
+      <link rel="stylesheet" href="/carousel-native.css" precedence="default" />
       <ul ref={trackRef} className="carousel__track">
         {projects.map((project, i) => (
           <li

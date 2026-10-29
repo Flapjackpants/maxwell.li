@@ -1,0 +1,79 @@
+/*
+ * Native carousel controls for FeaturedCarousel. Served from public/ so it skips
+ * Turbopack's Lightning CSS, which does not parse ::scroll-marker,
+ * ::scroll-button() or :target-current and would drop these rules.
+ */
+@supports selector(::scroll-marker) {
+  .carousel__track::scroll-marker-group {
+    display: flex;
+    gap: var(--s-1);
+    max-width: var(--content-max);
+    margin: var(--s-6) auto 0;
+    height: var(--s-12);
+    padding-inline: var(--gutter);
+    border-top: 1px solid var(--line);
+  }
+
+  .carousel__card::scroll-marker {
+    content: "";
+    flex: 1 1 0;
+    height: var(--s-12);
+    background: linear-gradient(var(--n-500) 0 0) center / 100%
+      var(--indicator-h) no-repeat;
+    cursor: pointer;
+  }
+
+  .carousel__card::scroll-marker:hover {
+    background-image: linear-gradient(var(--n-200) 0 0);
+  }
+
+  .carousel__card::scroll-marker:target-current {
+    background-image: linear-gradient(var(--accent) 0 0);
+  }
+
+  .carousel__track::scroll-button(*) {
+    position: absolute;
+    position-anchor: --carousel-track;
+    top: calc(anchor(center) - var(--s-6));
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--s-12);
+    height: var(--s-12);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--surface);
+    color: var(--n-50);
+    font-family: var(--font-mono);
+    font-size: var(--fs-lg);
+    cursor: pointer;
+    transition:
+      border-color var(--dur) var(--ease),
+      opacity var(--dur) var(--ease);
+  }
+
+  .carousel__track::scroll-button(*):hover {
+    border-color: var(--accent);
+  }
+
+  .carousel__track::scroll-button(*):focus-visible {
+    outline: var(--focus-width) solid var(--accent);
+    outline-offset: var(--focus-offset);
+  }
+
+  .carousel__track::scroll-button(*):disabled {
+    opacity: 0;
+    cursor: default;
+  }
+
+  .carousel__track::scroll-button(left) {
+    content: "←" / "Previous project";
+    left: calc(anchor(center) - var(--card-w) / 2 + var(--s-4));
+  }
+
+  .carousel__track::scroll-button(right) {
+    content: "→" / "Next project";
+    left: calc(anchor(center) + var(--card-w) / 2 - var(--s-4) - var(--s-12));
+  }
+}
