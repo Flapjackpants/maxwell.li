@@ -40,6 +40,28 @@ const PLACEHOLDER = "/project-placeholder.png";
 
 export const PROJECTS = [
   {
+    id: "shippy",
+    title: "shippy",
+    description:
+      "Claude Code plugin that replaces plan mode with a plan-then-build pipeline — the expensive model plans, cheaper models build and test.",
+    detail:
+      "shippy is a Claude Code skill built around one goal: the best code for the fewest tokens. The session model investigates read-only, settles design questions with you, and writes a staged roadmap. Small changes skip the roadmap and go straight to a short plan.\n\nEach stage's spec is written just before it's built, with code anchors from the current HEAD so it can't drift. A fresh sub-agent then writes black-box tests, the implementation, and white-box tests, verifies the stage, and makes one Conventional Commit. At the end you get a rundown and a ready-to-paste PR description; nothing is pushed.\n\nMost of an agent's cost is what it re-reads on every tool call, so I kept that small: a fresh builder per stage, quiet failures-only test output, short dispatch prompts, a Haiku verifier that keeps logs out of the main context, and the cheapest adequate model for each stage. It hasn't been benchmarked yet, so the savings are still a hypothesis.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/shippy`,
+    tags: ["Claude Code", "Sub-agents", "Markdown"],
+  },
+  {
+    id: "discord-bridge",
+    title: "Discord Bridge",
+    description:
+      "Fabric mod linking a Minecraft server's chat to a Discord channel — with GIFs and images inline in chat for clients running the mod.",
+    detail:
+      "Discord Bridge is a server-side Fabric mod that connects Minecraft chat to a Discord channel in both directions. Chat goes out through a webhook with the player's name and head avatar, along with joins, leaves, deaths, and server start/stop. Discord messages come back as colored system messages, with a hover showing the account and a clickable link to the original.\n\nIt works with vanilla clients. Clients that also run the mod complete a handshake and get rich messages instead: images and animated GIFs render inline in chat, with Tenor, Giphy, Imgur, and Klipy links supported. Media hosts are limited to an allowlist, the server never fetches media itself, and each client sets its own download and memory limits through Mod Menu.\n\nBuilt with JDA for Minecraft 26.3 on Java 25. Mass mentions are neutralized in both directions, because @everyone from inside a Minecraft server is nobody's idea of a good time.",
+    imageUrl: PLACEHOLDER,
+    githubUrl: `${GH}/bridge`,
+    tags: ["Java", "Fabric API", "JDA", "ModMenu"],
+  },
+  {
     id: "marko",
     title: "marko",
     description:
@@ -156,12 +178,12 @@ export const PROJECTS = [
     id: "stacksquing",
     title: "stackSquing",
     description:
-      "Interactive terminal utility for Litematica ASCII material lists — stacks, chests, filter groups, and fulfillment tracking.",
+      "Litematica material list tracker — a C++/ncurses terminal app and a Fabric mod that opens your list as an in-game book, with groups, supergroups, and partial fulfillment.",
     detail:
-      "stackSquing is a C++/ncurses tool for Minecraft builders who live in Litematica exports. Open a material_list_*.txt (or a folder and pick the newest), view totals in raw or chest/stack/item format, organize items into filter-based groups, and mark lines fulfilled — saved back with an a suffix.\n\nThe TUI supports reload when Litematica writes a newer timestamped file, scrollable help, and a one-line install script that builds with CMake and drops the binary in ~/.local/bin.\n\nI wrote it because having an accounting calculator on the desk shouldn't be a requirement to play fucking Minecraft, and I wanted something fast that stays in the terminal next to the game.",
+      "stackSquing is a material list tracker for Minecraft builders who live in Litematica exports. Open a material_list_*.txt (or a folder and pick the newest), view missing, available, or still-needed counts in raw or chest/stack/item format, organize items into filter-based groups and supergroups, and mark lines fulfilled — in full or by partial amounts like 2s+3 — saved back to the file.\n\nIt comes in two forms that share the same commands and groups file. The terminal app reloads when Litematica writes a newer timestamped file, has an overview of every group, redraws on resize, and installs with a one-line script that builds with CMake and drops the binary in ~/.local/bin. The client-side Fabric mod for Minecraft 26.3 opens the list as a book and quill on a hotkey, and can sit beside chests, your inventory, crafting tables, and furnaces while you gather, with settings through Mod Menu.\n\nI wrote it because having an accounting calculator on the desk shouldn't be a requirement to play fucking Minecraft, and I wanted something fast that stays next to the game — and now inside it.",
     imageUrl: "/stackSquing.png",
     githubUrl: `${GH}/stackSquing`,
-    tags: ["C++", "CMake", "ncurses"],
+    tags: ["C++", "CMake", "ncurses", "Java", "Fabric API", "ModMenu"],
   },
   {
     id: "enchantping",

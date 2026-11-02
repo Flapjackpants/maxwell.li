@@ -408,14 +408,14 @@ a:hover .text-link,
 
 @media (min-width: 768px) {
   .hero__portrait {
-    grid-column: 1 / 8;
+    grid-column: 1 / 7;
     aspect-ratio: auto;
-    height: var(--media-tall);
+    height: var(--media-portrait);
     max-height: none;
   }
 
   .hero__copy {
-    grid-column: 8 / 13;
+    grid-column: 7 / 13;
   }
 
   .hero__lede {

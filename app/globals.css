@@ -118,6 +118,7 @@
   --header-h: var(--s-12);
   --stage-h: calc(100dvh - var(--header-h));
   --media-tall: calc(var(--stage-h) - var(--s-16));
+  --media-portrait: calc(var(--media-tall) * 0.85);
   --card-w: min(80vw, 56rem);
   --card-scale-off: 0.86;
   --card-dim: 0.4;
