@@ -46,7 +46,7 @@ export const PROJECTS = [
       "Claude Code plugin that replaces plan mode with a plan-then-build pipeline — the expensive model plans, cheaper models build and test.",
     detail:
       "shippy is a Claude Code skill built around one goal: the best code for the fewest tokens. The session model investigates read-only, settles design questions with you, and writes a staged roadmap. Small changes skip the roadmap and go straight to a short plan.\n\nEach stage's spec is written just before it's built, with code anchors from the current HEAD so it can't drift. A fresh sub-agent then writes black-box tests, the implementation, and white-box tests, verifies the stage, and makes one Conventional Commit. At the end you get a rundown and a ready-to-paste PR description; nothing is pushed.\n\nMost of an agent's cost is what it re-reads on every tool call, so I kept that small: a fresh builder per stage, quiet failures-only test output, short dispatch prompts, a Haiku verifier that keeps logs out of the main context, and the cheapest adequate model for each stage. It hasn't been benchmarked yet, so the savings are still a hypothesis.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "/shippy.png",
     githubUrl: `${GH}/shippy`,
     tags: ["Claude Code", "Sub-agents", "Markdown"],
   },
@@ -57,7 +57,7 @@ export const PROJECTS = [
       "Fabric mod linking a Minecraft server's chat to a Discord channel — with GIFs and images inline in chat for clients running the mod.",
     detail:
       "Discord Bridge is a server-side Fabric mod that connects Minecraft chat to a Discord channel in both directions. Chat goes out through a webhook with the player's name and head avatar, along with joins, leaves, deaths, and server start/stop. Discord messages come back as colored system messages, with a hover showing the account and a clickable link to the original.\n\nIt works with vanilla clients. Clients that also run the mod complete a handshake and get rich messages instead: images and animated GIFs render inline in chat, with Tenor, Giphy, Imgur, and Klipy links supported. Media hosts are limited to an allowlist, the server never fetches media itself, and each client sets its own download and memory limits through Mod Menu.\n\nBuilt with JDA for Minecraft 26.3 on Java 25. Mass mentions are neutralized in both directions, because @everyone from inside a Minecraft server is nobody's idea of a good time.",
-    imageUrl: PLACEHOLDER,
+    imageUrl: "/discordBridge.png",
     githubUrl: `${GH}/bridge`,
     tags: ["Java", "Fabric API", "JDA", "ModMenu"],
   },
