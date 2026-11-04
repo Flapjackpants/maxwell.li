@@ -21,6 +21,9 @@
   --uv: #6a1fb8;
   --uv-deep: #1a0636;
   --spec-orange: #ff9d2e;
+  --spec-red: #ff4438;
+  --spec-yellow: #ffe14d;
+  --spec-cyan: #3fe8e0;
   --sun-peach: #f3c9a5;
   --sun-maroon: #5c0f24;
   --spectrum-stops: var(--n-500), var(--accent);
@@ -93,6 +96,7 @@
 
   /* Component sizes (named so portfolio.css has no raw lengths) */
   --portrait-max: 20rem;
+  --hero-flank-min: 34rem;
   --indicator-h: 0.125rem;
   --icon: 1.25rem;
   --header-h: var(--s-12);
