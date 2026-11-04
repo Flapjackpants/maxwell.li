@@ -77,7 +77,7 @@ const CELL_START = 0.35;
 const CELL_STAGGER = 0.04;
 const CELL_SPAN = 0.4;
 const COPY_RANGE = [0.45, 0.75];
-const ASCII_START = 0.3;
+const ASCII_START = 0.45;
 const ASCII_END = 0.72;
 const ASCII_FADE_END = 0.85;
 
@@ -105,10 +105,9 @@ function MosaicCell({
   const textSize = useTransform(progress, (p) =>
     textSizeForProgress(p, ASCII_START, ASCII_END),
   );
-  const asciiOpacity = useTransform(
-    progress,
-    [ASCII_END, ASCII_FADE_END],
-    [1, 0],
+  // Function form: the accelerated scroll animation behind the range form maps this fade wrongly.
+  const asciiOpacity = useTransform(progress, (p) =>
+    Math.min(Math.max((ASCII_FADE_END - p) / (ASCII_FADE_END - ASCII_END), 0), 1),
   );
   const rotateX = useTransform(progress, range, [58, 0]);
   const rotateZ = useTransform(progress, range, [-38, 0]);

@@ -27,8 +27,8 @@ const SPECIMENS = [
     aspect: "1042 / 1116",
     regions: [
       { title: "SKY.BMP", x: 40, y: 3, w: 20, h: 18, to: [82, 10], hex: "#B9A6FF" },
-      { title: "LEAVES.BMP", x: 52, y: 30, w: 20, h: 17, to: [90, 46], hex: "#9FB45A" },
-      { title: "FIGURE.BMP", x: 32, y: 62, w: 18, h: 18, to: [10, 88], hex: "#0B0F0A" },
+      { title: "LEAF.BMP", x: 52, y: 30, w: 20, h: 17, to: [90, 46], hex: "#9FB45A" },
+      { title: "FIG.BMP", x: 32, y: 62, w: 18, h: 18, to: [24, 88], hex: "#0B0F0A" },
     ],
   },
 ] as const;

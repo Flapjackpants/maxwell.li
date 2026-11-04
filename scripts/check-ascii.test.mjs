@@ -28,6 +28,11 @@ test("asciiLines returns one string per row with one char per column", () => {
   for (const line of lines) assert.equal(line.length, 3);
 });
 
+test("asciiLines stretches low-contrast images and leaves flat ones alone", () => {
+  assert.deepEqual(asciiLines([100, 100, 100, 255, 120, 120, 120, 255], 2, 1), [" @"]);
+  assert.deepEqual(asciiLines([255, 255, 255, 255, 255, 255, 255, 255], 2, 1), ["@@"]);
+});
+
 test("textSizeForProgress clamps to the first and last size", () => {
   assert.equal(textSizeForProgress(0.1, 0.3, 0.72), TEXT_SIZES[0]);
   assert.equal(

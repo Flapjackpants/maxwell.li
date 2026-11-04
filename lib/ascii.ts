@@ -1,6 +1,6 @@
 export const ASCII_RAMP = " .:-=+*#%@";
 
-export const TEXT_SIZES: readonly number[] = [22, 16, 12, 9, 7, 5];
+export const TEXT_SIZES: readonly number[] = [28, 20, 14, 10, 7, 5];
 
 /** Map a 0–255 luma to a ramp character, darkest to lightest. */
 export function lumaToChar(luma: number): string {
@@ -11,21 +11,30 @@ export function lumaToChar(luma: number): string {
 
 /**
  * Turn a cols × rows RGBA buffer into ASCII rows, one char per pixel.
- * `rgba` holds `cols * rows * 4` bytes; alpha is ignored.
+ * `rgba` holds `cols * rows * 4` bytes; alpha is ignored. Luma is stretched to
+ * the buffer's own range so dark or flat images still use the whole ramp.
  */
 export function asciiLines(
   rgba: ArrayLike<number>,
   cols: number,
   rows: number,
 ): string[] {
+  const lumas: number[] = [];
+  for (let offset = 0; offset < cols * rows * 4; offset += 4) {
+    lumas.push(
+      0.299 * rgba[offset] + 0.587 * rgba[offset + 1] + 0.114 * rgba[offset + 2],
+    );
+  }
+  const min = lumas.reduce((a, b) => Math.min(a, b), 255);
+  const max = lumas.reduce((a, b) => Math.max(a, b), 0);
+  const range = max - min;
+
   const lines: string[] = [];
   for (let row = 0; row < rows; row += 1) {
     let line = "";
     for (let col = 0; col < cols; col += 1) {
-      const offset = (row * cols + col) * 4;
-      const luma =
-        0.299 * rgba[offset] + 0.587 * rgba[offset + 1] + 0.114 * rgba[offset + 2];
-      line += lumaToChar(luma);
+      const luma = lumas[row * cols + col];
+      line += lumaToChar(range > 0 ? ((luma - min) / range) * 255 : luma);
     }
     lines.push(line);
   }
