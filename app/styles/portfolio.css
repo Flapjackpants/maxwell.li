@@ -741,6 +741,104 @@ a:hover .text-link,
   }
 }
 
+/* ─── Home: specimen plates ────────────────────────────────────────────── */
+.specimen {
+  display: grid;
+  gap: var(--s-12);
+}
+
+.specimen__plate {
+  position: relative;
+  overflow: visible;
+  background: var(--n-950);
+  box-shadow: 0 0 var(--s-8) color-mix(in srgb, var(--n-400) 35%, transparent);
+}
+
+.specimen__plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--n-400);
+  mix-blend-mode: multiply;
+}
+
+.specimen__plate--lake .specimen__base { filter: grayscale(1) contrast(1.35) brightness(1.1); }
+.specimen__plate--forest .specimen__base { filter: grayscale(1) contrast(1.2) brightness(1.9); }
+
+.specimen__lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.specimen__lines path {
+  fill: none;
+  stroke: var(--n-50);
+  stroke-width: 1px;
+}
+
+.specimen__mark {
+  position: absolute;
+  z-index: 1;
+  padding-left: var(--s-2);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  line-height: 1;
+  color: var(--n-50);
+  white-space: nowrap;
+  transform: translate(-100%, -50%);
+}
+
+.specimen__callout {
+  position: absolute;
+  z-index: 2;
+}
+
+.specimen__bar {
+  position: absolute;
+  bottom: 100%;
+  left: calc(var(--win-frame) * -1);
+  right: calc(var(--win-frame) * -1);
+  padding: var(--win-frame) var(--win-frame) 0;
+  background: var(--win-grey);
+}
+
+.specimen__zoom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  outline: var(--win-frame) solid var(--win-grey);
+}
+
+.specimen__pixels {
+  position: absolute;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+}
+
+@media (min-width: 768px) {
+  .specimen {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 3fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .specimen__bar .hud-panel__title,
+  .specimen__bar .win-btn:not(:last-child) {
+    display: none;
+  }
+
+  .specimen__bar .hud-panel__bar {
+    justify-content: flex-end;
+  }
+}
+
 /* ─── Home: project deck ───────────────────────────────────────────────── */
 .hud-frame {
   position: relative;

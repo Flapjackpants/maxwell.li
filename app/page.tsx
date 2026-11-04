@@ -18,7 +18,7 @@ import { ProjectDeck } from "./components/ProjectDeck";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
-import { WinBar, SunMountain } from "./components/VaporArt";
+import { WinBar, SunMountain, SpecimenBand } from "./components/VaporArt";
 import { TypedName } from "./components/TypedName";
 import { CrossWindow, TerminalWindow } from "./components/AsciiWindows";
 
@@ -125,6 +125,12 @@ export default function Home() {
                 {homeAboutBlocks.map((block, index) => (
                   <AboutScene key={block.title} block={block} index={index} />
                 ))}
+              </div>
+            </section>
+
+            <section className="section">
+              <div className="section__inner section__inner--poster">
+                <SpecimenBand />
               </div>
             </section>
 

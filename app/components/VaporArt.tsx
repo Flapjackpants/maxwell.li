@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import Image from "next/image";
+import { Fragment, type ReactNode } from "react";
 import { Minus, Square, X } from "lucide-react";
 
 const panelRidge = "M0 266 105 210 160 230 285 135 340 200 400 240V280H0Z";
@@ -6,6 +7,31 @@ const panelBars = [140, 156, 174, 194].map((y, i) => ({ y, h: 3 + i * 4 }));
 const horizonBars = [150, 175, 203, 234, 267, 302, 338, 375].map((y, i) => ({ y, h: [3, 5, 7, 9, 12, 15, 18, 22][i] }));
 const horizonRidge = "M0 380 150 330 260 350 440 255 555 330 700 300 805 205 940 324 1050 280 1190 345 1380 270 1600 370";
 const floorBars = [382, 386, 391, 397, 404, 412, 421, 431, 442, 454, 467, 479];
+
+const SPECIMENS = [
+  {
+    name: "lake",
+    base: "/specimen-lake.png",
+    pixels: "/specimen-lake-pixel.png",
+    aspect: "1042 / 834",
+    regions: [
+      { title: "TREELINE.BMP", x: 55, y: 37, w: 24, h: 15, to: [90, 15], hex: "#C8862A" },
+      { title: "LOG.BMP", x: 44, y: 64, w: 24, h: 16, to: [90, 72], hex: "#6E7A3A" },
+      { title: "CANOE.BMP", x: 4, y: 80, w: 26, h: 17, to: [48, 94], hex: "#1F3A6E" },
+    ],
+  },
+  {
+    name: "forest",
+    base: "/specimen-forest.png",
+    pixels: "/specimen-forest-pixel.png",
+    aspect: "1042 / 1116",
+    regions: [
+      { title: "SKY.BMP", x: 40, y: 3, w: 20, h: 18, to: [82, 10], hex: "#B9A6FF" },
+      { title: "LEAVES.BMP", x: 52, y: 30, w: 20, h: 17, to: [90, 46], hex: "#9FB45A" },
+      { title: "FIGURE.BMP", x: 32, y: 62, w: 18, h: 18, to: [10, 88], hex: "#0B0F0A" },
+    ],
+  },
+] as const;
 
 export function WinBar({ title }: { title: string }) {
   return (
@@ -78,4 +104,30 @@ export function WireCage({ children, className }: { children: ReactNode; classNa
       {[76,80,84,88,92,96].map((y) => <path key={y} d={`M1 ${y}H99`} stroke="var(--accent)" vectorEffect="non-scaling-stroke" />)}
     </svg>
   </div>;
+}
+
+export function SpecimenBand() {
+  return (
+    <div className="specimen" aria-hidden="true">
+      {SPECIMENS.map(({ name, base, pixels, aspect, regions }) => (
+        <div key={name} className={`specimen__plate specimen__plate--${name}`} style={{ aspectRatio: aspect }}>
+          <Image src={base} alt="" fill className="img-cover specimen__base" sizes="(max-width: 768px) 100vw, 50vw" />
+          <svg className="specimen__lines" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
+            {regions.map(({ title, x, y, h, to }) => <path key={title} d={`M${x} ${y + h}L${to[0]} ${to[1]}`} vectorEffect="non-scaling-stroke" />)}
+          </svg>
+          {regions.map(({ title, x, y, w, h, to, hex }) => (
+            <Fragment key={title}>
+              <span className="specimen__mark" style={{ left: `${to[0]}%`, top: `${to[1]}%` }}>{hex}</span>
+              <div className="specimen__callout" style={{ left: `${x}%`, top: `${y}%`, width: `${w}%`, height: `${h}%` }}>
+                <div className="specimen__bar"><WinBar title={title} /></div>
+                <div className="specimen__zoom">
+                  <div className="specimen__pixels" style={{ backgroundImage: `url(${pixels})`, width: `${10000 / w}%`, height: `${10000 / h}%`, left: `${(-x * 100) / w}%`, top: `${(-y * 100) / h}%` }} />
+                </div>
+              </div>
+            </Fragment>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
 }
