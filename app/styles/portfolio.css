@@ -566,6 +566,13 @@ a:hover .text-link,
   .hero__cue { display: inline-flex; }
 }
 
+/* Narrow side columns: keep both hero buttons inside the bio window. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .hero__copy .hero__cta { gap: var(--s-2); }
+  .hero__copy .btn { gap: var(--s-1); padding-inline: var(--s-2); }
+  .hero__copy .btn svg:not(:first-child) { display: none; }
+}
+
 /* ─── Scroll scenes: tall track, sticky stage (pins ≥768px only) ────────── */
 .scene + .scene {
   margin-top: var(--s-16);

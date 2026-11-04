@@ -96,7 +96,7 @@
 
   /* Component sizes (named so portfolio.css has no raw lengths) */
   --portrait-max: 20rem;
-  --hero-flank-min: 34rem;
+  --hero-flank-min: 37rem;
   --indicator-h: 0.125rem;
   --icon: 1.25rem;
   --header-h: var(--s-12);
