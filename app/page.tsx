@@ -14,7 +14,7 @@ import {
   PROFILE_IMAGE_URL,
 } from "@/lib/home-content";
 import { getPinnedProjects } from "@/lib/projects";
-import { FeaturedCarousel } from "./components/FeaturedCarousel";
+import { ProjectDeck } from "./components/ProjectDeck";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
@@ -118,7 +118,7 @@ export default function Home() {
             </section>
 
             <section id="projects" className="section">
-              <div className="section__inner">
+              <div className="section__inner section__inner--poster">
                 <motion.div {...fadeUp} className="section__head grid-12">
                   <h2 className="section__title">
                     {homeProjectsIntro.heading}
@@ -126,7 +126,7 @@ export default function Home() {
                   <p className="section__intro">{homeProjectsIntro.intro}</p>
                 </motion.div>
 
-                <FeaturedCarousel
+                <ProjectDeck
                   projects={pinnedProjects}
                   seeAllLabel={homeProjectsIntro.listAllLabel}
                 />

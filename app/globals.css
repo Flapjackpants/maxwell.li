@@ -15,7 +15,7 @@
   --n-200: #c4f7d2;
   --n-50: #f2fff5;
 
-  /* Accent: links, primary action, active carousel indicator, focus ring. */
+  /* Accent: links, primary action, active selection, focus ring. */
   --accent: #c6ff3d;
   --accent-strong: #e2ff8a;
   --uv: #6a1fb8;
@@ -99,18 +99,12 @@
   --icon: 1.25rem;
   --header-h: var(--s-12);
   --stage-h: calc(100dvh - var(--header-h));
-  --specimen-max: calc(100dvh - var(--header-h) - var(--s-24) - var(--fs-poster) * 0.9);
+  --specimen-max: calc(100dvh - var(--header-h) - var(--s-24) - var(--s-16) - var(--fs-poster) * 0.9);
   --media-tall: calc(var(--stage-h) - var(--s-16));
   --media-portrait: calc(var(--media-tall) * 0.85);
-  --card-w: min(80vw, 56rem);
-  --card-scale-off: 0.86;
-  --card-dim: 0.4;
-  --scrim: linear-gradient(
-    to top,
-    rgb(3 5 4 / 0.96) 0%,
-    rgb(3 5 4 / 0.85) 45%,
-    transparent 85%
-  );
+  --plate-perspective: 1400px;
+  --deck-list-min: 12rem;
+  --deck-info-min: 16rem;
   --index-size: 6rem;
   --rail-dot: 0.5rem;
   --rail-gap: var(--s-6);

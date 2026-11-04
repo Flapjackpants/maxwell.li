@@ -70,32 +70,41 @@ export function HeroScene({
   );
 }
 
-/* ─── About: pinned stage, mosaic wipes in, then the copy arrives ───────── */
-const CELL_START = 0.1;
-const CELL_STAGGER = 0.08;
-const CELL_SPAN = 0.35;
+/* ─── About: exploded plates settle while the stage is pinned ──────────── */
+const CELL_START = 0.35;
+const CELL_STAGGER = 0.04;
+const CELL_SPAN = 0.4;
 const COPY_RANGE = [0.45, 0.75];
 
 function MosaicCell({
   src,
   order,
+  rowIndex,
+  cellIndex,
+  rowLength,
   progress,
 }: {
   src: string;
   order: number;
+  rowIndex: number;
+  cellIndex: number;
+  rowLength: number;
   progress: MotionValue<number>;
 }) {
   const start = CELL_START + order * CELL_STAGGER;
   const range = [start, start + CELL_SPAN];
-  const clipPath = useTransform(progress, range, [
-    "inset(100% 0% 0% 0%)",
-    "inset(0% 0% 0% 0%)",
+  const rotateX = useTransform(progress, range, [58, 0]);
+  const rotateZ = useTransform(progress, range, [-38, 0]);
+  const x = useTransform(progress, range, [
+    `${((rowLength - 1) / 2 - cellIndex) * 105}%`, "0%",
   ]);
-  const scale = useTransform(progress, range, [1.25, 1]);
+  const y = useTransform(progress, range, [
+    `${(rowIndex === 0 ? 45 : -65) + (order - 1.5) * 42}%`, "0%",
+  ]);
 
   return (
-    <motion.div className="mosaic__cell" style={{ clipPath }}>
-      <motion.div className="mosaic__img" style={{ scale }}>
+    <motion.div className="mosaic__cell" style={{ rotateX, rotateZ, x, y }}>
+      <div className="mosaic__img">
         <Image
           src={src}
           alt=""
@@ -103,7 +112,7 @@ function MosaicCell({
           className="img-cover"
           sizes="(max-width: 768px) 50vw, 33vw"
         />
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -142,6 +151,9 @@ function AboutStage({
                 key={src}
                 src={src}
                 order={rowOffsets[rowIndex] + cellIndex}
+                rowIndex={rowIndex}
+                cellIndex={cellIndex}
+                rowLength={row.length}
                 progress={progress}
               />
             ))}
@@ -152,11 +164,14 @@ function AboutStage({
         className="about-stage__copy"
         style={{ opacity: copyOpacity, x: copyX }}
       >
-        <p className="about-stage__index" aria-hidden>
-          {pad(index + 1)}
-        </p>
-        <h3 className="about-stage__title">{block.title}</h3>
-        <p className="about-stage__body">{block.body}</p>
+        <div className="hud-panel">
+          <span className="hud-panel__bar" aria-hidden="true">ABOUT_0{index + 1}.TXT</span>
+          <div className="hud-panel__body">
+            <p className="about-stage__index" aria-hidden>{pad(index + 1)}</p>
+            <h3 className="about-stage__title">{block.title}</h3>
+            <p className="about-stage__body">{block.body}</p>
+          </div>
+        </div>
       </motion.div>
     </div>
   );

@@ -549,6 +549,8 @@ a:hover .text-link,
   height: var(--media-tall);
   grid-template-rows: 3fr 2fr;
   gap: var(--s-2);
+  perspective: var(--plate-perspective);
+  overflow: visible;
 }
 
 .mosaic__row {
@@ -561,9 +563,23 @@ a:hover .text-link,
   position: relative;
   flex: 2 1 0;
   min-width: 0;
+  isolation: isolate;
   overflow: hidden;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background-color: var(--n-900);
+  box-shadow: 0 var(--s-2) 0 var(--uv);
+  will-change: transform;
+}
+
+.mosaic__cell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--scanlines), var(--n-400);
+  mix-blend-mode: color;
+  transition: opacity var(--dur) var(--ease);
 }
 
 .mosaic__row:nth-child(odd) .mosaic__cell:first-child,
@@ -574,15 +590,20 @@ a:hover .text-link,
 .mosaic__img {
   position: absolute;
   inset: 0;
+  filter: grayscale(1) contrast(1.15) brightness(0.9);
+  transition: filter var(--dur) var(--ease);
 }
 
+.mosaic__cell:hover .mosaic__img { filter: none; }
+.mosaic__cell:hover::after { opacity: 0; }
+
 .about-stage__index {
-  font-family: var(--font-mono);
+  font-family: var(--font-hud);
   font-size: var(--index-size);
   font-weight: var(--fw-medium);
   line-height: 1;
   letter-spacing: var(--track-mono);
-  color: var(--line-strong);
+  color: var(--accent);
 }
 
 .about-stage__title {
@@ -623,231 +644,116 @@ a:hover .text-link,
   }
 }
 
-/* ─── Home: featured carousel (scroll-snap + ::scroll-* pseudo-elements) ── */
-.carousel {
+/* ─── Home: project deck ───────────────────────────────────────────────── */
+.hud-frame {
   position: relative;
-  min-width: 0;
+  border: 1px solid var(--line-strong);
 }
 
-/* Track bleeds to the viewport edges; side padding lets end cards centre.
-   Doubled class beats the `.site-root ul` margin/padding reset. */
-.carousel__track.carousel__track {
+.hud-frame::before,
+.hud-frame::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  width: var(--s-6);
+  height: var(--s-6);
+  pointer-events: none;
+}
+
+.hud-frame::before {
+  top: calc(var(--s-1) * -1);
+  left: calc(var(--s-1) * -1);
+  border-top: var(--s-1) solid var(--accent);
+  border-left: var(--s-1) solid var(--accent);
+}
+
+.hud-frame::after {
+  right: calc(var(--s-1) * -1);
+  bottom: calc(var(--s-1) * -1);
+  border-right: var(--s-1) solid var(--accent);
+  border-bottom: var(--s-1) solid var(--accent);
+}
+
+.deck {
+  display: grid;
+  min-width: 0;
+  gap: var(--s-6);
+}
+
+.deck__list {
   display: flex;
-  gap: var(--s-4);
-  margin-inline: calc(50% - 50vw);
-  padding-inline: calc(50vw - var(--card-w) / 2);
-  padding-block: var(--s-2);
+  min-width: 0;
+  gap: var(--s-2);
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
 
-.carousel__track::-webkit-scrollbar {
-  display: none;
-}
+.deck__list::-webkit-scrollbar { display: none; }
+.deck__list li { flex: none; }
 
-.carousel__card {
-  flex: none;
-  width: var(--card-w);
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-}
-
-.carousel__card:first-child {
-  scroll-initial-target: nearest;
-}
-
-.carousel__link {
-  position: relative;
-  display: block;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background-color: var(--n-900);
-  color: inherit;
-  text-decoration: none;
-}
-
-.carousel__img {
-  transition: scale var(--dur) var(--ease);
-}
-
-.carousel__link:hover .carousel__img {
-  scale: 1.03;
-}
-
-.carousel__caption {
-  position: absolute;
-  inset: auto 0 0;
+.deck__list button {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--s-3);
-  padding: var(--s-16) var(--s-6) var(--s-6);
-  background-image: var(--scrim);
-}
-
-.carousel__caption .eyebrow {
+  min-height: var(--s-12);
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line-strong);
+  background: var(--n-900);
   color: var(--n-200);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  letter-spacing: var(--track-hud);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
-.carousel__title {
-  font-size: var(--fs-xl);
-  transition: color var(--dur) var(--ease);
+.deck__list button:hover { color: var(--accent); }
+.deck__list button[aria-current="true"] { background: var(--accent); color: var(--n-950); }
+
+.deck__screen {
+  min-width: 0;
+  aspect-ratio: 16 / 10;
+  background: var(--n-900);
 }
 
-.carousel__link:hover .carousel__title {
-  color: var(--accent);
+.deck__screen > a { display: block; position: absolute; inset: 0; overflow: hidden; }
+.deck__image { opacity: 0; transition: opacity var(--dur) var(--ease); }
+.deck__image--active { opacity: 1; }
+
+.deck__details { min-width: 0; }
+.deck__info { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-4); animation: deck-fade var(--dur) var(--ease) both; }
+.deck__title { font-size: var(--fs-xl); overflow-wrap: anywhere; }
+.deck__description { color: var(--n-200); }
+.deck__readout { display: none; }
+
+@keyframes deck-fade {
+  from { opacity: 0; transform: translateY(var(--s-2)); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.carousel__desc {
-  display: none;
-  max-width: var(--prose-max);
-  color: var(--n-200);
-}
-
-.carousel__cta {
-  margin-top: var(--s-1);
-}
-
-@media (min-width: 768px) {
-  .carousel__link {
-    aspect-ratio: 16 / 10;
-  }
-
-  .carousel__caption {
-    padding: var(--s-24) var(--s-8) var(--s-8);
-  }
-
-  .carousel__desc {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-/* Off-centre cards shrink and dim as they leave the middle of the track. */
-@supports (animation-timeline: view()) {
-  .carousel__card {
-    animation: carousel-focus linear both;
-    animation-timeline: view(inline);
-  }
-
-  @keyframes carousel-focus {
-    0%,
-    100% {
-      scale: var(--card-scale-off);
-      opacity: var(--card-dim);
-    }
-
-    50% {
-      scale: 1;
-      opacity: 1;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .carousel__card {
-    animation: none;
-  }
-}
-
-/* Controls row: fallback React buttons/dashes, plus "See all". */
-.carousel__controls {
+.deck__controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--s-4) var(--s-6);
-  margin-top: var(--s-8);
-  padding-top: var(--s-6);
+  gap: var(--s-2);
+  min-width: 0;
+  padding-top: var(--s-4);
   border-top: 1px solid var(--line);
 }
 
-.carousel__buttons {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-}
+.deck__counter { margin-inline: var(--s-2); color: var(--n-400); font-family: var(--font-hud); font-size: var(--fs-hud); }
+.deck__all { margin-left: auto; }
 
-.carousel__position {
-  margin-left: var(--s-2);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: var(--track-mono);
-  color: var(--n-400);
-}
-
-.carousel__dashes {
-  display: flex;
-  flex: 1 1 100%;
-  order: 3;
-  gap: var(--s-1);
-  min-width: 0;
-}
-
-.carousel__dash {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  height: var(--s-12);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.carousel__dash::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 50%;
-  height: var(--indicator-h);
-  transform: translateY(-50%);
-  background-color: var(--n-500);
-  transition: background-color var(--dur) var(--ease);
-}
-
-.carousel__dash:hover::after {
-  background-color: var(--n-200);
-}
-
-.carousel__dash[aria-current="true"]::after {
-  background-color: var(--accent);
-}
-
-.carousel__all {
-  margin-left: auto;
-}
-
-@media (min-width: 768px) {
-  .carousel__dashes {
-    flex: 1 1 0;
-    order: 0;
-  }
-}
-
-/* Native controls: browser-generated arrows and markers replace the fallback.
- * The ::scroll-marker / ::scroll-button rules live in public/carousel-native.css
- * because Lightning CSS cannot parse them. */
-@supports selector(::scroll-marker) {
-  .carousel__fallback {
-    display: none;
-  }
-
-  .carousel__track {
-    anchor-name: --carousel-track;
-    scroll-marker-group: after;
-  }
-
-  .carousel__controls {
-    margin-top: 0;
-    padding-top: var(--s-2);
-    border-top: 0;
-  }
+@media (min-width: 1024px) {
+  .deck { grid-template-columns: minmax(var(--deck-list-min), 1fr) minmax(0, 2.4fr) minmax(var(--deck-info-min), 1.1fr); align-items: stretch; }
+  .deck__list { flex-direction: column; max-height: 100%; overflow-y: auto; overflow-x: hidden; }
+  .deck__list li { flex: none; }
+  .deck__list button { width: 100%; }
+  .deck__details { display: flex; flex-direction: column; justify-content: space-between; }
+  .deck__readout { display: block; margin-top: var(--s-6); }
+  .deck__controls { grid-column: 1 / -1; }
 }
 
 /* ─── Home: CV row ──────────────────────────────────────────────────────── */

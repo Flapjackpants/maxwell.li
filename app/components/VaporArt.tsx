@@ -16,9 +16,9 @@ export function SunMountain({ variant = "panel", className }: { variant?: "panel
           <clipPath id="sun-horizon-mountains"><path d={`${horizonRidge}V480H0Z`} /></clipPath>
           <mask id="sun-horizon-bars"><rect width="1600" height="480" fill="var(--n-50)" />{horizonBars.map(({y,h}) => <rect key={y} x="570" y={y} width="460" height={h} fill="var(--n-950)" />)}</mask>
         </defs>
+        <circle cx="800" cy="250" r="200" fill="url(#sun-horizon-glow)" mask="url(#sun-horizon-bars)" />
         <path d={`${horizonRidge}V480H0Z`} fill="var(--n-950)" />
         <rect x="800" y="200" width="800" height="180" fill="url(#sun-horizon-hatch)" clipPath="url(#sun-horizon-mountains)" />
-        <circle cx="800" cy="250" r="200" fill="url(#sun-horizon-glow)" mask="url(#sun-horizon-bars)" />
         <path d={horizonRidge} fill="none" stroke="var(--accent)" strokeWidth="1.5" />
         <rect y="380" width="1600" height="100" fill="var(--n-950)" />
         {floorBars.map((y, i) => <rect key={y} x={90 + i * 55} y={y} width={1420 - i * 110} height="2" fill="var(--accent)" opacity={1 - i * 0.075} />)}
