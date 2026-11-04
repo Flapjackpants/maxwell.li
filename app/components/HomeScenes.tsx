@@ -9,7 +9,9 @@ import {
   type MotionValue,
 } from "framer-motion";
 import Image from "next/image";
+import { textSizeForProgress } from "@/lib/ascii";
 import type { HomeAboutBlock } from "@/lib/home-content";
+import { AsciiCanvas } from "./AsciiCanvas";
 import { SunMountain, WinBar, WireCage } from "./VaporArt";
 import { ScrollScene, useScrubEnabled } from "./ScrollScene";
 
@@ -75,6 +77,9 @@ const CELL_START = 0.35;
 const CELL_STAGGER = 0.04;
 const CELL_SPAN = 0.4;
 const COPY_RANGE = [0.45, 0.75];
+const ASCII_START = 0.3;
+const ASCII_END = 0.72;
+const ASCII_FADE_END = 0.85;
 
 function MosaicCell({
   src,
@@ -84,6 +89,7 @@ function MosaicCell({
   cellIndex,
   rowLength,
   progress,
+  ascii,
 }: {
   src: string;
   label: string;
@@ -92,9 +98,18 @@ function MosaicCell({
   cellIndex: number;
   rowLength: number;
   progress: MotionValue<number>;
+  ascii: boolean;
 }) {
   const start = CELL_START + order * CELL_STAGGER;
   const range = [start, start + CELL_SPAN];
+  const textSize = useTransform(progress, (p) =>
+    textSizeForProgress(p, ASCII_START, ASCII_END),
+  );
+  const asciiOpacity = useTransform(
+    progress,
+    [ASCII_END, ASCII_FADE_END],
+    [1, 0],
+  );
   const rotateX = useTransform(progress, range, [58, 0]);
   const rotateZ = useTransform(progress, range, [-38, 0]);
   const x = useTransform(progress, range, [
@@ -118,6 +133,11 @@ function MosaicCell({
               sizes="(max-width: 768px) 50vw, 33vw"
             />
           </div>
+          {ascii && (
+            <motion.div className="mosaic__ascii" style={{ opacity: asciiOpacity }}>
+              <AsciiCanvas src={src} textSize={textSize} />
+            </motion.div>
+          )}
         </div>
       </div>
       <span className="win-tip">{label}</span>
@@ -135,6 +155,7 @@ function AboutStage({
   progress: MotionValue<number>;
 }) {
   const reverse = index % 2 === 1;
+  const enabled = useScrubEnabled();
   const copyOpacity = useTransform(progress, COPY_RANGE, [0, 1]);
   const copyX = useTransform(
     progress,
@@ -165,6 +186,7 @@ function AboutStage({
                 cellIndex={cellIndex}
                 rowLength={row.length}
                 progress={progress}
+                ascii={enabled}
               />
             ))}
           </div>
