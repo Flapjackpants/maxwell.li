@@ -134,6 +134,16 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* fills the iOS status-bar area, where page content otherwise shows above the sticky header */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: 100dvh;
+  background-color: var(--n-950);
+}
+
 .site-header::after {
   content: "";
   position: absolute;
@@ -1183,8 +1193,12 @@ a:hover .text-link,
   line-height: var(--lh-tight);
 }
 
+.page-head--archive {
+  margin-bottom: var(--s-8);
+}
+
 .page-head--archive .page-head__title {
-  font-size: var(--fs-poster);
+  font-size: var(--fs-section);
   padding-bottom: 0.15em;
 }
 
@@ -1195,11 +1209,16 @@ a:hover .text-link,
   color: var(--n-200);
 }
 
+.page-head--archive .page-head__lede {
+  margin-top: var(--s-3);
+  font-size: var(--fs-base);
+}
+
 .page-head__readout { display: none; }
 
 .project-list {
   display: grid;
-  gap: var(--s-6);
+  gap: var(--s-3);
 }
 
 .project-list > li { min-width: 0; }
@@ -1231,9 +1250,9 @@ a:hover .text-link,
   flex: 1;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--s-3);
+  gap: var(--s-1);
   min-width: 0;
-  padding: var(--s-6);
+  padding: var(--s-3);
 }
 
 .project-row__index {
@@ -1243,7 +1262,7 @@ a:hover .text-link,
   gap: var(--s-2);
   width: 100%;
   font-family: var(--font-hud);
-  font-size: var(--fs-hud);
+  font-size: var(--fs-sm);
   letter-spacing: var(--track-hud);
   color: var(--n-400);
 }
@@ -1253,7 +1272,7 @@ a:hover .text-link,
 }
 
 .project-row__title {
-  font-size: var(--fs-xl);
+  font-size: var(--fs-lg);
   overflow-wrap: anywhere;
   transition: color var(--dur) var(--ease);
 }
@@ -1263,13 +1282,33 @@ a:hover .text-link,
 }
 
 .project-row__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--fs-sm);
   color: var(--n-200);
   overflow-wrap: anywhere;
 }
 
 .project-row__body .text-link {
   margin-top: auto;
-  padding-top: var(--s-4);
+  padding-top: var(--s-2);
+}
+
+.project-row .tag {
+  font-size: var(--fs-sm);
+}
+
+.project-row .tag:not(:last-child)::after {
+  margin-inline: var(--s-1);
+}
+
+@media (max-width: 767px) {
+  .project-row { flex-direction: row; }
+  .project-row__media { flex: none; width: var(--s-24); aspect-ratio: auto; }
+  .project-row__body .text-link { display: none; }
 }
 
 @media (min-width: 768px) {
