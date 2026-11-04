@@ -59,7 +59,7 @@ export function HeroScene({
           <WireCage>
             <div className="hero__portrait">
               <motion.div className="hero__portrait-inner" style={{ scale: imageScale, y: imageY }}>
-                <Image src={imageUrl} alt="Profile" fill className="img-cover" sizes="(max-width: 1024px) 100vw, 40vw" preload />
+                <Image src={imageUrl} alt="Profile" fill className="img-cover" sizes="(max-width: 1024px) 66vw, 24vw" preload />
               </motion.div>
             </div>
           </WireCage>
