@@ -18,6 +18,8 @@ import { FeaturedCarousel } from "./components/FeaturedCarousel";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
+import { HudReadout, StrataStack, SunMountain } from "./components/VaporArt";
+import { HUD_NOISE, hudProjectLines } from "@/lib/hud-content";
 
 const pinnedProjects = getPinnedProjects();
 const sectionIds = navLinks.map((link) => link.href.slice(1));
@@ -68,11 +70,10 @@ export default function Home() {
 
           <main>
             <section id="bio" className="hero">
-              <div className="section__inner">
+              <div className="section__inner section__inner--poster">
                 <motion.div {...fadeUp}>
-                  <HeroScene imageUrl={PROFILE_IMAGE_URL}>
+                  <HeroScene imageUrl={PROFILE_IMAGE_URL} title={<h1 className="hero__name">{homeHero.title}</h1>} flankLeft={<HudReadout lines={HUD_NOISE} />} flankRight={<><HudReadout lines={hudProjectLines(pinnedProjects)} /><StrataStack className="hero__strata" /></>}>
                     <p className="eyebrow">{homeHero.eyebrow}</p>
-                    <h1 className="hero__name">{homeHero.title}</h1>
                     <p className="hero__lede">{homeHero.lede}</p>
                     <div className="hero__cta">
                       <a href="#cv" className="btn btn--primary">
@@ -134,7 +135,8 @@ export default function Home() {
 
             <section id="cv" className="section">
               <div className="section__inner">
-                <motion.div {...fadeUp} className="cv-row">
+                <motion.div {...fadeUp} className="cv-row hud-panel">
+                  <span className="hud-panel__bar" aria-hidden="true">RESUME.PDF</span>
                   <div>
                     <h2 className="cv-row__heading">{homeCv.heading}</h2>
                     <p className="cv-row__lede">{homeCv.lede}</p>
@@ -190,10 +192,11 @@ export default function Home() {
                     </li>
                   </ul>
                 </div>
-                <p className="eyebrow site-footer__legal">
-                  © {new Date().getFullYear()} — All rights reserved
-                </p>
               </motion.div>
+            </div>
+            <div className="site-footer__horizon">
+              <SunMountain variant="horizon" />
+              <p className="eyebrow site-footer__legal">© {new Date().getFullYear()} — All rights reserved</p>
             </div>
           </footer>
 

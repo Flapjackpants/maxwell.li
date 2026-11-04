@@ -24,6 +24,8 @@
   --spec-orange: #ff9d2e;
   --spec-yellow: #ffe14d;
   --spec-cyan: #3fe8e0;
+  --sun-peach: #f3c9a5;
+  --sun-maroon: #5c0f24;
   --spectrum-stops: var(--spec-red), var(--spec-orange), var(--spec-yellow), var(--accent), var(--spec-cyan), var(--uv);
 
   --success: #4ade80;
@@ -48,6 +50,8 @@
   --fs-lg: 1.375rem;
   --fs-xl: 2rem;
   --fs-2xl: 3.25rem;
+  --fs-poster: clamp(3.5rem, 11.5vw, 13rem);
+  --fs-section: clamp(2.5rem, 6vw, 5rem);
   --fw-regular: 400;
   --fw-medium: 500;
   --fw-semibold: 600;
@@ -70,6 +74,9 @@
 
   /* Layout */
   --content-max: 72rem;
+  --poster-max: 100rem;
+  --social-size: 5rem;
+  --footer-horizon-h: clamp(16rem, 34vw, 30rem);
   --prose-max: 40rem;
   --gutter: var(--s-4);
 

@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import type { HomeAboutBlock } from "@/lib/home-content";
+import { SunMountain, WireCage } from "./VaporArt";
 import { ScrollScene, useScrubEnabled } from "./ScrollScene";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -17,9 +18,15 @@ const pad = (n: number) => String(n).padStart(2, "0");
 /* ─── Hero: large portrait that drifts while the copy lifts away ────────── */
 export function HeroScene({
   imageUrl,
+  title,
+  flankLeft,
+  flankRight,
   children,
 }: {
   imageUrl: string;
+  title: ReactNode;
+  flankLeft: ReactNode;
+  flankRight: ReactNode;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -38,27 +45,27 @@ export function HeroScene({
 
   return (
     <div ref={ref} className="hero__inner grid-12">
-      <div className="hero__portrait">
-        <motion.div
-          className="hero__portrait-inner"
-          style={{ scale: imageScale, y: imageY }}
-        >
-          <Image
-            src={imageUrl}
-            alt="Profile"
-            fill
-            className="img-cover"
-            sizes="(max-width: 768px) 100vw, 60vw"
-            preload
-          />
-        </motion.div>
+      {title}
+      <div className="hero__stage">
+        <div className="hero__left">
+          <motion.div className="hero__copy hud-panel" style={{ y: copyY, opacity: copyOpacity }}>
+            <span className="hud-panel__bar" aria-hidden="true">BIO.TXT</span>
+            <div className="hud-panel__body">{children}</div>
+          </motion.div>
+          <div className="hero__flank-left">{flankLeft}</div>
+        </div>
+        <div className="hero__specimen">
+          <SunMountain className="hero__sun" />
+          <WireCage>
+            <div className="hero__portrait">
+              <motion.div className="hero__portrait-inner" style={{ scale: imageScale, y: imageY }}>
+                <Image src={imageUrl} alt="Profile" fill className="img-cover" sizes="(max-width: 1024px) 100vw, 40vw" preload />
+              </motion.div>
+            </div>
+          </WireCage>
+        </div>
+        <div className="hero__flank-right">{flankRight}</div>
       </div>
-      <motion.div
-        className="hero__copy"
-        style={{ y: copyY, opacity: copyOpacity }}
-      >
-        {children}
-      </motion.div>
     </div>
   );
 }
