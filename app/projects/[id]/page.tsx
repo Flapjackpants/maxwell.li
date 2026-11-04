@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import { HudReadout } from "@/app/components/VaporArt";
+import { HUD_NOISE, hudProjectLines } from "@/lib/hud-content";
 import {
   getAllProjectIds,
   getProjectById,
@@ -78,57 +80,52 @@ export default async function ProjectDetailPage({ params }: Props) {
         All projects
       </Link>
 
-      <header className="detail__head">
-        <p className="eyebrow">CASE_STUDY // {project.id.toUpperCase()}</p>
-        <h1 className="detail__title">{project.title}</h1>
-        <ul className="tag-list">
-          {project.tags.map((tag) => (
-            <li key={tag} className="tag">
-              {tag}
-            </li>
-          ))}
-        </ul>
-        <div className="detail__actions">
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn--ghost"
-          >
-            <Github aria-hidden />
-            Repository
-          </a>
-          {project.liveUrl ? (
-            <LiveLink href={project.liveUrl} className="btn btn--ghost" />
-          ) : null}
+      <header className="detail__hero hud-frame">
+        <div className="detail__hero-media">
+          <Image
+            src={project.imageUrl}
+            alt=""
+            fill
+            preload
+            className="img-cover"
+            sizes="(max-width: 1152px) 100vw, 1152px"
+          />
+        </div>
+        <div className="detail__hero-copy">
+          <p className="eyebrow">CASE_STUDY // {project.id.toUpperCase()}</p>
+          <h1 className="detail__title">{project.title}</h1>
         </div>
       </header>
 
-      <div className="detail__hero">
-        <Image
-          src={project.imageUrl}
-          alt=""
-          fill
-          preload
-          className="img-cover"
-          sizes="(max-width: 1152px) 100vw, 1152px"
-        />
-      </div>
-
-      <div className="detail__body grid-12">
-        <div className="detail__prose">
-          {project.detail.split("\n\n").map((para, i) => (
-            <p key={i} className="detail__para">
-              {para}
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {youtubeId ? (
-        <div className="detail__demo">
-          <p className="eyebrow detail__demo-label">DEMO</p>
-          <div className="detail__demo-frame">
+      <div className="detail__grid">
+        <aside className="detail__data hud-panel">
+          <span className="hud-panel__bar" aria-hidden="true">{project.id.toUpperCase()}</span>
+          <div className="hud-panel__body">
+            <ul className="tag-list">
+              {project.tags.map((tag) => (
+                <li key={tag} className="tag">{tag}</li>
+              ))}
+            </ul>
+            <div className="detail__actions">
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn btn--ghost">
+                <Github aria-hidden />
+                Repository
+              </a>
+              {project.liveUrl ? <LiveLink href={project.liveUrl} className="btn btn--ghost" /> : null}
+            </div>
+            <HudReadout className="detail__readout" lines={[...hudProjectLines([project]), ...HUD_NOISE.slice(10, 16)]} />
+          </div>
+        </aside>
+        <div className="detail__main">
+          <div className="detail__prose">
+            {project.detail.split("\n\n").map((para, i) => (
+              <p key={i} className="detail__para">{para}</p>
+            ))}
+          </div>
+          {youtubeId ? (
+            <div className="detail__demo">
+              <p className="eyebrow detail__demo-label">DEMO</p>
+              <div className="detail__demo-frame hud-frame">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
               title={`${project.title} demo`}
@@ -137,9 +134,11 @@ export default async function ProjectDetailPage({ params }: Props) {
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
             />
-          </div>
+              </div>
+            </div>
+          ) : null}
         </div>
-      ) : null}
+      </div>
 
       <nav className="pager" aria-label="Adjacent projects">
         {prev ? (

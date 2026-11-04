@@ -2,6 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getArchiveProjects, isProjectPinned } from "@/lib/projects";
+import { HudReadout } from "@/app/components/VaporArt";
+import { HUD_NOISE } from "@/lib/hud-content";
+
+const pad = (n: number) => String(n).padStart(2, "0");
 
 export const metadata: Metadata = {
   title: "Projects — Portfolio",
@@ -15,23 +19,26 @@ export default function ProjectsIndexPage() {
   return (
     <div>
       <header className="page-head">
-        <p className="eyebrow">MODULE_ARCHIVE // FULL_INDEX</p>
-        <h1 className="page-head__title">Projects</h1>
-        <p className="page-head__lede">
-          Featured picks (marked Featured) sit at the top — the same short list
-          from the home page. Everything below is the full chronological
-          archive. Open any entry for narrative, stack, and links.
-        </p>
+        <div className="page-head__copy">
+          <p className="eyebrow">MODULE_ARCHIVE // FULL_INDEX</p>
+          <h1 className="page-head__title">Projects</h1>
+          <p className="page-head__lede">
+            Featured picks (marked Featured) sit at the top — the same short list
+            from the home page. Everything below is the full chronological
+            archive. Open any entry for narrative, stack, and links.
+          </p>
+        </div>
+        <HudReadout className="page-head__readout" lines={HUD_NOISE.slice(0, 10)} />
       </header>
 
       <ul className="project-list">
-        {projects.map((project) => {
+        {projects.map((project, i) => {
           const pinned = isProjectPinned(project.id);
           return (
-            <li key={project.id}>
+            <li key={project.id} className={pinned ? "project-row--featured" : undefined}>
               <Link
                 href={`/projects/${project.id}`}
-                className="project-row grid-12"
+                className="project-row hud-frame"
               >
                 <div className="project-row__media">
                   <Image
@@ -39,17 +46,16 @@ export default function ProjectsIndexPage() {
                     alt=""
                     fill
                     className="img-cover"
-                    sizes="(max-width: 768px) 100vw, 280px"
+                    sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
                   />
                 </div>
                 <div className="project-row__body">
-                  {pinned ? (
-                    <span className="project-row__marker">FEATURED</span>
-                  ) : null}
+                  <div className="project-row__index">
+                    <span aria-hidden="true">{`${pad(i + 1)} // ${project.id.toUpperCase()}`}</span>
+                    {pinned ? <span className="project-row__marker">FEATURED</span> : null}
+                  </div>
                   <h2 className="project-row__title">{project.title}</h2>
                   <p className="project-row__desc">{project.description}</p>
-                </div>
-                <div className="project-row__meta">
                   <ul className="tag-list">
                     {project.tags.map((tag) => (
                       <li key={tag} className="tag">
