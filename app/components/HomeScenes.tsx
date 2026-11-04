@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import type { HomeAboutBlock } from "@/lib/home-content";
-import { SunMountain, WireCage } from "./VaporArt";
+import { SunMountain, WinBar, WireCage } from "./VaporArt";
 import { ScrollScene, useScrubEnabled } from "./ScrollScene";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -49,7 +49,7 @@ export function HeroScene({
       <div className="hero__stage">
         <div className="hero__left">
           <motion.div className="hero__copy hud-panel" style={{ y: copyY, opacity: copyOpacity }}>
-            <span className="hud-panel__bar" aria-hidden="true">BIO.TXT</span>
+            <WinBar title="BIO.TXT" />
             <div className="hud-panel__body">{children}</div>
           </motion.div>
           <div className="hero__flank-left">{flankLeft}</div>
@@ -78,6 +78,7 @@ const COPY_RANGE = [0.45, 0.75];
 
 function MosaicCell({
   src,
+  label,
   order,
   rowIndex,
   cellIndex,
@@ -85,6 +86,7 @@ function MosaicCell({
   progress,
 }: {
   src: string;
+  label: string;
   order: number;
   rowIndex: number;
   cellIndex: number;
@@ -104,15 +106,21 @@ function MosaicCell({
 
   return (
     <motion.div className="mosaic__cell" style={{ rotateX, rotateZ, x, y }}>
-      <div className="mosaic__img">
-        <Image
-          src={src}
-          alt=""
-          fill
-          className="img-cover"
-          sizes="(max-width: 768px) 50vw, 33vw"
-        />
+      <div className="hud-panel mosaic__window">
+        <WinBar title={label} />
+        <div className="mosaic__frame">
+          <div className="mosaic__img">
+            <Image
+              src={src}
+              alt=""
+              fill
+              className="img-cover"
+              sizes="(max-width: 768px) 50vw, 33vw"
+            />
+          </div>
+        </div>
       </div>
+      <span className="win-tip">{label}</span>
     </motion.div>
   );
 }
@@ -146,10 +154,12 @@ function AboutStage({
       <div className="about-stage__media mosaic" aria-hidden="true">
         {block.imageRows.map((row, rowIndex) => (
           <div key={rowIndex} className="mosaic__row">
+            {/* shortcut: assumes four images per block, compute offsets if blocks vary */}
             {row.map((src, cellIndex) => (
               <MosaicCell
                 key={src}
                 src={src}
+                label={`test ${index * 4 + rowOffsets[rowIndex] + cellIndex + 1}`}
                 order={rowOffsets[rowIndex] + cellIndex}
                 rowIndex={rowIndex}
                 cellIndex={cellIndex}
@@ -165,7 +175,7 @@ function AboutStage({
         style={{ opacity: copyOpacity, x: copyX }}
       >
         <div className="hud-panel">
-          <span className="hud-panel__bar" aria-hidden="true">ABOUT_0{index + 1}.TXT</span>
+          <WinBar title={`ABOUT_0${index + 1}.TXT`} />
           <div className="hud-panel__body">
             <p className="about-stage__index" aria-hidden>{pad(index + 1)}</p>
             <h3 className="about-stage__title">{block.title}</h3>

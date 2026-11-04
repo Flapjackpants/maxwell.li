@@ -18,7 +18,8 @@ import { ProjectDeck } from "./components/ProjectDeck";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
-import { SunMountain } from "./components/VaporArt";
+import { WinBar, SunMountain } from "./components/VaporArt";
+import { TypedName } from "./components/TypedName";
 
 const pinnedProjects = getPinnedProjects();
 const sectionIds = navLinks.map((link) => link.href.slice(1));
@@ -71,7 +72,7 @@ export default function Home() {
             <section id="bio" className="hero">
               <div className="section__inner section__inner--poster">
                 <motion.div {...fadeUp}>
-                  <HeroScene imageUrl={PROFILE_IMAGE_URL} title={<h1 className="hero__name">{homeHero.title}</h1>} flankLeft={null} flankRight={null}>
+                  <HeroScene imageUrl={PROFILE_IMAGE_URL} title={<TypedName text={homeHero.title} />} flankLeft={null} flankRight={null}>
                     <p className="eyebrow">{homeHero.eyebrow}</p>
                     <p className="hero__lede">{homeHero.lede}</p>
                     <div className="hero__cta">
@@ -134,16 +135,18 @@ export default function Home() {
 
             <section id="cv" className="section">
               <div className="section__inner">
-                <motion.div {...fadeUp} className="cv-row hud-panel">
-                  <span className="hud-panel__bar" aria-hidden="true">RESUME.PDF</span>
-                  <div>
-                    <h2 className="cv-row__heading">{homeCv.heading}</h2>
-                    <p className="cv-row__lede">{homeCv.lede}</p>
+                <motion.div {...fadeUp} className="hud-panel">
+                  <WinBar title="RESUME.PDF" />
+                  <div className="hud-panel__body cv-row">
+                    <div>
+                      <h2 className="cv-row__heading">{homeCv.heading}</h2>
+                      <p className="cv-row__lede">{homeCv.lede}</p>
+                    </div>
+                    <a href={homeCv.pdfHref} className="btn btn--primary">
+                      <FileText aria-hidden />
+                      Download
+                    </a>
                   </div>
-                  <a href={homeCv.pdfHref} className="btn btn--primary">
-                    <FileText aria-hidden />
-                    Download
-                  </a>
                 </motion.div>
               </div>
             </section>

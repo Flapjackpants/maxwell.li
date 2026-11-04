@@ -1,10 +1,24 @@
 import type { ReactNode } from "react";
+import { Minus, Square, X } from "lucide-react";
 
 const panelRidge = "M0 266 105 210 160 230 285 135 340 200 400 240V280H0Z";
 const panelBars = [140, 156, 174, 194].map((y, i) => ({ y, h: 3 + i * 4 }));
 const horizonBars = [150, 175, 203, 234, 267, 302, 338, 375].map((y, i) => ({ y, h: [3, 5, 7, 9, 12, 15, 18, 22][i] }));
 const horizonRidge = "M0 380 150 330 260 350 440 255 555 330 700 300 805 205 940 324 1050 280 1190 345 1380 270 1600 370";
 const floorBars = [382, 386, 391, 397, 404, 412, 421, 431, 442, 454, 467, 479];
+
+export function WinBar({ title }: { title: string }) {
+  return (
+    <span className="hud-panel__bar" aria-hidden="true">
+      <span className="hud-panel__title">{title}</span>
+      <span className="win-controls">
+        <span className="win-btn"><Minus /></span>
+        <span className="win-btn"><Square /></span>
+        <span className="win-btn"><X /></span>
+      </span>
+    </span>
+  );
+}
 
 export function SunMountain({ variant = "panel", className }: { variant?: "panel" | "horizon"; className?: string }) {
   if (variant === "horizon") {

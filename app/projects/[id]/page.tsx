@@ -9,6 +9,7 @@ import {
   getYoutubeVideoId,
   PROJECTS,
 } from "@/lib/projects";
+import { WinBar } from "../../components/VaporArt";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -97,7 +98,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       <div className="detail__grid">
         <aside className="detail__data hud-panel">
-          <span className="hud-panel__bar" aria-hidden="true">{project.id.toUpperCase()}</span>
+          <WinBar title={project.id.toUpperCase()} />
           <div className="hud-panel__body">
             <ul className="tag-list">
               {project.tags.map((tag) => (

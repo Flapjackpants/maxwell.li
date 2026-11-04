@@ -104,6 +104,20 @@
   --rail-dot: 0.5rem;
   --rail-gap: var(--s-6);
 
+  /* Win95 chrome */
+  --win-grey: #c0c0c0;
+  --win-light: #ffffff;
+  --win-mid: #dfdfdf;
+  --win-shadow: #808080;
+  --win-dark: #0a0a0a;
+  --win-navy: #000080;
+  --win-tip: #ffffe1;
+  --win-frame: 0.1875rem;
+  --win-btn: 1.125rem;
+  --win-hover-scale: 1.08;
+  --win-raised: inset -1px -1px 0 var(--win-dark), inset 1px 1px 0 var(--win-light), inset -2px -2px 0 var(--win-shadow), inset 2px 2px 0 var(--win-mid);
+  --win-sunken: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 var(--win-light), inset 2px 2px 0 var(--win-dark), inset -2px -2px 0 var(--win-mid);
+
   /* Background */
   --page-gradient: linear-gradient(to bottom, #000 0%, #020104 45%, var(--uv-deep) 78%, #3b1075 100%);
   --page-vignette: linear-gradient(
