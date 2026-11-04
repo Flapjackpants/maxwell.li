@@ -18,9 +18,9 @@ import { ProjectDeck } from "./components/ProjectDeck";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
-import { WinBar, SunMountain, SpecimenBand } from "./components/VaporArt";
+import { WinBar, SunMountain, SpecimenPlate } from "./components/VaporArt";
 import { TypedName } from "./components/TypedName";
-import { CrossWindow, TerminalWindow } from "./components/AsciiWindows";
+import { CrossWindow } from "./components/AsciiWindows";
 
 const pinnedProjects = getPinnedProjects();
 const sectionIds = navLinks.map((link) => link.href.slice(1));
@@ -76,11 +76,11 @@ export default function Home() {
                   <HeroScene
                     imageUrl={PROFILE_IMAGE_URL}
                     title={<TypedName text={homeHero.title} />}
-                    flankLeft={<TerminalWindow src="/muon2.webp" className="terminal--fill" />}
+                    flankLeft={<SpecimenPlate name="forest" />}
                     flankRight={
                       <>
                         <CrossWindow />
-                        <TerminalWindow src="/nature.webp" className="terminal--fill" />
+                        <SpecimenPlate name="lake" />
                       </>
                     }
                   >
@@ -128,11 +128,6 @@ export default function Home() {
               </div>
             </section>
 
-            <section className="section">
-              <div className="section__inner section__inner--poster">
-                <SpecimenBand />
-              </div>
-            </section>
 
             <section id="projects" className="section">
               <div className="section__inner section__inner--poster">

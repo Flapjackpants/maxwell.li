@@ -62,7 +62,7 @@ export function AsciiCross() {
 export function CrossWindow({ className }: { className?: string }) {
   return (
     <div className={`hud-panel cross-window ${className ?? ""}`} aria-hidden="true">
-      <WinBar title="CROSS.EXE" />
+      <WinBar />
       <div className="cross-window__body">
         <AsciiCross />
       </div>
@@ -81,7 +81,7 @@ export function TerminalWindow({
 }) {
   return (
     <div className={`hud-panel terminal ${className ?? ""}`} aria-hidden="true">
-      <WinBar title="COMMAND.COM" />
+      <WinBar />
       <div className="terminal__body">
         <p className="terminal__prompt">{`C:\\> asciiify ${src.slice(1)}`}</p>
         <AsciiCanvas src={src} textSize={textSize} className="terminal__canvas" />

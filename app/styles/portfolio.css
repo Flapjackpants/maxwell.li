@@ -463,7 +463,9 @@ a:hover .text-link,
 .hero__sun { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; }
 .hero__specimen .wire-cage { position: absolute; left: 6%; bottom: 4%; width: 66%; }
 .hero__left { order: 1; min-width: 0; }
-.hero__flank-left, .hero__flank-right { display: none; }
+.hero__flank-left { margin-top: var(--s-12); }
+.hero__flank-right { order: 2; }
+.hero__flank-right .cross-window { display: none; }
 .hero__copy { position: relative; z-index: 3; }
 
 .hud-panel { padding: var(--win-frame); background: var(--win-grey); box-shadow: var(--win-raised), var(--hard-shadow); }
@@ -481,8 +483,6 @@ a:hover .text-link,
 .terminal__body { display: flex; flex: 1; flex-direction: column; min-height: 0; gap: var(--s-1); margin-top: var(--win-frame); padding: var(--s-2); overflow: hidden; background: var(--n-950); box-shadow: var(--win-sunken); }
 .terminal__prompt { font-family: var(--font-hud); font-size: var(--fs-hud); line-height: var(--lh-tight); color: var(--n-200); white-space: nowrap; overflow: hidden; }
 .terminal__canvas { height: auto; aspect-ratio: var(--terminal-aspect); }
-.terminal--fill .terminal__canvas { flex: 1 1 0; height: 0; min-height: 0; aspect-ratio: auto; }
-.hero__flank-left .terminal--fill { height: 100%; }
 
 .wire-cage { position: relative; width: 100%; }
 .wire-cage__back, .wire-cage__front { position: absolute; inset: -6%; width: 112%; height: 112%; overflow: visible; pointer-events: none; }
@@ -544,7 +544,7 @@ a:hover .text-link,
 @media (min-width: 1024px) {
   .hero__name { margin-bottom: var(--s-4); }
   .hero__stage { grid-template-columns: minmax(0, 3fr) minmax(0, 5fr) minmax(0, 3fr); align-items: stretch; gap: var(--s-6); }
-  .hero__left, .hero__specimen { order: initial; }
+  .hero__left, .hero__specimen, .hero__flank-right { order: initial; }
   .hero__specimen { width: min(100%, var(--specimen-max)); min-width: var(--portrait-max); }
   .hero__specimen .wire-cage { width: 58%; }
   .hero__portrait { max-height: none; }
@@ -554,8 +554,8 @@ a:hover .text-link,
   .hero__left, .hero__flank-right { display: flex; flex-direction: column; min-height: 0; max-height: var(--specimen-max); }
   .hero__flank-left { display: block; flex: 1; min-height: 0; margin-top: var(--s-4); overflow: hidden; }
   .hero__flank-right { gap: var(--s-4); overflow: hidden; }
-  .hero__flank-right .cross-window { flex: none; }
-  .hero__flank-right .terminal--fill { flex: 1; }
+  .hero__flank-right .cross-window { display: block; flex: none; }
+  .hero__flank-right .specimen__plate { flex: 1; min-height: 0; height: auto; }
   .hero__cue { display: inline-flex; }
 }
 
@@ -746,16 +746,13 @@ a:hover .text-link,
 }
 
 /* ─── Home: specimen plates ────────────────────────────────────────────── */
-.specimen {
-  display: grid;
-  gap: var(--s-12);
-}
-
 .specimen__plate {
   position: relative;
-  overflow: visible;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
   background: var(--n-950);
-  box-shadow: 0 0 var(--s-8) color-mix(in srgb, var(--n-400) 35%, transparent);
 }
 
 .specimen__plate::after {
@@ -790,7 +787,7 @@ a:hover .text-link,
   z-index: 1;
   padding-left: var(--s-2);
   font-family: var(--font-hud);
-  font-size: var(--fs-hud);
+  font-size: var(--fs-sm);
   line-height: 1;
   color: var(--n-50);
   white-space: nowrap;
@@ -824,27 +821,10 @@ a:hover .text-link,
 
 .specimen__pixels {
   position: absolute;
-  background-size: 100% 100%;
+  background-size: cover;
   image-rendering: pixelated;
 }
 
-@media (min-width: 768px) {
-  .specimen {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 3fr);
-    gap: var(--s-8);
-    align-items: center;
-  }
-}
-
-@media (max-width: 767px) {
-  .specimen__bar .hud-panel__title {
-    display: none;
-  }
-
-  .specimen__bar .hud-panel__bar {
-    justify-content: flex-end;
-  }
-}
 
 /* ─── Home: project deck ───────────────────────────────────────────────── */
 .hud-frame {
@@ -1814,4 +1794,8 @@ a:hover .text-link,
   .yt-embeds {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (max-width: 1023px) {
+  .specimen__plate { height: auto; aspect-ratio: 3 / 2; }
 }

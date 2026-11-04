@@ -20,6 +20,9 @@
   --accent-strong: #e2ff8a;
   --uv: #6a1fb8;
   --uv-deep: #1a0636;
+  --spec-orange: #ff9d2e;
+  --sun-peach: #f3c9a5;
+  --sun-maroon: #5c0f24;
   --spectrum-stops: var(--n-500), var(--accent);
 
   --success: #4ade80;
