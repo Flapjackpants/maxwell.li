@@ -1163,7 +1163,7 @@ a:hover .text-link,
 }
 
 @media (min-width: 1024px) {
-  .detail__hero { position: relative; aspect-ratio: 2 / 1; max-height: 75dvh; justify-content: flex-end; overflow: hidden; }
+  .detail__hero { position: relative; aspect-ratio: 2 / 1; max-height: 75dvh; justify-content: flex-end; }
   .detail__hero-media { position: absolute; inset: 0; aspect-ratio: auto; }
   .detail__hero-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, color-mix(in srgb, var(--n-950) 92%, transparent), transparent 60%); pointer-events: none; }
   .detail__hero-copy { position: relative; z-index: 1; padding: var(--s-12); }
@@ -1319,10 +1319,13 @@ a:hover .text-link,
   margin: 0;
   font-family: var(--font-hud);
   font-size: var(--s-12);
+  letter-spacing: 0;
+  white-space: nowrap;
   color: var(--accent);
 }
 
 .yt-kpi dd.yt-kpi__delta {
+  white-space: normal;
   font-size: var(--fs-sm);
   color: var(--success);
 }
