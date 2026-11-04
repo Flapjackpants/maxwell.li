@@ -2,7 +2,7 @@
  * Portfolio design system — home (/) and /projects.
  * Tokens live in app/globals.css (:root). No raw colors or lengths here:
  * everything reads a token. Exceptions: 1px hairlines and media-query widths.
- * Dark only. Quiet, editorial: type + whitespace carry hierarchy.
+ * Dark phosphor and ultraviolet system with spectrum accents.
  */
 
 /* ─── Shell + base type ─────────────────────────────────────────────────── */
@@ -10,7 +10,7 @@
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   font-size: var(--fs-base);
   line-height: var(--lh-body);
   color: var(--n-200);
@@ -26,9 +26,25 @@
 .site-root h2,
 .site-root h3 {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: var(--fw-medium);
   line-height: var(--lh-tight);
   color: var(--n-50);
+}
+
+.site-root h1,
+.site-root h2 {
+  text-shadow: 0.04em 0.04em 0 var(--uv);
+}
+
+.site-root::after,
+.dash-root::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: var(--scanlines);
 }
 
 .site-root p {
@@ -60,6 +76,7 @@
   .site-root *,
   .site-root *::before,
   .site-root *::after {
+    animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
   }
@@ -85,12 +102,12 @@
 
 /* ─── Mono voice ────────────────────────────────────────────────────────── */
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-medium);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  font-weight: var(--fw-regular);
   line-height: var(--lh-body);
   text-transform: uppercase;
-  letter-spacing: var(--track-mono);
+  letter-spacing: var(--track-hud);
   color: var(--n-400);
 }
 
@@ -101,6 +118,15 @@
   z-index: 40;
   background-color: var(--surface);
   border-bottom: 1px solid var(--line);
+}
+
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: var(--focus-width);
+  background: linear-gradient(to right, var(--spectrum-stops));
 }
 
 .site-header__inner {
@@ -120,11 +146,11 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--s-12);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-medium);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  font-weight: var(--fw-regular);
   text-transform: uppercase;
-  letter-spacing: var(--track-mono);
+  letter-spacing: var(--track-hud);
   text-decoration: none;
   white-space: nowrap;
   color: var(--n-400);
@@ -133,13 +159,17 @@
 
 .site-brand {
   flex: none;
-  color: var(--n-50);
+  color: var(--accent);
 }
 
 .site-brand:hover,
-.site-nav a:hover,
+.site-nav a:hover {
+  color: var(--accent);
+}
+
 .site-nav a[aria-current] {
-  color: var(--n-50);
+  background: var(--accent);
+  color: var(--n-950);
 }
 
 .site-nav {
@@ -177,18 +207,19 @@
   padding-inline: var(--s-6);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-semibold);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  font-weight: var(--fw-regular);
   text-transform: uppercase;
-  letter-spacing: var(--track-mono);
+  letter-spacing: var(--track-hud);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
   transition:
     border-color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
+    color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
 }
 
 .btn svg {
@@ -204,6 +235,7 @@
 
 .btn--primary:hover {
   background-color: var(--accent-strong);
+  box-shadow: var(--hard-shadow);
 }
 
 .btn--ghost {
@@ -214,6 +246,7 @@
 
 .btn--ghost:hover {
   border-color: var(--accent);
+  color: var(--accent);
 }
 
 .icon-btn {
@@ -235,7 +268,7 @@
 
 .icon-btn:hover {
   border-color: var(--accent);
-  color: var(--n-50);
+  color: var(--accent);
 }
 
 .icon-btn svg {
@@ -251,12 +284,17 @@
 }
 
 .tag {
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
   font-weight: var(--fw-regular);
   line-height: var(--lh-body);
-  color: var(--n-400);
+  letter-spacing: var(--track-hud);
+  color: var(--spec-cyan);
 }
+
+.tag:nth-child(4n + 2) { color: var(--spec-yellow); }
+.tag:nth-child(4n + 3) { color: var(--spec-orange); }
+.tag:nth-child(4n + 4) { color: var(--accent); }
 
 .tag:not(:last-child)::after {
   content: "/";
@@ -885,7 +923,7 @@ a:hover .text-link,
 
 .rail__fill {
   height: 100%;
-  background-color: var(--accent);
+  background: linear-gradient(to bottom, var(--spectrum-stops));
   transform-origin: top;
 }
 
@@ -906,11 +944,11 @@ a:hover .text-link,
 }
 
 .rail__label {
-  font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-medium);
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  font-weight: var(--fw-regular);
   text-transform: uppercase;
-  letter-spacing: var(--track-mono);
+  letter-spacing: var(--track-hud);
   color: var(--n-400);
   opacity: 0;
   translate: var(--s-2) 0;
@@ -942,7 +980,7 @@ a:hover .text-link,
   width: var(--rail-dot);
   height: var(--rail-dot);
   border: 1px solid var(--line-strong);
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   background-color: var(--n-950);
   transition:
     background-color var(--dur) var(--ease),
@@ -1411,7 +1449,7 @@ a:hover .text-link,
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
-    radial-gradient(120% 140% at 0% 0%, rgb(147 197 253 / 0.25), transparent 60%),
+    radial-gradient(120% 140% at 0% 0%, rgb(106 31 184 / 0.35), transparent 60%),
     linear-gradient(135deg, var(--n-800), var(--n-950));
 }
 
@@ -1423,7 +1461,7 @@ a:hover .text-link,
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(10 14 23 / 0.6), transparent 55%);
+  background: linear-gradient(to top, rgb(3 5 4 / 0.6), transparent 55%);
   pointer-events: none;
 }
 
@@ -1484,7 +1522,7 @@ a:hover .text-link,
   left: var(--s-2);
   padding: var(--s-1) var(--s-2);
   border-radius: var(--radius-sm);
-  background: rgb(10 14 23 / 0.8);
+  background: rgb(3 5 4 / 0.8);
   color: var(--accent);
   font-size: var(--fs-xs);
 }
