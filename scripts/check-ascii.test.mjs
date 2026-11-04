@@ -4,6 +4,7 @@ import {
   ASCII_RAMP,
   TEXT_SIZES,
   asciiLines,
+  crossFrame,
   lumaToChar,
   textSizeForProgress,
 } from "../lib/ascii.ts";
@@ -47,4 +48,22 @@ test("textSizeForProgress shrinks monotonically as progress increases", () => {
     previous = size;
   }
   assert.equal(previous, TEXT_SIZES[TEXT_SIZES.length - 1]);
+});
+
+test("crossFrame returns a full cols × rows frame with visible ink", () => {
+  const frame = crossFrame(0.6, 44, 30);
+  const lines = frame.split("\n");
+  assert.equal(lines.length, 30);
+  for (const line of lines) assert.equal(line.length, 44);
+  assert.ok(lines.some((line) => line.trim() !== ""));
+  assert.equal(frame, crossFrame(0.6, 44, 30));
+  assert.notEqual(crossFrame(0, 44, 30), crossFrame(1, 44, 30));
+});
+
+test("crossFrame slanted footrest keeps rows asymmetric", () => {
+  const lines = crossFrame(0, 44, 30).split("\n");
+  assert.ok(
+    lines.some((line) => line !== [...line].reverse().join("")),
+    "expected at least one non-palindromic row",
+  );
 });

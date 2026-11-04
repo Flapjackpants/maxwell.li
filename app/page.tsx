@@ -20,6 +20,7 @@ import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
 import { WinBar, SunMountain } from "./components/VaporArt";
 import { TypedName } from "./components/TypedName";
+import { CrossWindow, TerminalWindow } from "./components/AsciiWindows";
 
 const pinnedProjects = getPinnedProjects();
 const sectionIds = navLinks.map((link) => link.href.slice(1));
@@ -72,7 +73,17 @@ export default function Home() {
             <section id="bio" className="hero">
               <div className="section__inner section__inner--poster">
                 <motion.div {...fadeUp}>
-                  <HeroScene imageUrl={PROFILE_IMAGE_URL} title={<TypedName text={homeHero.title} />} flankLeft={null} flankRight={null}>
+                  <HeroScene
+                    imageUrl={PROFILE_IMAGE_URL}
+                    title={<TypedName text={homeHero.title} />}
+                    flankLeft={<TerminalWindow src="/muon2.webp" className="terminal--fill" />}
+                    flankRight={
+                      <>
+                        <CrossWindow />
+                        <TerminalWindow src="/nature.webp" className="terminal--fill" />
+                      </>
+                    }
+                  >
                     <p className="eyebrow">{homeHero.eyebrow}</p>
                     <p className="hero__lede">{homeHero.lede}</p>
                     <div className="hero__cta">

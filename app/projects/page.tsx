@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getArchiveProjects, isProjectPinned } from "@/lib/projects";
+import { TerminalWindow } from "../components/AsciiWindows";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -26,6 +27,7 @@ export default function ProjectsIndexPage() {
             archive. Open any entry for narrative, stack, and links.
           </p>
         </div>
+        <TerminalWindow src="/asciiify.png" className="page-head__readout" />
       </header>
 
       <ul className="project-list">

@@ -10,6 +10,7 @@ import {
   PROJECTS,
 } from "@/lib/projects";
 import { WinBar } from "../../components/VaporArt";
+import { TerminalWindow } from "../../components/AsciiWindows";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -112,6 +113,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               </a>
               {project.liveUrl ? <LiveLink href={project.liveUrl} className="btn btn--ghost" /> : null}
             </div>
+            <TerminalWindow src={project.imageUrl} className="detail__readout" />
           </div>
         </aside>
         <div className="detail__main">

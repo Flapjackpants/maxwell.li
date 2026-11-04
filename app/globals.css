@@ -118,6 +118,10 @@
   --win-raised: inset -1px -1px 0 var(--win-dark), inset 1px 1px 0 var(--win-light), inset -2px -2px 0 var(--win-shadow), inset 2px 2px 0 var(--win-mid);
   --win-sunken: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 var(--win-light), inset 2px 2px 0 var(--win-dark), inset -2px -2px 0 var(--win-mid);
 
+  /* ASCII windows */
+  --ascii-pre: clamp(0.5rem, 1.1dvh, 0.75rem);
+  --terminal-aspect: 16 / 10;
+
   /* Background */
   --page-gradient: linear-gradient(to bottom, #000 0%, #020104 45%, var(--uv-deep) 78%, #3b1075 100%);
   --page-vignette: linear-gradient(

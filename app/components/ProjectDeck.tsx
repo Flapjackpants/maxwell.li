@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Project } from "@/lib/projects";
+import { TerminalWindow } from "./AsciiWindows";
 
 const IMAGE_SIZES = "(max-width: 1023px) 100vw, 52vw";
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -82,6 +83,7 @@ export function ProjectDeck({
           </ul>
           <Link href={`/projects/${project.id}`} className="text-link">Open case study →</Link>
         </div>
+        <TerminalWindow src={project.imageUrl} className="deck__readout" />
       </div>
 
       <div className="deck__controls">
