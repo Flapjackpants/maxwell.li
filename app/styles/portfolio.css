@@ -569,7 +569,6 @@ a:hover .text-link,
   position: relative;
   flex: 2 1 0;
   min-width: 0;
-  isolation: isolate;
   overflow: hidden;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
@@ -578,13 +577,13 @@ a:hover .text-link,
   will-change: transform;
 }
 
+/* Plain alpha, not mix-blend-mode: blending is unreliable inside these 3D-transformed cells. */
 .mosaic__cell::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: var(--scanlines), var(--n-400);
-  mix-blend-mode: color;
+  background: var(--scanlines), color-mix(in srgb, var(--n-400) 16%, transparent);
   transition: opacity var(--dur) var(--ease);
 }
 
@@ -596,12 +595,14 @@ a:hover .text-link,
 .mosaic__img {
   position: absolute;
   inset: 0;
-  filter: grayscale(1) contrast(1.15) brightness(0.9);
+  filter: grayscale(0.55) contrast(1.05);
   transition: filter var(--dur) var(--ease);
 }
 
-.mosaic__cell:hover .mosaic__img { filter: none; }
-.mosaic__cell:hover::after { opacity: 0; }
+@media (hover: hover) {
+  .mosaic__cell:hover .mosaic__img { filter: none; }
+  .mosaic__cell:hover::after { opacity: 0; }
+}
 
 .about-stage__index {
   font-family: var(--font-hud);
