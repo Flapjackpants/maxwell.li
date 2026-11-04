@@ -1,3 +1,5 @@
+import { AsciiSplash } from "./AsciiSplash";
+
 /** Fixed phosphor grid and drifting ultraviolet stripes behind portfolio pages. */
 export function PortfolioBackground() {
   return (
@@ -6,6 +8,7 @@ export function PortfolioBackground() {
       <div className="portfolio-bg__grid" />
       <div className="portfolio-bg__stripes" />
       <div className="portfolio-bg__vignette" />
+      <AsciiSplash />
     </div>
   );
 }

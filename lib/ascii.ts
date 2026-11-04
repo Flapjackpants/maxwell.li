@@ -211,3 +211,59 @@ export function textSizeForProgress(
   );
   return TEXT_SIZES[index];
 }
+
+export type SplashCell = { dx: number; dy: number; char: string; alpha: number };
+
+const SPLASH_RADIUS = 16;
+const SPLASH_TRAIL = 5;
+const SPLASH_RING_WIDTH = 1.5;
+
+/** Stable noise in [0.75, 1] for one grid cell, so a splash keeps its grain. */
+function splashJitter(dx: number, dy: number, seed: number): number {
+  let hash =
+    Math.imul(dx, 374761393) ^
+    Math.imul(dy, 668265263) ^
+    Math.imul(seed, 1274126177);
+  hash = Math.imul(hash ^ (hash >>> 13), 1274126177);
+  hash ^= hash >>> 16;
+  return 0.75 + ((hash >>> 0) / 4294967295) * 0.25;
+}
+
+/**
+ * Cells of an ASCII ripple `age` (0–1) into its life, centred on a click.
+ * Two rings spread out and thin through the ramp as the splash fades. Pure and
+ * deterministic; rows are twice as tall as columns, so dy is measured doubled.
+ */
+export function splashCells(age: number, seed: number): SplashCell[] {
+  const progress = Math.max(age, 0);
+  if (progress >= 1) return [];
+
+  const eased = 1 - (1 - progress) ** 2;
+  const leading = SPLASH_RADIUS * eased;
+  const trailing = leading - SPLASH_TRAIL;
+  const rings = trailing >= 0 ? [leading, trailing] : [leading];
+  const fade = 1 - progress;
+  const span = SPLASH_RADIUS + 2;
+  const halfRows = Math.floor(span / 2);
+
+  const cells: SplashCell[] = [];
+  for (let dy = -halfRows; dy <= halfRows; dy += 1) {
+    for (let dx = -span; dx <= span; dx += 1) {
+      const distance = Math.hypot(dx, dy * 2);
+      let intensity = 0;
+      for (const ring of rings) {
+        intensity = Math.max(
+          intensity,
+          Math.max(0, 1 - Math.abs(distance - ring) / SPLASH_RING_WIDTH),
+        );
+      }
+      if (intensity <= 0) continue;
+
+      const brightness = intensity * fade * splashJitter(dx, dy, seed);
+      const char = lumaToChar(brightness * 255);
+      if (char === " ") continue;
+      cells.push({ dx, dy, char, alpha: intensity * fade });
+    }
+  }
+  return cells;
+}
