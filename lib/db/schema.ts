@@ -112,3 +112,9 @@ export const shopSettings = sqliteTable("shop_settings", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+/** Global retro visitor count. Single row with id = 1. */
+export const retroVisitorCount = sqliteTable("retro_visitor_count", {
+  id: integer("id").primaryKey(),
+  count: integer("count").notNull().default(0),
+});
