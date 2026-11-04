@@ -699,10 +699,27 @@ a:hover .text-link,
   font-family: var(--font-hud);
   font-size: var(--fs-hud);
   line-height: var(--lh-tight);
-  white-space: nowrap;
+  width: max-content;
+  max-width: calc(100% - var(--s-4));
   opacity: 0;
   pointer-events: none;
 }
+
+.mosaic__hit {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.mosaic__cell--open,
+.mosaic__cell:has(:focus-visible) { z-index: 5; }
+.mosaic__row:has(.mosaic__cell--open, :focus-visible) { position: relative; z-index: 5; }
+.mosaic__cell--open .win-tip,
+.mosaic__cell:has(:focus-visible) .win-tip { opacity: 1; }
 
 @media (hover: hover) {
   .mosaic__cell:hover { z-index: 5; scale: var(--win-hover-scale); }

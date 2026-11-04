@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useMotionValue,
@@ -83,7 +83,7 @@ const ASCII_FADE_END = 0.85;
 
 function MosaicCell({
   src,
-  label,
+  caption,
   order,
   rowIndex,
   cellIndex,
@@ -92,7 +92,7 @@ function MosaicCell({
   ascii,
 }: {
   src: string;
-  label: string;
+  caption: string;
   order: number;
   rowIndex: number;
   cellIndex: number;
@@ -100,6 +100,18 @@ function MosaicCell({
   progress: MotionValue<number>;
   ascii: boolean;
 }) {
+  const cellRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (!cellRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, [open]);
+
   const start = CELL_START + order * CELL_STAGGER;
   const range = [start, start + CELL_SPAN];
   const textSize = useTransform(progress, (p) =>
@@ -119,9 +131,13 @@ function MosaicCell({
   ]);
 
   return (
-    <motion.div className="mosaic__cell" style={{ rotateX, rotateZ, x, y }}>
+    <motion.div
+      ref={cellRef}
+      className={open ? "mosaic__cell mosaic__cell--open" : "mosaic__cell"}
+      style={{ rotateX, rotateZ, x, y }}
+    >
       <div className="hud-panel mosaic__window">
-        <WinBar title={label} />
+        <WinBar />
         <div className="mosaic__frame">
           <div className="mosaic__img">
             <Image
@@ -139,7 +155,13 @@ function MosaicCell({
           )}
         </div>
       </div>
-      <span className="win-tip">{label}</span>
+      <button
+        type="button"
+        className="mosaic__hit"
+        aria-label={caption}
+        onClick={() => setOpen((value) => !value)}
+      />
+      <span className="win-tip" aria-hidden="true">{caption}</span>
     </motion.div>
   );
 }
@@ -171,15 +193,14 @@ function AboutStage({
         reverse ? "about-stage about-stage--reverse grid-12" : "about-stage grid-12"
       }
     >
-      <div className="about-stage__media mosaic" aria-hidden="true">
+      <div className="about-stage__media mosaic">
         {block.imageRows.map((row, rowIndex) => (
           <div key={rowIndex} className="mosaic__row">
-            {/* shortcut: assumes four images per block, compute offsets if blocks vary */}
-            {row.map((src, cellIndex) => (
+            {row.map(({ src, caption }, cellIndex) => (
               <MosaicCell
                 key={src}
                 src={src}
-                label={`test ${index * 4 + rowOffsets[rowIndex] + cellIndex + 1}`}
+                caption={caption}
                 order={rowOffsets[rowIndex] + cellIndex}
                 rowIndex={rowIndex}
                 cellIndex={cellIndex}

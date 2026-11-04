@@ -179,7 +179,7 @@ export default function RetroHomePage() {
                           } as React.CSSProperties
                         }
                       >
-                        {row.map((src, cellIndex) => (
+                        {row.map(({ src }, cellIndex) => (
                           // eslint-disable-next-line @next/next/no-img-element -- same intrinsic mosaic as main home
                           <img
                             key={`${rowIndex}-${cellIndex}-${src}`}
