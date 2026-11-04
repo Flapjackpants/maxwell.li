@@ -32,12 +32,12 @@ export const homeAboutBlocks: readonly HomeAboutBlock[] = [
       "My projects are a reflection of my interests in the moment. Some are born out of a particular problem I'm facing, others are a way to explore a new technology or idea, some are a creative submission for a class project, and some others yet are just made for fun. ",
     imageRows: [
       [
-        { src: "/hackathon.jpg", caption: "Hackathon" },
-        { src: "/muon2.webp", caption: "Muon" },
+        { src: "/hackathon.jpg", caption: "Cornell AI Hackathon: the event we made Burger.AI :)" },
+        { src: "/muon2.webp", caption: "A monitor into a hatch of a particle accelerator..." },
       ],
       [
-        { src: "/critterworld.png", caption: "Critterworld" },
-        { src: "/muon.webp", caption: "Muon" },
+        { src: "/critterworld.png", caption: "I'm just a critter in this world... 😔" },
+        { src: "/muon.webp", caption: "Checking readings from the muon detector" },
       ],
     ],
   },
@@ -47,12 +47,12 @@ export const homeAboutBlocks: readonly HomeAboutBlock[] = [
       "From a young age, I've always been interested in building things. It started with Lego and Minecraft, but when I started coding in middle school, it was love at first sight. After being accepted into my dream school, Cornell, I've been able to explore my interests in a more structured way, and I've been able to build some really cool things.",
     imageRows: [
       [
-        { src: "/daylite.png", caption: "Daylite" },
-        { src: "/cornell.webp", caption: "Cornell" },
+        { src: "/daylite.png", caption: "My first Minecraft Mod!" },
+        { src: "/cornell.webp", caption: "Willard Straight hall in the spring!" },
       ],
       [
-        { src: "/youngMax.webp", caption: "Young Max" },
-        { src: "/nature.webp", caption: "Nature" },
+        { src: "/youngMax.webp", caption: "I visited Cornell in 2012 and I rang the bells!" },
+        { src: "/nature.webp", caption: "Beebe lake in the fall" },
       ],
     ],
   },
@@ -62,12 +62,12 @@ export const homeAboutBlocks: readonly HomeAboutBlock[] = [
       "In my free time, I like to hang out with my friends, play video games, learn new instruments, and explore the beauty of creation. Above all, I enjoy the process of creating and learning new things, and making meaningful connections with others.",
     imageRows: [
       [
-        { src: "/hackathon2.png", caption: "Hackathon" },
-        { src: "/minecraft.png", caption: "Minecraft" },
+        { src: "/hackathon2.png", caption: "BigRed//Hacks 2025: my first ever hackathon!" },
+        { src: "/minecraft.png", caption: "I enjoy to build in Minecraft" },
       ],
       [
-        { src: "/piano.png", caption: "Piano" },
-        { src: "/nature2.webp", caption: "Nature" },
+        { src: "/piano.png", caption: "I have been playing piano since I was eight years old." },
+        { src: "/nature2.webp", caption: "The part of living on north I miss the most ❤️" },
       ],
     ],
   },
