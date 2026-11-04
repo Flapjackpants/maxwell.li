@@ -18,7 +18,7 @@ export default function ProjectsIndexPage() {
 
   return (
     <div>
-      <header className="page-head">
+      <header className="page-head page-head--archive">
         <div className="page-head__copy">
           <p className="eyebrow">MODULE_ARCHIVE // FULL_INDEX</p>
           <h1 className="page-head__title">Projects</h1>

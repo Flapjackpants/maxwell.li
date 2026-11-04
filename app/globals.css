@@ -550,6 +550,31 @@ body {
 /* —— Dashboard (/dashboard) —— */
 .dash-root {
   min-height: 100vh;
+  --border-subtle: var(--line);
+  --border-medium: var(--line-strong);
+  --border-sky-strong: var(--line-strong);
+  --border-sky-hover: var(--accent);
+  --header-bg: var(--n-950);
+  --panel-bg: var(--surface);
+  --text-white: var(--n-50);
+  --text-muted: var(--n-200);
+  --text-soft: var(--n-200);
+  --text-caption: var(--n-400);
+  --text-nav: var(--n-400);
+  font-family: var(--font-body);
+}
+
+.dash-root .home-nav-link,
+.dash-root .projects-archive-back,
+.dash-root .mono-data {
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
+  letter-spacing: var(--track-hud);
+}
+
+.dash-root .projects-archive-header {
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(to right, var(--spectrum-stops)) 1;
 }
 
 .dash-main {
@@ -564,9 +589,10 @@ body {
 
 .dash-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: var(--fs-section);
   font-weight: 600;
   color: var(--text-white);
+  text-shadow: 0.04em 0.04em 0 var(--uv);
   margin: 0.35rem 0 0.5rem;
 }
 
@@ -590,9 +616,9 @@ body {
 }
 
 .dash-panel {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--line-strong);
   background: var(--panel-bg);
-  backdrop-filter: blur(var(--blur-panel));
+  box-shadow: var(--hard-shadow);
   padding: 1.15rem 1.25rem 1.35rem;
   min-height: 12rem;
 }
@@ -611,10 +637,10 @@ body {
 }
 
 .dash-panel-title {
-  font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-family: var(--font-hud);
+  font-size: var(--fs-hud);
   font-weight: 600;
-  color: var(--text-white);
+  color: var(--accent);
   margin: 0;
 }
 
@@ -639,7 +665,7 @@ body {
 }
 
 .dash-panel-error {
-  color: rgb(252 165 165);
+  color: var(--error);
   font-size: 0.875rem;
   margin: 0;
 }
@@ -695,12 +721,12 @@ body {
 }
 
 .dash-change--up {
-  color: rgb(134 239 172);
+  color: var(--success);
   font-size: 0.875rem;
 }
 
 .dash-change--down {
-  color: rgb(252 165 165);
+  color: var(--error);
   font-size: 0.875rem;
 }
 
@@ -753,13 +779,13 @@ body {
 }
 
 .dash-banner--ok {
-  color: rgb(187 247 208);
-  border-color: rgb(74 222 128 / 0.35);
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
 }
 
 .dash-banner--err {
-  color: rgb(254 202 202);
-  border-color: rgb(248 113 113 / 0.35);
+  color: var(--error);
+  border-color: color-mix(in srgb, var(--error) 35%, transparent);
 }
 
 .dash-provider-list,
