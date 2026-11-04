@@ -18,7 +18,7 @@ export default function ProjectsLayout({
             <span className="site-label">ARCHIVE // WORK</span>
           </div>
         </header>
-        <div className="site-main">{children}</div>
+        <div className="site-main site-main--poster">{children}</div>
       </div>
     </div>
   );

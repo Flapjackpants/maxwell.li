@@ -48,7 +48,7 @@ export default async function YoutubeSponsorPage() {
 
   return (
     <main>
-      <div className="yt-hero">
+      <div className="yt-hero hud-frame">
         <div className="yt-hero__banner">
           {channel.bannerUrl && (
             <Image

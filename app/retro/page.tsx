@@ -20,6 +20,7 @@ import {
 import { Y2K_GIFS } from "@/lib/retro-gifs";
 import { RetroBackgroundAudio } from "./RetroBackgroundAudio";
 import { RetroImageFlash } from "./RetroImageFlash";
+import { RetroVisitorCount } from "./RetroVisitorCount";
 
 export const metadata: Metadata = {
   title: "Maxwell Li's Homepage",
@@ -43,7 +44,7 @@ export default function RetroHomePage() {
         </h1>
         <div className={styles.marqueeWrap}>
           <div className={styles.marqueeTrack}>
-            You are visitor number 0000071! Thanks for stopping by!
+            You are visitor number <RetroVisitorCount />! Thanks for stopping by!
           </div>
         </div>
         <div
@@ -179,7 +180,7 @@ export default function RetroHomePage() {
                           } as React.CSSProperties
                         }
                       >
-                        {row.map((src, cellIndex) => (
+                        {row.map(({ src }, cellIndex) => (
                           // eslint-disable-next-line @next/next/no-img-element -- same intrinsic mosaic as main home
                           <img
                             key={`${rowIndex}-${cellIndex}-${src}`}

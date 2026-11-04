@@ -1,10 +1,23 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Bodoni_Moda, JetBrains_Mono, VT323 } from "next/font/google";
 import { retroFont } from "@/lib/retro-font";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono-accent",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const bodoniModa = Bodoni_Moda({
+  variable: "--font-bodoni",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const vt323 = VT323({
+  weight: "400",
+  variable: "--font-vt323",
   subsets: ["latin"],
   display: "swap",
 });
@@ -22,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jetbrainsMono.variable} ${retroFont.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} ${bodoniModa.variable} ${vt323.variable} ${retroFont.variable} h-full antialiased`}
     >
       <body className="portfolio-body-shell min-h-full">{children}</body>
     </html>
