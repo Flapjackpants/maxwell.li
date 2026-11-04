@@ -77,6 +77,13 @@ test("retro visitor POST counts once per cookie and reports database errors", as
       const second = await fetch(url, { method: "POST" });
       assert.equal(second.status, 200);
       assert.deepEqual(await second.json(), { count: 2 });
+
+      const retro = await fetch(new URL("/retro", url));
+      assert.equal(retro.status, 200);
+      const html = await retro.text();
+      assert.ok(html.includes("You are visitor number"));
+      assert.ok(html.includes("???????"));
+      assert.ok(!html.includes("visitor number 0000071"));
     });
 
     await withServer(unmigratedPath, 3458, async (url) => {
