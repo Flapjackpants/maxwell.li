@@ -2,8 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getArchiveProjects, isProjectPinned } from "@/lib/projects";
-import { HudReadout } from "@/app/components/VaporArt";
-import { HUD_NOISE } from "@/lib/hud-content";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -28,7 +26,6 @@ export default function ProjectsIndexPage() {
             archive. Open any entry for narrative, stack, and links.
           </p>
         </div>
-        <HudReadout className="page-head__readout" lines={HUD_NOISE.slice(0, 10)} />
       </header>
 
       <ul className="project-list">

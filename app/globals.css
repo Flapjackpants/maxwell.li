@@ -20,13 +20,7 @@
   --accent-strong: #e2ff8a;
   --uv: #6a1fb8;
   --uv-deep: #1a0636;
-  --spec-red: #ff4438;
-  --spec-orange: #ff9d2e;
-  --spec-yellow: #ffe14d;
-  --spec-cyan: #3fe8e0;
-  --sun-peach: #f3c9a5;
-  --sun-maroon: #5c0f24;
-  --spectrum-stops: var(--spec-red), var(--spec-orange), var(--spec-yellow), var(--accent), var(--spec-cyan), var(--uv);
+  --spectrum-stops: var(--n-500), var(--accent);
 
   --success: #4ade80;
   --warning: #fbbf24;
@@ -51,6 +45,7 @@
   --fs-xl: 2rem;
   --fs-2xl: 3.25rem;
   --fs-poster: clamp(2.5rem, min(13vw, 24dvh), 13rem);
+  --fs-hero-name: var(--fs-poster);
   --fs-section: clamp(2.5rem, 6vw, 5rem);
   --fw-regular: 400;
   --fw-medium: 500;
@@ -99,7 +94,7 @@
   --icon: 1.25rem;
   --header-h: var(--s-12);
   --stage-h: calc(100dvh - var(--header-h));
-  --specimen-max: calc(100dvh - var(--header-h) - var(--s-24) - var(--s-16) - var(--fs-poster) * 0.9);
+  --specimen-max: calc(100dvh - var(--header-h) - var(--s-24) - var(--s-16) - var(--fs-hero-name) * 0.9);
   --media-tall: calc(var(--stage-h) - var(--s-16));
   --media-portrait: calc(var(--media-tall) * 0.85);
   --plate-perspective: 1400px;
@@ -138,6 +133,12 @@
 @media (max-width: 639px) {
   :root {
     --fs-2xl: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --fs-hero-name: clamp(3rem, min(6vw, 12dvh), 6.5rem);
   }
 }
 

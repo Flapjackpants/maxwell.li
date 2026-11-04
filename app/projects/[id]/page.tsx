@@ -3,8 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Github } from "lucide-react";
-import { HudReadout } from "@/app/components/VaporArt";
-import { HUD_NOISE, hudProjectLines } from "@/lib/hud-content";
 import {
   getAllProjectIds,
   getProjectById,
@@ -113,7 +111,6 @@ export default async function ProjectDetailPage({ params }: Props) {
               </a>
               {project.liveUrl ? <LiveLink href={project.liveUrl} className="btn btn--ghost" /> : null}
             </div>
-            <HudReadout className="detail__readout" lines={[...hudProjectLines([project]), ...HUD_NOISE.slice(10, 16)]} />
           </div>
         </aside>
         <div className="detail__main">

@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Project } from "@/lib/projects";
-import { HUD_NOISE } from "@/lib/hud-content";
-import { HudReadout } from "./VaporArt";
 
 const IMAGE_SIZES = "(max-width: 1023px) 100vw, 52vw";
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -84,7 +82,6 @@ export function ProjectDeck({
           </ul>
           <Link href={`/projects/${project.id}`} className="text-link">Open case study →</Link>
         </div>
-        <HudReadout className="deck__readout" lines={HUD_NOISE.slice(0, 8)} />
       </div>
 
       <div className="deck__controls">

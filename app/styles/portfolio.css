@@ -2,7 +2,7 @@
  * Portfolio design system — home (/) and /projects.
  * Tokens live in app/globals.css (:root). No raw colors or lengths here:
  * everything reads a token. Exceptions: 1px hairlines and media-query widths.
- * Dark phosphor and ultraviolet system with spectrum accents.
+ * Dark phosphor and ultraviolet system with a single chartreuse accent.
  */
 
 /* ─── Shell + base type ─────────────────────────────────────────────────── */
@@ -295,12 +295,10 @@
   font-weight: var(--fw-regular);
   line-height: var(--lh-body);
   letter-spacing: var(--track-hud);
-  color: var(--spec-cyan);
+  color: var(--n-400);
 }
 
-.tag:nth-child(4n + 2) { color: var(--spec-yellow); }
-.tag:nth-child(4n + 3) { color: var(--spec-orange); }
-.tag:nth-child(4n + 4) { color: var(--accent); }
+.tag:nth-child(even) { color: var(--accent); }
 
 .tag:not(:last-child)::after {
   content: "/";
@@ -407,7 +405,7 @@ a:hover .text-link,
   z-index: 4;
   width: 100%;
   margin: 0;
-  font-size: var(--fs-poster);
+  font-size: var(--fs-hero-name);
   line-height: 0.9;
   text-align: center;
   text-transform: uppercase;
@@ -431,14 +429,6 @@ a:hover .text-link,
 .wire-cage__back { z-index: 0; }
 .wire-cage__child { position: relative; z-index: 1; }
 .wire-cage__front { z-index: 2; }
-
-.hud-readout { overflow: hidden; font-family: var(--font-hud); font-size: var(--fs-hud); line-height: var(--lh-tight); letter-spacing: var(--track-hud); white-space: nowrap; text-align: left; }
-.hud-readout span { display: block; color: var(--spec-red); }
-.hud-readout span:nth-child(24n + 5), .hud-readout span:nth-child(24n + 6), .hud-readout span:nth-child(24n + 7), .hud-readout span:nth-child(24n + 8) { color: var(--spec-orange); }
-.hud-readout span:nth-child(24n + 9), .hud-readout span:nth-child(24n + 10), .hud-readout span:nth-child(24n + 11), .hud-readout span:nth-child(24n + 12) { color: var(--spec-yellow); }
-.hud-readout span:nth-child(24n + 13), .hud-readout span:nth-child(24n + 14), .hud-readout span:nth-child(24n + 15), .hud-readout span:nth-child(24n + 16) { color: var(--accent); }
-.hud-readout span:nth-child(24n + 17), .hud-readout span:nth-child(24n + 18), .hud-readout span:nth-child(24n + 19), .hud-readout span:nth-child(24n + 20) { color: var(--spec-cyan); }
-.hud-readout span:nth-child(24n + 21), .hud-readout span:nth-child(24n + 22), .hud-readout span:nth-child(24n + 23), .hud-readout span:nth-child(24n + 24) { color: var(--n-400); }
 
 .hero__portrait {
   position: relative;
@@ -492,7 +482,7 @@ a:hover .text-link,
 }
 
 @media (min-width: 1024px) {
-  .hero__name { margin-bottom: calc(var(--s-8) * -1); }
+  .hero__name { margin-bottom: var(--s-4); }
   .hero__stage { grid-template-columns: minmax(0, 3fr) minmax(0, 5fr) minmax(0, 3fr); align-items: stretch; gap: var(--s-6); }
   .hero__left, .hero__specimen { order: initial; }
   .hero__specimen { width: min(100%, var(--specimen-max)); min-width: var(--portrait-max); }
@@ -501,7 +491,6 @@ a:hover .text-link,
   .hero__left, .hero__flank-right { display: flex; flex-direction: column; min-height: 0; max-height: var(--specimen-max); }
   .hero__flank-left { display: block; flex: 1; min-height: 0; margin-top: var(--s-8); overflow: hidden; mask-image: linear-gradient(to bottom, var(--n-950) 75%, transparent); }
   .hero__flank-right { overflow: hidden; }
-  .hero__strata { flex: 1; min-height: 0; width: 100%; }
   .hero__cue { display: inline-flex; }
 }
 

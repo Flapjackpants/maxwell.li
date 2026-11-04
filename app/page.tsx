@@ -18,8 +18,7 @@ import { ProjectDeck } from "./components/ProjectDeck";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
-import { HudReadout, StrataStack, SunMountain } from "./components/VaporArt";
-import { HUD_NOISE, hudProjectLines } from "@/lib/hud-content";
+import { SunMountain } from "./components/VaporArt";
 
 const pinnedProjects = getPinnedProjects();
 const sectionIds = navLinks.map((link) => link.href.slice(1));
@@ -72,7 +71,7 @@ export default function Home() {
             <section id="bio" className="hero">
               <div className="section__inner section__inner--poster">
                 <motion.div {...fadeUp}>
-                  <HeroScene imageUrl={PROFILE_IMAGE_URL} title={<h1 className="hero__name">{homeHero.title}</h1>} flankLeft={<HudReadout lines={HUD_NOISE} />} flankRight={<><HudReadout lines={hudProjectLines(pinnedProjects)} /><StrataStack className="hero__strata" /></>}>
+                  <HeroScene imageUrl={PROFILE_IMAGE_URL} title={<h1 className="hero__name">{homeHero.title}</h1>} flankLeft={null} flankRight={null}>
                     <p className="eyebrow">{homeHero.eyebrow}</p>
                     <p className="hero__lede">{homeHero.lede}</p>
                     <div className="hero__cta">
