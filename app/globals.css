@@ -77,7 +77,6 @@
   --content-max: 72rem;
   --poster-max: 100rem;
   --social-size: 5rem;
-  --footer-horizon-h: clamp(16rem, 34vw, 30rem);
   --prose-max: 40rem;
   --gutter: var(--s-4);
 
@@ -95,13 +94,10 @@
   --focus-offset: 2px;
 
   /* Component sizes (named so portfolio.css has no raw lengths) */
-  --portrait-max: 20rem;
-  --hero-flank-min: 37rem;
   --indicator-h: 0.125rem;
   --icon: 1.25rem;
   --header-h: var(--s-12);
   --stage-h: calc(100dvh - var(--header-h));
-  --specimen-max: calc(100dvh - var(--header-h) - var(--s-24) - var(--s-16) - var(--fs-hero-name) * 0.9);
   --media-tall: calc(var(--stage-h) - var(--s-16));
   --media-portrait: calc(var(--media-tall) * 0.85);
   --plate-perspective: 1400px;
@@ -126,7 +122,6 @@
   --win-sunken: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 var(--win-light), inset 2px 2px 0 var(--win-dark), inset -2px -2px 0 var(--win-mid);
 
   /* ASCII windows */
-  --ascii-pre: clamp(0.5rem, 1.1dvh, 0.75rem);
   --terminal-aspect: 16 / 10;
 
   /* Background */

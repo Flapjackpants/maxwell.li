@@ -21,14 +21,10 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export function HeroScene({
   imageUrl,
   title,
-  flankLeft,
-  flankRight,
   children,
 }: {
   imageUrl: string;
   title: ReactNode;
-  flankLeft: ReactNode;
-  flankRight: ReactNode;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,14 +43,13 @@ export function HeroScene({
 
   return (
     <div ref={ref} className="hero__inner grid-12">
-      {title}
       <div className="hero__stage">
         <div className="hero__left">
+          {title}
           <motion.div className="hero__copy hud-panel" style={{ y: copyY, opacity: copyOpacity }}>
             <WinBar title="BIO.TXT" />
             <div className="hud-panel__body">{children}</div>
           </motion.div>
-          <div className="hero__flank-left">{flankLeft}</div>
         </div>
         <div className="hero__specimen">
           <SunMountain className="hero__sun" />
@@ -66,7 +61,6 @@ export function HeroScene({
             </div>
           </WireCage>
         </div>
-        <div className="hero__flank-right">{flankRight}</div>
       </div>
     </div>
   );
