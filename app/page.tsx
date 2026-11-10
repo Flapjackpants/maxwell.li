@@ -18,9 +18,8 @@ import { ProjectDeck } from "./components/ProjectDeck";
 import { AboutScene, HeroScene } from "./components/HomeScenes";
 import { PortfolioBackground } from "./components/PortfolioBackground";
 import { SectionRail, useActiveSection } from "./components/SectionRail";
-import { WinBar, SunMountain, SpecimenPlate } from "./components/VaporArt";
+import { WinBar } from "./components/VaporArt";
 import { TypedName } from "./components/TypedName";
-import { CrossWindow } from "./components/AsciiWindows";
 
 const pinnedProjects = getPinnedProjects();
 const sectionIds = navLinks.map((link) => link.href.slice(1));
@@ -76,13 +75,6 @@ export default function Home() {
                   <HeroScene
                     imageUrl={PROFILE_IMAGE_URL}
                     title={<TypedName text={homeHero.title} />}
-                    flankLeft={<SpecimenPlate name="forest" />}
-                    flankRight={
-                      <>
-                        <CrossWindow />
-                        <SpecimenPlate name="lake" />
-                      </>
-                    }
                   >
                     <p className="eyebrow">{homeHero.eyebrow}</p>
                     <p className="hero__lede">{homeHero.lede}</p>
@@ -208,8 +200,7 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
-            <div className="site-footer__horizon">
-              <SunMountain variant="horizon" />
+            <div className="section__inner">
               <p className="eyebrow site-footer__legal">© {new Date().getFullYear()} — All rights reserved</p>
             </div>
           </footer>
