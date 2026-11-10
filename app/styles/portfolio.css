@@ -557,12 +557,13 @@ a:hover .text-link,
   .hero__inner { --hu: min(0.86vw, 1.6dvh); --fs-hero-name: calc(var(--hu) * 12); }
   .hero__copy { --fs-hud: max(1.125rem, calc(var(--hu) * 1.6)); font-size: max(1rem, calc(var(--hu) * 1.9)); }
   .hero__name { margin-bottom: var(--s-4); text-align: left; }
-  /* Name sets the left column width; the square picture stretches to that column's height. */
+  /* Name sets the left column width; the square picture sits beside it. */
   .hero__stage { grid-template-columns: max-content auto; justify-content: center; gap: var(--s-6); }
   .hero__left { display: block; }
   .hero__copy { width: 0; min-width: 100%; }
   .hero__copy .hero__lede { max-width: none; }
-  .hero__specimen { width: auto; align-self: stretch; }
+  /* Grid sizes columns before rows, so an auto-width square collapses to 0; size it with the shared unit instead. */
+  .hero__specimen { width: calc(var(--hu) * 40); align-self: center; }
   .hero__specimen .wire-cage { width: 58%; }
   .hero__portrait { max-height: none; }
   .hero__cue { display: inline-flex; }
