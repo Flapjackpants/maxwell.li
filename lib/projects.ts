@@ -71,7 +71,7 @@ export const PROJECTS = [
     imageUrl: "/marko.png",
     githubUrl: "https://github.com/mdelriolanse/marko",
     tags: ["Swift", "RealityKit", "ARKit", "React", "ElevenLabs"],
-    liveUrl: "https://get-marko.vercel.app/",
+    liveUrl: "https://trymarko.io",
     demoYoutubeUrl: "https://youtu.be/3NhzazVjEco?si=4BvsPL1h1WAg7sd1",
   },
   {
